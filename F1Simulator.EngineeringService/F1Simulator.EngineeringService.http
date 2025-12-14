@@ -1,0 +1,6 @@
+@F1Simulator.EngineeringService_HostAddress = http://localhost:5135
+
+GET {{F1Simulator.EngineeringService_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
