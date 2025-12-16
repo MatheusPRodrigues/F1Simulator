@@ -1,0 +1,20 @@
+﻿using F1Simulator.Models.Enuns.TeamManegementService;
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace F1Simulator.Models.Models.TeamManegement
+{
+    public class Engineer
+    {
+        public Guid EngineerId { get; set; }
+        public Guid TeamId { get; set; }
+        public Guid CarId { get; set; }
+        public string FirstName { get; set; }
+        public string FullName { get; set; }
+        public Specialization EngineerSpecialization { get; set; }
+        public int Age { get; set; }
+        public decimal ExperienceFactor { get; set; }
+        public bool IsActive { get; set; } = true;
+    }
+}
