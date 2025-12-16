@@ -2,7 +2,9 @@
   <Folder Name="/docs/" />
   <Folder Name="/docs/Insomnia/" />
   <Folder Name="/src/">
-    <Project Path="F1Simulator.CompetitionService/F1Simulator.CompetitionService.csproj" />
+    <Project Path="F1Simulator.CompetitionService/F1Simulator.CompetitionService.csproj">
+      <BuildDependency Project="F1Simulator.Models/F1Simulator.Models.csproj" />
+    </Project>
     <Project Path="F1Simulator.EngineeringService/F1Simulator.EngineeringService.csproj" />
     <Project Path="F1Simulator.Models/F1Simulator.Models.csproj" />
     <Project Path="F1Simulator.RaceControlService/F1Simulator.RaceControlService.csproj" />
