@@ -6,14 +6,14 @@ namespace F1Simulator.Models.DTOs.TeamManegementService.DriverDTO
 {
     public class DriverResponseDTO
     {
-        public string DriverNumber { get; set; }
-        public string TeamId { get; set; }
-        public string CarId { get; set; }
-        public string FirstName { get; set; }
-        public string FullName { get; set; }
-        public string NameAcronym { get; set; }
-        public double WeightKg { get; set; }
-        public double HandiCap { get; set; }
-        public bool IsActive { get; set; }
+        public string DriverNumber { get; init; }
+        public string TeamId { get; init; }
+        public string CarId { get; init; }
+        public string FirstName { get; init; }
+        public string FullName { get; init; }
+        public string NameAcronym { get; init; }
+        public double WeightKg { get; init; }
+        public double HandiCap { get; init; }
+        public bool IsActive { get; init; }
     }
 }

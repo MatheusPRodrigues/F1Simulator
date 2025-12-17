@@ -19,7 +19,7 @@ namespace F1Simulator.TeamManagementService.Controllers
             _logger = logger;
         }
 
-        [HttpGet]
+        [HttpGet("{count}")]
         public async Task<int> GetTeamsCountAsync()
         {
             try
@@ -35,18 +35,40 @@ namespace F1Simulator.TeamManagementService.Controllers
         }
 
         [HttpPost]
-        public async Task CreateTeamAsync([FromBody] TeamRequestDTO teamRequestDto)
+        public async Task<ActionResult> CreateTeamAsync([FromBody] TeamRequestDTO teamRequestDto)
         {
             try
             {
                 _teamService.CreateTeamAsync(teamRequestDto);
                 _logger.LogInformation("Team created successfully!");
+                return Ok();
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occurred while creating team");
+                return BadRequest(ex);
+            }
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<List<TeamResponseDTO>>> GetAllTeamsAsync()
+        {
+            try
+            {
+                var teams = await _teamService.GetAllTeamsAsync();
+                return Ok(teams);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"An error occurred while getting the team list: {ex.Message}", ex);
                 throw;
             }
+        }
+
+        [HttpGet("{teamId}")]
+        public async Task<TeamResponseDTO> GetTeamByIdAsync(string teamId)
+        {
+
         }
     }
 }

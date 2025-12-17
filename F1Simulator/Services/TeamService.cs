@@ -39,11 +39,51 @@ namespace F1Simulator.TeamManagementService.Services
                 if (count > 11)
                     throw new Exception("Max teams reached!");
 
-                await _teamRepository.CreateTeamAsync(teamRequestDto);
+                var team = new Team
+                {
+                    TeamId = Guid.NewGuid(),
+                    Name = teamRequestDto.Name,
+                    NameAcronym = teamRequestDto.NameAcronym,
+                    Country = teamRequestDto.Country
+                };
+
+                await _teamRepository.CreateTeamAsync(team);
             }
             catch(Exception ex)
             {
                 _logger.LogError($"An error occurred while creating the team: {ex.Message}", ex);
+            }
+        }
+
+        public async Task<List<TeamResponseDTO>> GetAllTeamsAsync()
+        {
+            try
+            {
+                var teams = await _teamRepository.GetAllTeamsAsync();
+                return teams.ToList();
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError($"An error occurred while getting the team list: {ex.Message}", ex);
+                throw;
+            }
+        }
+
+        public async Task<TeamResponseDTO> GetTeamByIdAsync(string teamId)
+        {
+            try
+            {
+                var team = await _teamRepository.GetTeamByIdAsync(teamId);
+
+                if (team is null)
+                    throw new Exception("Team not found!");
+
+                return team;
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError($"An error occurred while getting team by id: {ex.Message}", ex);
+                throw;
             }
         }
     }

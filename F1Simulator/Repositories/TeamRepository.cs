@@ -9,11 +9,9 @@ namespace F1Simulator.TeamManagementService.Repositories
 {
     public class TeamRepository
     {
-        private readonly ILogger<Team> _logger;
         private readonly TeamManagementServiceConnection _connection;
-        public TeamRepository(ILogger<Team> logger, TeamManagementServiceConnection connection)
+        public TeamRepository(TeamManagementServiceConnection connection)
         {
-            _logger = logger;
             _connection = connection;
         }
 
@@ -26,21 +24,32 @@ namespace F1Simulator.TeamManagementService.Repositories
             return await connection.ExecuteScalarAsync<int>(sql);
         }
 
-        public async Task CreateTeamAsync(TeamRequestDTO teamRequestDto)
+        public async Task CreateTeamAsync(Team team)
         {
-            try
-            {
-                using var sqlConnection = _connection.GetConnection();
-                var query = "INSERT INTO Teams (Name, NameAcronym, Country) " +
-                            "VALUES (@Name, @NameAcronym, @Country)";
+            var query = "INSERT INTO Teams (Name, NameAcronym, Country) " +
+                        "VALUES (@Name, @NameAcronym, @Country)";
 
+            using var connection = _connection.GetConnection();
+            await connection.ExecuteAsync(query, team);
+        }
+
+        public async Task<IEnumerable<TeamResponseDTO>> GetAllTeamsAsync()
+        {
                 using var connection = _connection.GetConnection();
-                await connection.ExecuteAsync(query, teamRequestDto);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"An error occurred while creating the team: {ex.Message}", ex);
-            }
+                var query = @"SELECT TeamId, Name, NameAcronym, Country
+                          FROM Teams";
+
+                return await connection.QueryAsync<TeamResponseDTO>(query);           
+        }
+
+        public async Task<TeamResponseDTO> GetTeamByIdAsync(string teamId)
+        {
+                using var connection = _connection.GetConnection();
+                var query = @"SELECT TeamId, Name, NameAcronym, Country
+                          FROM Teams
+                          WHERE TeamId = @TeamId";
+
+                return await connection.QueryFirstOrDefaultAsync<TeamResponseDTO>(query, new { TeamId = Guid.Parse(teamId) });           
         }
     }
 }
