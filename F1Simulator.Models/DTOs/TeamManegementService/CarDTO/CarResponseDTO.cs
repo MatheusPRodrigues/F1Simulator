@@ -11,8 +11,8 @@ namespace F1Simulator.Models.DTOs.TeamManegementService.CarDTO
         public string Model { get; set; }
         public decimal WeightKg { get; set; }
         public int Speed { get; set; }
-        public decimal Ca { get; set; }
-        public decimal Cp { get; set; }
+        public double Ca { get; set; }
+        public double Cp { get; set; }
         public bool IsActive { get; set; } 
     }
 }

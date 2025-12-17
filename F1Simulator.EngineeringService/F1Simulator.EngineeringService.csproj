@@ -14,8 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
-    <Folder Include="Services\Interfaces\" />
+    <ProjectReference Include="..\F1Simulator.Models\F1Simulator.Models.csproj" />
   </ItemGroup>
 
 </Project>

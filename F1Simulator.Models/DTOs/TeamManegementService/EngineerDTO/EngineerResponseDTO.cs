@@ -14,7 +14,7 @@ namespace F1Simulator.Models.DTOs.TeamManegementService.EngineerDTO
         public string FullName { get; set; }
         public Specialization EngineerSpecialization { get; set; }
         public int Age { get; set; }
-        public decimal ExperienceFactor { get; set; }
+        public double ExperienceFactor { get; set; }
         public bool IsActive { get; set; }
     }
 }
