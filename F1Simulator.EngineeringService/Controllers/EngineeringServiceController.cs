@@ -44,59 +44,5 @@ namespace F1Simulator.EngineeringService.Controllers
             }
         }
 
-
-
-        [HttpPatch("car/{carId}/ca")]
-        public async Task<IActionResult> PatchCarAerodynamicCoefficientsAsync([FromBody] EngineersPutDTO engIds, string carId)
-        {
-            try
-            {
-                var result = await _engineeringService.PatchCarAerodynamicCoefficientsAsync(engIds, carId);
-
-                return Ok(result);
-            }
-            catch (KeyNotFoundException ex)
-            {
-                return NotFound(ex.Message);
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "An unexpected error occurred.");
-
-                return Problem(ex.Message);
-            }
-        }
-
-
-
-        [HttpPatch("car/{carId}/cp")]
-        public async Task<IActionResult> PatchCarPotentialCoefficientsAsync([FromBody] EngineersPutDTO engIds, string carId)
-        {
-            try
-            {
-                var result = await _engineeringService.PatchCarPotentialCoefficientsAsync(engIds, carId);
-
-                return Ok(result);
-            }
-            catch (KeyNotFoundException ex)
-            {
-                return NotFound(ex.Message);
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "An unexpected error occurred.");
-
-                return Problem(ex.Message);
-            }
-        }
-
     }
 }

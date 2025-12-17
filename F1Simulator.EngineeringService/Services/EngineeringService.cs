@@ -7,67 +7,70 @@ namespace F1Simulator.EngineeringService.Services
 {
     public class EngineeringService :  IEngineeringService
     {
-		private readonly IHttpClientFactory _hhtpClientFactory;
+		private readonly IHttpClientFactory _httpClientFactory;
         private readonly Random _random = Random.Shared;
 
-        public EngineeringService(IHttpClientFactory hhtpClientFactory)
+        public EngineeringService(IHttpClientFactory httpClientFactory)
         {
-            _hhtpClientFactory = hhtpClientFactory;
+            _httpClientFactory = httpClientFactory;
         }
 
 
         public async Task<CarResponseDTO> PutCarCoefficientsAsync(EngineersPutDTO engIds, string carId)
         {
-            var httpClientCar = _hhtpClientFactory.CreateClient("Car");
+            var httpClientCar = _httpClientFactory.CreateClient("Car");
 
             // looking for the car
-            var car = await httpClientCar.GetFromJsonAsync<CarResponseDTO>($"car/{carId}");
+            var car = await httpClientCar.GetFromJsonAsync<CarResponseDTO>($"{carId}");
 
             if (car is null)
                 throw new KeyNotFoundException("Car not found.");
 
-            var httpClientEngineer = _hhtpClientFactory.CreateClient("Engineer");
+            var httpClientEngineer = _httpClientFactory.CreateClient("Engineer");
 
             EngineerResponseDTO? engineerCa = null, engineerCp = null;
 
             // Looking for engineers
             if (!string.IsNullOrWhiteSpace(engIds.EngineerCaId))
-                engineerCa = await httpClientEngineer.GetFromJsonAsync<EngineerResponseDTO>($"engineer/{engIds.EngineerCaId}");
+                engineerCa = await httpClientEngineer.GetFromJsonAsync<EngineerResponseDTO>($"{engIds.EngineerCaId}");
 
             if (!string.IsNullOrWhiteSpace(engIds.EngineerCpId))
-                engineerCp = await httpClientEngineer.GetFromJsonAsync<EngineerResponseDTO>($"engineer/{engIds.EngineerCpId}");
-
-            // Confirmar com a equipe se gera uma variação aleatória para cada engenheiro, ou se vai utilizar a mesma
-            var randomFactor = Math.Round(
-                    ((2.0 * _random.NextDouble()) - 1.0),
-                    3);
+                engineerCp = await httpClientEngineer.GetFromJsonAsync<EngineerResponseDTO>($"{engIds.EngineerCpId}");
 
             double caUpdated = car.Ca, cpUpdated = car.Cp;
 
             // Update Ca
             if (engineerCa is not null)
             {
+                var randomFactorOne = Math.Round(
+                            ((2.0 * _random.NextDouble()) - 1.0),
+                            3);
+
                 if (engineerCa.CarId != car.CarId)
                     throw new ArgumentException("The aerodynamic coefficient engineer is not associated with the reported car.");
 
-                caUpdated = Math.Clamp(car.Ca + (engineerCa.ExperienceFactor * randomFactor), 0, 10);
-
+                caUpdated = Math.Clamp(car.Ca + (engineerCa.ExperienceFactor * randomFactorOne), 0, 10);
             }
 
             // Update Cp
             if (engineerCp is not null)
             {
+
+                var randomFactorTwo = Math.Round(
+                            ((2.0 * _random.NextDouble()) - 1.0),
+                            3);
+
                 if (engineerCp.CarId != car.CarId)
                     throw new ArgumentException("The power coefficient engineer is not associated with the specified car.");
 
-                cpUpdated = Math.Clamp(car.Cp + (engineerCp.ExperienceFactor * randomFactor), 0, 10);
+                cpUpdated = Math.Clamp(car.Cp + (engineerCp.ExperienceFactor * randomFactorTwo), 0, 10);
             }
 
             //If nothing has changed, error: bad request.
             if (caUpdated == car.Ca && cpUpdated == car.Cp)
                 throw new ArgumentException("No coefficients were updated.");
 
-            return new CarResponseDTO
+            var newCar = new CarResponseDTO
             {
                 CarId = car.CarId,
                 TeamId = car.TeamId,
@@ -76,31 +79,11 @@ namespace F1Simulator.EngineeringService.Services
                 Speed = car.Speed,
                 Ca = caUpdated,
                 Cp = cpUpdated,
-                IsActive = car.IsActive,
             };
-        }
 
+            await httpClientCar.PutAsJsonAsync($"car/{carId}", new { ca = newCar.Ca, cp = newCar.Cp });
 
-        // Verificar com o time sobre a necessidade de dois endpoints de patch
-        public async Task<CarResponseDTO> PatchCarAerodynamicCoefficientsAsync(EngineersPutDTO engIds, string carId)
-        {
-            return await PutCarCoefficientsAsync(new EngineersPutDTO 
-                                                { 
-                                                    EngineerCaId = engIds.EngineerCaId,
-                                                    EngineerCpId = null
-                                                }, 
-                                                carId);
-        }
-
-
-        public async Task<CarResponseDTO> PatchCarPotentialCoefficientsAsync(EngineersPutDTO engIds, string carId)
-        {
-            return await PutCarCoefficientsAsync(new EngineersPutDTO
-                                                {
-                                                    EngineerCaId = engIds.EngineerCaId,
-                                                    EngineerCpId = null
-                                                },
-                                                carId);
+            return newCar;
         }
 
     }

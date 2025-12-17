@@ -9,9 +9,9 @@ builder.Services.AddControllers();
 
 builder.Services.AddScoped<IEngineeringService, EngineeringService>();
 
-builder.Services.AddHttpClient("Car", client => client.BaseAddress = new Uri("https://localhost:8001/api/"));
+builder.Services.AddHttpClient("Car", client => client.BaseAddress = new Uri("https://localhost:8001/api/car/"));
 
-builder.Services.AddHttpClient("Engineer", client => client.BaseAddress = new Uri("https://localhost:8001/api/"));
+builder.Services.AddHttpClient("Engineer", client => client.BaseAddress = new Uri("https://localhost:8001/api/engineer/"));
 
 
 var app = builder.Build();
