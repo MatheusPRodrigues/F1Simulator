@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace F1Simulator.Models.DTOs.EngineeringService
+﻿namespace F1Simulator.Models.DTOs.EngineeringService
 {
-    internal class EngineersPutDTO
+    public class EngineersPutDTO
     {
+        public string? EngineerCaId { get; init; }
+        public string? EngineerCpId { get; init; }
     }
 }

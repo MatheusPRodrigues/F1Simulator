@@ -1,9 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using F1Simulator.Models.DTOs.EngineeringService;
+using F1Simulator.Models.DTOs.TeamManegementService.CarDTO;
 
 namespace F1Simulator.EngineeringService.Services.Interfaces
 {
     public interface IEngineeringService
     {
-        Task<CarResultDTO> PutCarCoefficientsAsync(EngineersRequestDTO eng, string carId);
+        Task<CarResponseDTO> PutCarCoefficientsAsync(EngineersPutDTO? engIds, string carId);
+
+        Task<CarResponseDTO> PatchCarAerodynamicCoefficientsAsync(EngineersPutDTO engIds, string carId);
+
+        Task<CarResponseDTO> PatchCarPotentialCoefficientsAsync(EngineersPutDTO engIds, string carId);
     }
 }

@@ -20,17 +20,21 @@ namespace F1Simulator.EngineeringService.Controllers
 
 
         [HttpPut("car/{carId}")]
-        public async Task<IActionResult> PutCarCoefficientsAsync([FromBody] EngineersPutDTO engId, string carId)
+        public async Task<IActionResult> PutCarCoefficientsAsync([FromBody] EngineersPutDTO engIds, string carId)
         {
             try
             {
-                var result = await _engineeringService.PutCarCoefficientsAsync(engId, carId);
+                var result = await _engineeringService.PutCarCoefficientsAsync(engIds, carId);
 
                 return Ok(result);
             }
             catch (KeyNotFoundException ex)
             {
                 return NotFound(ex.Message);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
             }
             catch (Exception ex)
             {
@@ -43,13 +47,21 @@ namespace F1Simulator.EngineeringService.Controllers
 
 
         [HttpPatch("car/{carId}/ca")]
-        public async Task<IActionResult> PatchCarAerodynamicCoefficientsAsync(string carId)
+        public async Task<IActionResult> PatchCarAerodynamicCoefficientsAsync([FromBody] EngineersPutDTO engIds, string carId)
         {
             try
             {
-                var result = await _engineeringService.PatchCarAerodynamicCoefficientsCoefficientsAsync(carId);
+                var result = await _engineeringService.PatchCarAerodynamicCoefficientsAsync(engIds, carId);
 
                 return Ok(result);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
             }
             catch (Exception ex)
             {
@@ -62,13 +74,21 @@ namespace F1Simulator.EngineeringService.Controllers
 
 
         [HttpPatch("car/{carId}/cp")]
-        public async Task<IActionResult> PatchCarPotentialCoefficientsAsync(string carId)
+        public async Task<IActionResult> PatchCarPotentialCoefficientsAsync([FromBody] EngineersPutDTO engIds, string carId)
         {
             try
             {
-                var result = await _engineeringService.PatchCarPotentialCoefficientsAsync(carId);
+                var result = await _engineeringService.PatchCarPotentialCoefficientsAsync(engIds, carId);
 
                 return Ok(result);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
             }
             catch (Exception ex)
             {
@@ -77,9 +97,6 @@ namespace F1Simulator.EngineeringService.Controllers
                 return Problem(ex.Message);
             }
         }
-
-
-
 
     }
 }
