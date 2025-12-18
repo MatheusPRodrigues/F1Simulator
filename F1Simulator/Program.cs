@@ -1,4 +1,6 @@
 using F1Simulator.TeamManagementService.Data;
+using F1Simulator.TeamManagementService.Repositories;
+using F1Simulator.TeamManagementService.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -6,6 +8,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
+builder.Services.AddScoped<TeamService>();
+builder.Services.AddScoped<TeamRepository>();
 builder.Services.AddSingleton<TeamManagementServiceConnection>();
 
 var app = builder.Build();
