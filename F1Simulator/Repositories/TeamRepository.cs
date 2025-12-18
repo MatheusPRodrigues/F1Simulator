@@ -19,8 +19,6 @@ namespace F1Simulator.TeamManagementService.Repositories
 
         public async Task<int> GetTeamsCountAsync()
         {
-           
-
             var sql = @"SELECT COUNT(*) FROM Teams";
 
             return await _connection.ExecuteScalarAsync<int>(sql);
@@ -53,7 +51,8 @@ namespace F1Simulator.TeamManagementService.Repositories
 
         public async Task<TeamResponseDTO> GetTeamByNameAsync(string name)
         {
-                var query = @"SELECT TeamId, Name, NameAcronym, Country
+
+            var query = @"SELECT TeamId, Name, NameAcronym, Country
                           FROM Teams
                           WHERE Name = @Name";
 

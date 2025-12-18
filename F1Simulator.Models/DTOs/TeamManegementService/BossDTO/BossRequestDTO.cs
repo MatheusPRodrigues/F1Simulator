@@ -4,7 +4,7 @@ using System.Text;
 
 namespace F1Simulator.Models.DTOs.TeamManegementService.BossDTO
 {
-    internal class BossRequestDTO
+    public class BossRequestDTO
     {
         public string TeamId { get; init; }
         public string FirstName { get; init; }
