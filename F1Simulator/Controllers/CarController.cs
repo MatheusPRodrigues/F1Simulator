@@ -1,5 +1,4 @@
 ﻿using F1Simulator.Models.DTOs.TeamManegementService.CarDTO;
-using F1Simulator.Models.Models.TeamManegement;
 using F1Simulator.TeamManagementService.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -21,7 +20,7 @@ namespace F1Simulator.TeamManagementService.Controllers
 
 
         [HttpPost]
-        public async Task<ActionResult> CreateCarAsync(Car car)
+        public async Task<ActionResult> CreateCarAsync(CarRequestDTO car)
         {
             try
             {
@@ -29,9 +28,13 @@ namespace F1Simulator.TeamManagementService.Controllers
 
                 return Created();
             }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An unexpected error occurred while searching for the car.");
+                _logger.LogError(ex, "An unexpected error occurred while creating a new car.");
 
                 return Problem(ex.Message);
             }
@@ -52,7 +55,7 @@ namespace F1Simulator.TeamManagementService.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An unexpected error occurred while searching for the car.");
+                _logger.LogError(ex, "An unexpected error occurred while listing the cars.");
 
                 return Problem(ex.Message);
             }
@@ -67,6 +70,10 @@ namespace F1Simulator.TeamManagementService.Controllers
                 var car = await _carService.GetCarByIdAsync(carId);
 
                 return Ok(car);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
             }
             catch (Exception ex)
             {

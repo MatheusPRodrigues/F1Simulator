@@ -1,4 +1,5 @@
 ﻿using F1Simulator.Models.DTOs.TeamManegementService.CarDTO;
+using F1Simulator.Models.DTOs.TeamManegementService.TeamDTO;
 using F1Simulator.Models.Models.TeamManegement;
 
 namespace F1Simulator.TeamManagementService.Repositories.Interfaces
@@ -13,6 +14,7 @@ namespace F1Simulator.TeamManagementService.Repositories.Interfaces
 
         Task UpdateCarCoefficientsAsync(CarUpdateDTO carUpdate, string carId);
 
+        Task<TeamResponseDTO> GetTeamByIdAsync(string teamId);
 
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using F1Simulator.Models.DTOs.TeamManegementService.CarDTO;
+using F1Simulator.Models.DTOs.TeamManegementService.TeamDTO;
 using F1Simulator.Models.Models.TeamManegement;
 using F1Simulator.TeamManagementService.Data;
 using F1Simulator.TeamManagementService.Repositories.Interfaces;
@@ -81,6 +82,24 @@ namespace F1Simulator.TeamManagementService.Repositories
                             WHERE [CarId] = @CarId";
 
                 await _connection.ExecuteAsync(sql, new { carUpdate.Ca, carUpdate.Cp, CarId = carId });
+            }
+            catch (SqlException ex)
+            {
+                throw new Exception("Error querying the database.", ex);
+            }
+        }
+
+
+        public async Task<TeamResponseDTO> GetTeamByIdAsync(string teamId)
+        {
+            try
+            {
+                var sql = @"SELECT 
+                            [TeamId], [Name], [NameAcronym], [Country]
+                            FROM [Teams] 
+                            WHERE [TeamId] = @TeamId";
+
+                return await _connection.QueryFirstOrDefaultAsync<TeamResponseDTO>(sql, new { TeamId = teamId });
             }
             catch (SqlException ex)
             {
