@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace F1Simulator.TeamManagementService.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/team")]
     [ApiController]
     public class TeamController : ControllerBase
     {
@@ -68,7 +68,7 @@ namespace F1Simulator.TeamManagementService.Controllers
         }
 
         [HttpGet("{teamId}")]
-        public async Task<ActionResult<TeamResponseDTO>> GetTeamByIdAsync(string teamId)
+        public async Task<ActionResult<TeamResponseDTO>> GetTeamByIdAsync([FromRoute] string teamId)
         {
             try
             {
@@ -83,7 +83,7 @@ namespace F1Simulator.TeamManagementService.Controllers
         }
 
         [HttpGet("name/{name}")]
-        public async Task<ActionResult<TeamResponseDTO>> GetTeamByNameAsync(string name)
+        public async Task<ActionResult<TeamResponseDTO>> GetTeamByNameAsync([FromRoute] string name)
         {
             try
             {
@@ -98,7 +98,7 @@ namespace F1Simulator.TeamManagementService.Controllers
         }
 
         [HttpPut("update/{teamId}")]
-        public async Task<ActionResult> UpdateTeamCountryAsync(string teamId, [FromBody] string newCountry)
+        public async Task<ActionResult> UpdateTeamCountryAsync([FromRoute]string teamId, [FromBody] string newCountry)
         {
             try
             {
