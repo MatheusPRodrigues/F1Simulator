@@ -24,7 +24,7 @@ namespace F1Simulator.TeamManagementService.Repositories
                 var sql = @"INSERT INTO [Cars] 
                             ([CarId], [TeamId], [Model], [WeightKg], [Speed], [Ca], [Cp]) 
                             VALUES 
-                            (@CarId, @TeamId, @Model, @WeightKg, @Speed, @Ca, C@p)";
+                            (@CarId, @TeamId, @Model, @WeightKg, @Speed, @Ca, @Cp)";
 
                 await _connection.ExecuteAsync(sql, new {car.CarId, car.TeamId,car.Model,
                                                         car.WeightKg, car.Speed, car.Ca, car.Cp});
@@ -103,6 +103,18 @@ namespace F1Simulator.TeamManagementService.Repositories
             {
                 throw new Exception("Error querying the database.", ex);
             }
+        }
+
+
+        public async Task<int> GetCountCarsByIdTeam(string teamId)
+        {
+            var sql = @"SELECT COUNT (*) FROM Cars c
+                        INNER JOIN Teams t
+                        ON c.TeamId = t.TeamId
+                        WHERE c.TeamId = @TeamId";
+
+            return await _connection.QueryFirstOrDefaultAsync<int>(sql, new { teamId });
+
         }
 
 

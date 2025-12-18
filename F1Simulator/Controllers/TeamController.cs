@@ -48,7 +48,7 @@ namespace F1Simulator.TeamManagementService.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occurred while creating team");
-                return BadRequest(ex);
+                return BadRequest(ex.Message);
             }
         }
 

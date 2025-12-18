@@ -46,7 +46,7 @@ namespace F1Simulator.EngineeringService.Services
                             ((2.0 * _random.NextDouble()) - 1.0),
                             3);
 
-                if (engineerCa.CarId != Guid.Parse(car.CarId))
+                if (engineerCa.CarId != car.CarId)
                     throw new ArgumentException("The aerodynamic coefficient engineer is not associated with the reported car.");
 
                 caUpdated = Math.Clamp(car.Ca + (engineerCa.ExperienceFactor * randomFactorOne), 0, 10);
@@ -60,7 +60,7 @@ namespace F1Simulator.EngineeringService.Services
                             ((2.0 * _random.NextDouble()) - 1.0),
                             3);
 
-                if (engineerCp.CarId != Guid.Parse(car.CarId))
+                if (engineerCp.CarId != car.CarId)
                     throw new ArgumentException("The power coefficient engineer is not associated with the specified car.");
 
                 cpUpdated = Math.Clamp(car.Cp + (engineerCp.ExperienceFactor * randomFactorTwo), 0, 10);

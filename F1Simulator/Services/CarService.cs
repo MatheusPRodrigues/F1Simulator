@@ -26,6 +26,11 @@ namespace F1Simulator.TeamManagementService.Services
             if (!Guid.TryParse(car.TeamId, out var teamId))
                 throw new ArgumentException("TeamId must be a valid GUID.");
 
+            var countCarsTeam = await _carRepository.GetCountCarsByIdTeam(car.TeamId);
+
+            if (countCarsTeam >= 2)
+                throw new ArgumentException("The car cannot be added because there are already 2 cars registered in the team.");
+
             if (car.WeightKg <= 0)
                 throw new ArgumentException("WeightKg must be greater than zero.");
 

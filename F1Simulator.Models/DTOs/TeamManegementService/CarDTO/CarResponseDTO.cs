@@ -6,8 +6,8 @@ namespace F1Simulator.Models.DTOs.TeamManegementService.CarDTO
 {
     public class CarResponseDTO
     {
-        public string CarId { get; init; }
-        public string TeamId { get; init; }
+        public Guid CarId { get; init; }
+        public Guid TeamId { get; init; }
         public string Model { get; init; }
         public double WeightKg { get; init; }
         public int Speed { get; init; }
