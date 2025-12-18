@@ -6,9 +6,9 @@ namespace F1Simulator.Models.DTOs.TeamManegementService.BossDTO
 {
     internal class BossRequestDTO
     {
-        public string TeamId { get; set; }
-        public string FirstName { get; set; }
-        public string FullName { get; set; }
-        public int Age { get; set; }
+        public string TeamId { get; init; }
+        public string FirstName { get; init; }
+        public string FullName { get; init; }
+        public int Age { get; init; }
     }
 }

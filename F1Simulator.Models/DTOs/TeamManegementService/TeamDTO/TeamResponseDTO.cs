@@ -6,9 +6,9 @@ namespace F1Simulator.Models.DTOs.TeamManegementService.TeamDTO
 {
     public class TeamResponseDTO
     {
-        public string TeamId { get; set; }
-        public string Name { get; set; }
-        public string NameAcronym { get; set; }
-        public string Country { get; set; }
+        public Guid TeamId { get; init; }
+        public string Name { get; init; }
+        public string NameAcronym { get; init; }
+        public string Country { get; init; }
     }
 }

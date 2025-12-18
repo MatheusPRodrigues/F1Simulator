@@ -2,18 +2,17 @@
 using F1Simulator.Models.DTOs.TeamManegementService.TeamDTO;
 using F1Simulator.Models.Models.TeamManegement;
 using F1Simulator.TeamManagementService.Data;
+using F1Simulator.TeamManagementService.Repositories.Interfaces;
 using F1Simulator.TeamManagementService.Services;
 using Microsoft.Data.SqlClient;
 
 namespace F1Simulator.TeamManagementService.Repositories
 {
-    public class TeamRepository
+    public class TeamRepository : ITeamRepository
     {
-        private readonly ILogger<Team> _logger;
         private readonly TeamManagementServiceConnection _connection;
-        public TeamRepository(ILogger<Team> logger, TeamManagementServiceConnection connection)
+        public TeamRepository(TeamManagementServiceConnection connection)
         {
-            _logger = logger;
             _connection = connection;
         }
 
@@ -26,21 +25,56 @@ namespace F1Simulator.TeamManagementService.Repositories
             return await connection.ExecuteScalarAsync<int>(sql);
         }
 
-        public async Task CreateTeamAsync(TeamRequestDTO teamRequestDto)
+        public async Task CreateTeamAsync(Team team)
         {
-            try
-            {
-                using var sqlConnection = _connection.GetConnection();
-                var query = "INSERT INTO Teams (Name, NameAcronym, Country) " +
-                            "VALUES (@Name, @NameAcronym, @Country)";
+            var query = "INSERT INTO Teams (TeamId, Name, NameAcronym, Country) " +
+                        "VALUES (@TeamId, @Name, @NameAcronym, @Country)";
 
+            using var connection = _connection.GetConnection();
+            await connection.ExecuteAsync(query, team);
+        }
+
+        public async Task<IEnumerable<TeamResponseDTO>> GetAllTeamsAsync()
+        {
                 using var connection = _connection.GetConnection();
-                await connection.ExecuteAsync(query, teamRequestDto);
-            }
-            catch (Exception ex)
+                var query = @"SELECT TeamId, Name, NameAcronym, Country
+                          FROM Teams";
+
+                return await connection.QueryAsync<TeamResponseDTO>(query);           
+        }
+
+        public async Task<TeamResponseDTO> GetTeamByIdAsync(Guid teamId)
+        {
+                using var connection = _connection.GetConnection();
+                var query = @"SELECT TeamId, Name, NameAcronym, Country
+                          FROM Teams
+                          WHERE TeamId = @TeamId";
+
+                return await connection.QueryFirstOrDefaultAsync<TeamResponseDTO>(query, new { TeamId = teamId });           
+        }
+
+        public async Task<TeamResponseDTO> GetTeamByNameAsync(string name)
+        {
+                using var connection = _connection.GetConnection();
+                var query = @"SELECT TeamId, Name, NameAcronym, Country
+                          FROM Teams
+                          WHERE Name = @Name";
+
+                return await connection.QueryFirstOrDefaultAsync<TeamResponseDTO>(query, new { Name = name });           
+        }
+
+        public async Task UpdateTeamCountryAsync(Guid teamId, string country)
+        {
+            using var connection = _connection.GetConnection();
+            var query = @"UPDATE Teams
+                          SET Country = @Country
+                          WHERE TeamId = @TeamId";
+
+            await connection.ExecuteAsync(query, new 
             {
-                _logger.LogError($"An error occurred while creating the team: {ex.Message}", ex);
-            }
+                TeamId = teamId,
+                Country = country
+            });
         }
     }
 }
