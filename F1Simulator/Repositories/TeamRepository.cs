@@ -2,13 +2,14 @@
 using F1Simulator.Models.DTOs.TeamManegementService.TeamDTO;
 using F1Simulator.Models.Models.TeamManegement;
 using F1Simulator.TeamManagementService.Data;
+using F1Simulator.TeamManagementService.Repositories.Interfaces;
 using F1Simulator.TeamManagementService.Services;
 using F1Simulator.Utils.DatabaseConnectionFactory;
 using Microsoft.Data.SqlClient;
 
 namespace F1Simulator.TeamManagementService.Repositories
 {
-    public class TeamRepository
+    public class TeamRepository : ITeamRepository
     {
         private readonly SqlConnection _connection;
         public TeamRepository(IDatabaseConnection<SqlConnection> connection)
@@ -27,8 +28,8 @@ namespace F1Simulator.TeamManagementService.Repositories
 
         public async Task CreateTeamAsync(Team team)
         {
-            var query = "INSERT INTO Teams (Name, NameAcronym, Country) " +
-                        "VALUES (@Name, @NameAcronym, @Country)";
+            var query = "INSERT INTO Teams (TeamId, Name, NameAcronym, Country) " +
+                        "VALUES (@TeamId, @Name, @NameAcronym, @Country)";
 
             await _connection.ExecuteAsync(query, team);
         }
@@ -41,13 +42,37 @@ namespace F1Simulator.TeamManagementService.Repositories
                 return await _connection.QueryAsync<TeamResponseDTO>(query);           
         }
 
-        public async Task<TeamResponseDTO> GetTeamByIdAsync(string teamId)
+        public async Task<TeamResponseDTO> GetTeamByIdAsync(Guid teamId)
         {
+                using var connection = _connection.GetConnection();
                 var query = @"SELECT TeamId, Name, NameAcronym, Country
                           FROM Teams
                           WHERE TeamId = @TeamId";
 
-                return await _connection.QueryFirstOrDefaultAsync<TeamResponseDTO>(query, new { TeamId = Guid.Parse(teamId) });           
+                return await connection.QueryFirstOrDefaultAsync<TeamResponseDTO>(query, new { TeamId = teamId });           
+        }
+
+        public async Task<TeamResponseDTO> GetTeamByNameAsync(string name)
+        {
+                var query = @"SELECT TeamId, Name, NameAcronym, Country
+                          FROM Teams
+                          WHERE Name = @Name";
+
+                return await connection.QueryFirstOrDefaultAsync<TeamResponseDTO>(query, new { Name = name });           
+        }
+
+        public async Task UpdateTeamCountryAsync(Guid teamId, string country)
+        {
+            using var connection = _connection.GetConnection();
+            var query = @"UPDATE Teams
+                          SET Country = @Country
+                          WHERE TeamId = @TeamId";
+
+            await connection.ExecuteAsync(query, new 
+            {
+                TeamId = teamId,
+                Country = country
+            });
         }
     }
 }

@@ -13,5 +13,16 @@ namespace F1Simulator.Models.Models.TeamManegement
         public int Speed { get; set; }
         public double Ca { get; set; }
         public double Cp { get; set; }
+
+        public Car(Guid teamId, string model, double weightKg, int speed, double ca, double cp)
+        {
+            CarId = Guid.NewGuid();
+            TeamId = teamId;
+            Model = model;
+            WeightKg = weightKg;
+            Speed = speed;
+            Ca = ca;
+            Cp = cp;
+        }
     }
 }

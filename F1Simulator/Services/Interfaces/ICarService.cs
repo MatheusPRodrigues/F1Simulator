@@ -1,0 +1,17 @@
+﻿using F1Simulator.Models.DTOs.TeamManegementService.CarDTO;
+
+namespace F1Simulator.TeamManagementService.Services.Interfaces
+{
+    public interface ICarService
+    {
+        Task CreateCarAsync(CarRequestDTO car);
+
+        Task<List<CarResponseDTO>> GetAllCarAsync(string id);
+
+        Task<CarResponseDTO> GetCarByIdAsync(string id);
+
+        Task UpdateCarCoefficientsAsync(CarUpdateDTO carUpdate, string carId);
+
+        Task UpdateCarModelAsync(CarModelUpdateDTO carModelUpdate, string carId);
+    }
+}
