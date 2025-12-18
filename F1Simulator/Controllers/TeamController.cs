@@ -64,11 +64,5 @@ namespace F1Simulator.TeamManagementService.Controllers
                 throw;
             }
         }
-
-        [HttpGet("{teamId}")]
-        public async Task<TeamResponseDTO> GetTeamByIdAsync(string teamId)
-        {
-
-        }
     }
 }

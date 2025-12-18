@@ -1,4 +1,11 @@
 using F1Simulator.TeamManagementService.Data;
+using F1Simulator.TeamManagementService.Repositories;
+using F1Simulator.TeamManagementService.Repositories.Interfaces;
+using F1Simulator.TeamManagementService.Services;
+using F1Simulator.TeamManagementService.Services.Interfaces;
+using F1Simulator.Utils.DatabaseConnectionFactory;
+using F1Simulator.Utils.DatabaseConnectionFactory.Connections;
+using Microsoft.Data.SqlClient;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -6,7 +13,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
-builder.Services.AddSingleton<TeamManagementServiceConnection>();
+builder.Services.AddSingleton<IDatabaseConnection<SqlConnection>, SqlServerConnection>();
+builder.Services.AddSingleton<IEngineerRepository, EngineerRepository>();
+builder.Services.AddSingleton<IEngineerService, EngineerService>();
 
 var app = builder.Build();
 

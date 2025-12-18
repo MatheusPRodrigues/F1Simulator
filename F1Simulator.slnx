@@ -8,6 +8,7 @@
     <Project Path="F1Simulator.EngineeringService/F1Simulator.EngineeringService.csproj" />
     <Project Path="F1Simulator.Models/F1Simulator.Models.csproj" />
     <Project Path="F1Simulator.RaceControlService/F1Simulator.RaceControlService.csproj" />
+    <Project Path="F1Simulator.Utils/F1Simulator.Utils.csproj" Id="67d20145-1c1f-4ef3-a965-f30051588d8c" />
     <Project Path="F1Simulator/F1Simulator.TeamManagementService.csproj" />
   </Folder>
   <Folder Name="/tests/">
