@@ -1,9 +1,7 @@
-﻿using F1Simulator.Models.DTOs.TeamManegementService.BossDTO;
-using F1Simulator.Models.Models.TeamManegement;
-using F1Simulator.Models.Models.TeamManegementService;
+﻿using F1Simulator.Models.Models.TeamManegementService;
+using F1Simulator.Models.DTOs.TeamManegementService.BossDTO;
 using F1Simulator.TeamManagementService.Data;
 using F1Simulator.TeamManagementService.Repositories;
-
 namespace F1Simulator.TeamManagementService.Services
 {
     public class BossService

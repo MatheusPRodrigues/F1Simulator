@@ -1,6 +1,5 @@
 ﻿using F1Simulator.Models.DTOs.TeamManegementService.EngineerDTO;
 using F1Simulator.TeamManagementService.Services.Interfaces;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace F1Simulator.TeamManagementService.Controllers
@@ -24,6 +23,21 @@ namespace F1Simulator.TeamManagementService.Controllers
                 var engineer = await _engineerService.CreateEngineerAsync(engineerRequestDTO);
                 return Ok(engineer);
 
+            } catch(Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<List<EngineerResponseDTO>>> GetAllEngineersAsync()
+        {
+            try
+            {
+                var enginners = await _engineerService.GetAllEngineersAsync();
+                if (enginners is null)
+                    return NotFound();
+                return Ok(enginners);
             } catch(Exception ex)
             {
                 throw new Exception(ex.Message);
