@@ -2,6 +2,7 @@
 using F1Simulator.Models.Models.TeamManegement;
 using F1Simulator.TeamManagementService.Data;
 using F1Simulator.TeamManagementService.Repositories;
+using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.Data.SqlClient;
 
 namespace F1Simulator.TeamManagementService.Services
@@ -39,6 +40,10 @@ namespace F1Simulator.TeamManagementService.Services
                 if (count > 11)
                     throw new Exception("Max teams reached!");
 
+                var existingTeam = await _teamRepository.GetTeamByNameAsync(teamRequestDto.Name);
+                if (existingTeam is not null)
+                    throw new Exception("Team is already exists!");
+
                 var team = new Team
                 {
                     TeamId = Guid.NewGuid(),
@@ -73,6 +78,9 @@ namespace F1Simulator.TeamManagementService.Services
         {
             try
             {
+                if (!Guid.TryParse(teamId, out var guid))
+                    throw new Exception("Invalid team id!");
+
                 var team = await _teamRepository.GetTeamByIdAsync(teamId);
 
                 if (team is null)
@@ -85,6 +93,38 @@ namespace F1Simulator.TeamManagementService.Services
                 _logger.LogError($"An error occurred while getting team by id: {ex.Message}", ex);
                 throw;
             }
+        }
+        public async Task<TeamResponseDTO> GetTeamByNameAsync(string name)
+        {
+            try
+            {
+                var team = await _teamRepository.GetTeamByNameAsync(name);
+
+                if (team is null)
+                    throw new Exception("Team not found!");
+
+                return team;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"An error occurred while getting team by name: {ex.Message}", ex);
+                throw;
+            }
+        }
+
+        public async Task UpdateTeamCountryAsync(string teamId, string country)
+        {
+            if (!Guid.TryParse(teamId, out var idGuid))
+                throw new Exception("Invalid team id!");
+
+            if (country is null)
+                throw new Exception("Country can´t be empty!");
+
+            var team = await _teamRepository.GetTeamByIdAsync(idGuid);
+            if (team is null)
+                throw new Exception("Team not found!");
+
+            await _teamRepository.UpdateTeamCountryAsync(idGuid)
         }
     }
 }
