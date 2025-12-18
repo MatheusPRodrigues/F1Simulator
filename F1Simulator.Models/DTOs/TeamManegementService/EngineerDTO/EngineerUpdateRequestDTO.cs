@@ -4,7 +4,8 @@ using System.Text;
 
 namespace F1Simulator.Models.DTOs.TeamManegementService.EngineerDTO
 {
-    internal class EngineerUpdateRequestDTO
+    public class EngineerUpdateRequestDTO
     {
+        public bool IsActive { get; init; }
     }
 }
