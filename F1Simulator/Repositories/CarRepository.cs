@@ -3,6 +3,7 @@ using F1Simulator.Models.DTOs.TeamManegementService.CarDTO;
 using F1Simulator.Models.Models.TeamManegement;
 using F1Simulator.TeamManagementService.Data;
 using F1Simulator.TeamManagementService.Repositories.Interfaces;
+using F1Simulator.Utils.DatabaseConnectionFactory;
 using Microsoft.Data.SqlClient;
 
 namespace F1Simulator.TeamManagementService.Repositories
@@ -10,9 +11,9 @@ namespace F1Simulator.TeamManagementService.Repositories
     public class CarRepository : ICarRepository
     {
         private readonly SqlConnection _connection;
-        public CarRepository(TeamManagementServiceConnection connection)
+        public CarRepository(IDatabaseConnection<SqlConnection> connection)
         {
-            _connection = connection.GetConnection();
+            _connection = connection.Connect();
         }
 
 

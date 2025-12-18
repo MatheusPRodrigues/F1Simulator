@@ -16,9 +16,12 @@ builder.Services.AddControllers();
 builder.Services.AddSingleton<IDatabaseConnection<SqlConnection>, SqlServerConnection>();
 builder.Services.AddSingleton<IEngineerRepository, EngineerRepository>();
 builder.Services.AddSingleton<IEngineerService, EngineerService>();
+builder.Services.AddSingleton<ITeamRepository, TeamRepository>();
+builder.Services.AddSingleton<ITeamService, TeamService>();
 
-builder.Services.AddScoped<ICarRepository, CarRepository>();
-builder.Services.AddScoped<ICarService, CarService>();
+
+builder.Services.AddSingleton<ICarRepository, CarRepository>();
+builder.Services.AddSingleton<ICarService, CarService>();
 
 var app = builder.Build();
 

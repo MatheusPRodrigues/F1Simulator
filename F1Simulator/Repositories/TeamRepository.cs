@@ -44,12 +44,11 @@ namespace F1Simulator.TeamManagementService.Repositories
 
         public async Task<TeamResponseDTO> GetTeamByIdAsync(Guid teamId)
         {
-                using var connection = _connection.GetConnection();
                 var query = @"SELECT TeamId, Name, NameAcronym, Country
                           FROM Teams
                           WHERE TeamId = @TeamId";
 
-                return await connection.QueryFirstOrDefaultAsync<TeamResponseDTO>(query, new { TeamId = teamId });           
+                return await _connection.QueryFirstOrDefaultAsync<TeamResponseDTO>(query, new { TeamId = teamId });           
         }
 
         public async Task<TeamResponseDTO> GetTeamByNameAsync(string name)
@@ -58,17 +57,16 @@ namespace F1Simulator.TeamManagementService.Repositories
                           FROM Teams
                           WHERE Name = @Name";
 
-                return await connection.QueryFirstOrDefaultAsync<TeamResponseDTO>(query, new { Name = name });           
+                return await _connection.QueryFirstOrDefaultAsync<TeamResponseDTO>(query, new { Name = name });           
         }
 
         public async Task UpdateTeamCountryAsync(Guid teamId, string country)
         {
-            using var connection = _connection.GetConnection();
             var query = @"UPDATE Teams
                           SET Country = @Country
                           WHERE TeamId = @TeamId";
 
-            await connection.ExecuteAsync(query, new 
+            await _connection.ExecuteAsync(query, new 
             {
                 TeamId = teamId,
                 Country = country
