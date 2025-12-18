@@ -6,5 +6,7 @@ namespace F1Simulator.TeamManagementService.Services.Interfaces
     {
         public Task<EngineerResponseDTO> CreateEngineerAsync(EngineerRequestDTO engineerRequestDTO);
         public Task<List<EngineerResponseDTO>> GetAllEngineersAsync();
+        public Task<EngineerResponseDTO> GetEngineerByIdAsync(Guid id);
+        public Task UpdateActiveEngineer(EngineerUpdateRequestDTO engineerUpdateRequestDTO, Guid id);
     }
 }

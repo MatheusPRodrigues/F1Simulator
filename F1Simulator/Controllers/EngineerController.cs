@@ -23,7 +23,8 @@ namespace F1Simulator.TeamManagementService.Controllers
                 var engineer = await _engineerService.CreateEngineerAsync(engineerRequestDTO);
                 return Ok(engineer);
 
-            } catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 throw new Exception(ex.Message);
             }
@@ -38,6 +39,36 @@ namespace F1Simulator.TeamManagementService.Controllers
                 if (enginners is null)
                     return NotFound();
                 return Ok(enginners);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<EngineerResponseDTO>> GetEngineerByIdAsync([FromRoute] Guid id)
+        {
+            try
+            {
+                var engineer = await _engineerService.GetEngineerByIdAsync(id);
+                if (engineer is null)
+                    return NotFound();
+                return Ok(engineer);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        [HttpPatch("{id}")]
+        public async Task<ActionResult> UpdateEnginnerAsync([FromBody] EngineerUpdateRequestDTO engineerUpdateRequestDTO, [FromRoute] Guid id)
+        {
+            try
+            {
+                await _engineerService.UpdateActiveEngineer(engineerUpdateRequestDTO, id);
+                return NoContent();
             } catch(Exception ex)
             {
                 throw new Exception(ex.Message);
