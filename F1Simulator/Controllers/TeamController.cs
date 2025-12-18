@@ -2,6 +2,7 @@
 using F1Simulator.Models.Models.TeamManegement;
 using F1Simulator.TeamManagementService.Repositories;
 using F1Simulator.TeamManagementService.Services;
+using F1Simulator.TeamManagementService.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,10 +12,10 @@ namespace F1Simulator.TeamManagementService.Controllers
     [ApiController]
     public class TeamController : ControllerBase
     {
-        private readonly TeamService _teamService;
+        private readonly ITeamService _teamService;
         private readonly ILogger<TeamController> _logger;
 
-        public TeamController(TeamService teamService, ILogger<TeamController> logger)
+        public TeamController(ITeamService teamService, ILogger<TeamController> logger)
         {
             _teamService = teamService;
             _logger = logger;

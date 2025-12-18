@@ -2,6 +2,7 @@
 using F1Simulator.Models.Models.TeamManegement;
 using F1Simulator.TeamManagementService.Data;
 using F1Simulator.TeamManagementService.Repositories;
+using F1Simulator.TeamManagementService.Repositories.Interfaces;
 using F1Simulator.TeamManagementService.Services.Interfaces;
 using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.Data.SqlClient;
@@ -10,14 +11,12 @@ namespace F1Simulator.TeamManagementService.Services
 {
     public class TeamService : ITeamService
     {
-        private readonly TeamManagementServiceConnection _connection;
         private readonly ILogger<Team> _logger;
-        private readonly TeamRepository _teamRepository;
-        public TeamService( ILogger<Team> logger,TeamManagementServiceConnection connection, TeamRepository teamRepository)
+        private readonly ITeamRepository _teamRepository;
+        public TeamService( ILogger<Team> logger, ITeamRepository teamRepository)
         {
             _logger = logger;
             _teamRepository = teamRepository;
-            _connection = connection;
         }
 
         public async Task<int> GetTeamsCountAsync()

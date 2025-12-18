@@ -20,7 +20,7 @@ namespace F1Simulator.TeamManagementService.Controllers
 
 
         [HttpPost]
-        public async Task<ActionResult> CreateCarAsync(CarRequestDTO car)
+        public async Task<ActionResult> CreateCarAsync([FromBody] CarRequestDTO car)
         {
             try
             {
@@ -42,11 +42,11 @@ namespace F1Simulator.TeamManagementService.Controllers
 
 
         [HttpGet]
-        public async Task<ActionResult<List<CarResponseDTO>>> GetAllCarAsync(string id)
+        public async Task<ActionResult<List<CarResponseDTO>>> GetAllCarAsync()
         {
             try
             {
-                var cars = await _carService.GetAllCarAsync(id);
+                var cars = await _carService.GetAllCarAsync();
 
                 if (cars.IsNullOrEmpty())
                     return NoContent();
@@ -63,7 +63,7 @@ namespace F1Simulator.TeamManagementService.Controllers
 
 
         [HttpGet("{carId}")]
-        public async Task<ActionResult<CarResponseDTO>> GetCarByIdAsync(string carId)
+        public async Task<ActionResult<CarResponseDTO>> GetCarByIdAsync([FromRoute] string carId)
         {
             try
             {
@@ -85,7 +85,7 @@ namespace F1Simulator.TeamManagementService.Controllers
 
 
         [HttpPut("{carId}/coefficients")]
-        public async Task<IActionResult> UpdateCarCoefficientsAsync(CarUpdateDTO carUpdate, string carId)
+        public async Task<IActionResult> UpdateCarCoefficientsAsync([FromBody] CarUpdateDTO carUpdate, [FromRoute] string carId)
         {
             try
             {
@@ -103,7 +103,7 @@ namespace F1Simulator.TeamManagementService.Controllers
 
 
         [HttpPatch("{carId}/model")]
-        public async Task<IActionResult> UpdateCarModelAsync(CarModelUpdateDTO carModelUpdate, string carId)
+        public async Task<IActionResult> UpdateCarModelAsync([FromBody] CarModelUpdateDTO carModelUpdate, [FromRoute] string carId)
         {
             try
             {

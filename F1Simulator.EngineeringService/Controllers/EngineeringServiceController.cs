@@ -20,7 +20,7 @@ namespace F1Simulator.EngineeringService.Controllers
 
 
         [HttpPut("car/{carId}")]
-        public async Task<IActionResult> PutCarCoefficientsAsync([FromBody] EngineersPutDTO engIds, string carId)
+        public async Task<IActionResult> PutCarCoefficientsAsync([FromBody] EngineersPutDTO engIds, [FromRoute] string carId)
         {
             try
             {

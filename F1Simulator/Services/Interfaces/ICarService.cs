@@ -6,7 +6,7 @@ namespace F1Simulator.TeamManagementService.Services.Interfaces
     {
         Task CreateCarAsync(CarRequestDTO car);
 
-        Task<List<CarResponseDTO>> GetAllCarAsync(string id);
+        Task<List<CarResponseDTO>> GetAllCarAsync();
 
         Task<CarResponseDTO> GetCarByIdAsync(string id);
 
