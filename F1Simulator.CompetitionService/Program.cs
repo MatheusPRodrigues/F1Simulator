@@ -6,6 +6,7 @@ using F1Simulator.CompetitionService.Services.Interfaces;
 using F1Simulator.Utils.DatabaseConnectionFactory;
 using F1Simulator.Utils.DatabaseConnectionFactory.Connections;
 using Microsoft.Data.SqlClient;
+using RabbitMQ.Client;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +14,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddSingleton<IDatabaseConnection<SqlConnection>, SqlServerConnection>();
+builder.Services.AddSingleton<IConnectionFactory>(sp => new ConnectionFactory { HostName = "localhost" });
 builder.Services.AddScoped< ICircuitRepository, CircuitRepository>();
 builder.Services.AddScoped< ICircuitService, CircuitService>();
 
