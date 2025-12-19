@@ -22,10 +22,4 @@
     <Project Path="F1Simulator.Utils/F1Simulator.Utils.csproj" Id="67d20145-1c1f-4ef3-a965-f30051588d8c" />
     <Project Path="F1Simulator/F1Simulator.TeamManagementService.csproj" />
   </Folder>
-  <Folder Name="/tests/">
-    <Project Path="F1Simulator.CompetitionService.Tests/F1Simulator.CompetitionService.Tests.csproj" />
-    <Project Path="F1Simulator.EngineeringService.Tests/F1Simulator.EngineeringService.Tests.csproj" />
-    <Project Path="F1Simulator.RaceControlService.Tests/F1Simulator.RaceControlService.Tests.csproj" />
-    <Project Path="F1Simulator.TeamManagementService.Tests/F1Simulator.TeamManagementService.Tests.csproj" />
-  </Folder>
 </Solution>
