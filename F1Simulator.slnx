@@ -1,5 +1,7 @@
 <Solution>
-  <Folder Name="/docs/" />
+  <Folder Name="/docs/">
+    <File Path="documentacao-f1simulator.md" />
+  </Folder>
   <Folder Name="/docs/EngineeringService/">
     <File Path="README.md" />
   </Folder>
