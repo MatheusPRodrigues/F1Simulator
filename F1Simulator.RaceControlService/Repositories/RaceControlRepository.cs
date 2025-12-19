@@ -1,6 +1,8 @@
-﻿namespace F1Simulator.RaceControlService.Repositories
+﻿using F1Simulator.RaceControlService.Repositories.Interfaces;
+
+namespace F1Simulator.RaceControlService.Repositories
 {
-    public class RaceControlRepository
+    public class RaceControlRepository : IRaceControlRepository
     {
     }
 }
