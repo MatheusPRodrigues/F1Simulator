@@ -114,7 +114,6 @@ namespace F1Simulator.RaceControlService.Services
                 foreach (var d in drivers)
                 {
                     // recebe novos valores de Ca e Cp
-
                     var request = new EngineersPutDTO
                     {
                         EngineerCaId = d.EnginneringAId,
@@ -122,6 +121,8 @@ namespace F1Simulator.RaceControlService.Services
                     };
 
                     var responseEngineerClient = await _engineeringClient.PutAsJsonAsync($"car/{d.CarId}", request);
+                    //TODO: caso a api retorne algo diferente de 200 prosseguir com os dados atuais
+
                     var processedResponse = JsonSerializer.Deserialize<CarUpdateDTO>(await responseEngineerClient.Content.ReadAsStringAsync());
 
                     var newCa = processedResponse.Ca;
