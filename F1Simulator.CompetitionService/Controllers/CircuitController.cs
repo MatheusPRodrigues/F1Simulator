@@ -1,4 +1,5 @@
-﻿using F1Simulator.CompetitionService.Services.Interfaces;
+﻿using F1Simulator.CompetitionService.Exceptions;
+using F1Simulator.CompetitionService.Services.Interfaces;
 using F1Simulator.Models.DTOs.CompetitionService.Request;
 using F1Simulator.Models.DTOs.CompetitionService.Response;
 using F1Simulator.Models.DTOs.CompetitionService.Update;
@@ -32,6 +33,11 @@ namespace F1Simulator.CompetitionService.Controllers
                     return BadRequest("Error: There is already a circuit with this name and country.");
                 }
                 return Ok(circuit);
+            }catch(BusinessException bex)
+            {
+                _logger.LogWarning(bex, "Business error creating circuit");
+                return BadRequest(bex.Message);
+
             }
             catch (Exception ex)
             {
@@ -51,6 +57,12 @@ namespace F1Simulator.CompetitionService.Controllers
                     return BadRequest("Error: There is already a registration with the same name for all past circuits.");
                 }
                 return Ok(circuit);
+            }
+            catch (BusinessException bex)
+            {
+                _logger.LogWarning(bex, "Business error creating circuit");
+                return BadRequest(bex.Message);
+
             }
             catch (Exception ex)
             {
@@ -76,6 +88,10 @@ namespace F1Simulator.CompetitionService.Controllers
                 }
 
                 return Ok(circuit);
+            }catch(BusinessException bex)
+            {
+                _logger.LogWarning(bex, "Business error deactivating circuit");
+                return BadRequest(bex.Message);
             }
             catch (Exception ex)
             {
@@ -105,6 +121,11 @@ namespace F1Simulator.CompetitionService.Controllers
                 }
 
                 return Ok(circuit);
+            }
+            catch (BusinessException bex)
+            {
+                _logger.LogWarning(bex, "Business error activating circuit");
+                return BadRequest(bex.Message);
             }
             catch (Exception ex)
             {
@@ -159,6 +180,11 @@ namespace F1Simulator.CompetitionService.Controllers
                 }
                 return Ok();
             }
+            catch (BusinessException bex)
+            {
+                _logger.LogWarning(bex, "Business error deleting circuit");
+                return BadRequest(bex.Message);
+            }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error when get circuit by id");
@@ -181,6 +207,10 @@ namespace F1Simulator.CompetitionService.Controllers
                     return BadRequest("there is already a circuit with this name");
                 }
                 return Ok(circuit);
+            }catch (BusinessException bex)
+            {
+                _logger.LogWarning(bex, "Business error updating circuit");
+                return BadRequest(bex.Message);
             }
             catch (Exception ex)
             {
