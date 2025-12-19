@@ -1,10 +1,9 @@
 ﻿using F1Simulator.Models.DTOs.EngineeringService;
 using F1Simulator.Models.DTOs.RaceControlService;
-using F1Simulator.Models.DTOs.TeamManegementService.EngineerDTO;
+using F1Simulator.Models.DTOs.TeamManegementService.CarDTO;
 using F1Simulator.RaceControlService.Messaging;
 using F1Simulator.RaceControlService.Repositories.Interfaces;
 using F1Simulator.RaceControlService.Services.Interfaces;
-using System.Net;
 using System.Text.Json;
 
 namespace F1Simulator.RaceControlService.Services
@@ -150,7 +149,7 @@ namespace F1Simulator.RaceControlService.Services
                     var response = await _factory.CreateClient("EngineeringService")
                         .PutAsJsonAsync($"car/{d.CarId}", request);
 
-                    var processedResponse = JsonSerializer.Deserialize<CarCoefficientsResponseDTO>(await response.Content.ReadAsStringAsync());
+                    var processedResponse = JsonSerializer.Deserialize<CarUpdateDTO>(await response.Content.ReadAsStringAsync());
 
                     var newCa = processedResponse.Ca;
                     var newCp = processedResponse.Cp;
