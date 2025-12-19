@@ -4,6 +4,7 @@ using F1Simulator.Models.DTOs.TeamManegementService.TeamDTO;
 using F1Simulator.Models.Models.TeamManegement;
 using F1Simulator.TeamManagementService.Repositories.Interfaces;
 using F1Simulator.TeamManagementService.Services.Interfaces;
+using F1Simulator.Utils.Clients.Interfaces;
 
 namespace F1Simulator.TeamManagementService.Services
 {
@@ -13,17 +14,25 @@ namespace F1Simulator.TeamManagementService.Services
         private readonly IEngineerRepository _engineerRepository;
         private readonly ITeamService _teamService;
         private readonly ICarService _carService;
-        public EngineerService(IEngineerRepository engineerRepository, ITeamService teamService, ICarService carService)
+        private readonly ICompetitionClient _competitionClient;
+
+        public EngineerService(IEngineerRepository engineerRepository, ITeamService teamService,
+                               ICarService carService, ICompetitionClient competitionClient)
         {
             _engineerRepository = engineerRepository;
             _teamService = teamService;
             _carService = carService;
+            _competitionClient = competitionClient;
         }
 
         public async Task<EngineerResponseDTO> CreateEngineerAsync(EngineerRequestDTO engineerRequestDTO)
         {
             try
             {
+                var activeSeason = await _competitionClient.GetActiveSeasonAsync();
+
+                if (activeSeason is not null && activeSeason.IsActive)
+                    throw new InvalidOperationException("Cannot create or update engineer while a competition season is active.");
 
                 var team = await _teamService.GetTeamByIdAsync(engineerRequestDTO.TeamId.ToString());
 
@@ -85,6 +94,11 @@ namespace F1Simulator.TeamManagementService.Services
         {
             try
             {
+                var activeSeason = await _competitionClient.GetActiveSeasonAsync();
+
+                if (activeSeason is not null && activeSeason.IsActive)
+                    throw new InvalidOperationException("Cannot create or update engineer while a competition season is active.");
+
                 var engineer = await _engineerRepository.GetEngineerByIdAsync(id);
 
                 if (engineer is null)

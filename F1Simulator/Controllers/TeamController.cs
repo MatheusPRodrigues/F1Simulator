@@ -40,11 +40,13 @@ namespace F1Simulator.TeamManagementService.Controllers
         [HttpPost]
         public async Task<ActionResult> CreateTeamAsync([FromBody] TeamRequestDTO teamRequestDto)
         {
+            if (teamRequestDto is null)
+                return BadRequest("Request body is required!");
+
             try
             {
                 await _teamService.CreateTeamAsync(teamRequestDto);
-                _logger.LogInformation("Team sucessfully created!");
-                return Created();
+                return StatusCode(StatusCodes.Status201Created);
             }
             catch (Exception ex)
             {
@@ -102,19 +104,27 @@ namespace F1Simulator.TeamManagementService.Controllers
             }
         }
 
-        [HttpPut("update/{teamId}")]
+        [HttpPatch("update/{teamId}")]
         public async Task<ActionResult> UpdateTeamCountryAsync([FromRoute]string teamId, [FromBody] string newCountry)
         {
             try
             {
                 await _teamService.UpdateTeamCountryAsync(teamId, newCountry);
-
                 return NoContent();
             }
-            catch(Exception ex)
+            catch (ArgumentException ex)
+            {
+                _logger.LogWarning(ex, "Invalid data when updating team country. TeamId: {TeamId}", teamId);
+                return BadRequest(new { Message = ex.Message });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { Message = ex.Message });
+            }
+            catch (Exception ex)
             {
                 _logger.LogError($"An error occurred while updatting team: {ex.Message}", ex);
-                throw;
+                return StatusCode(StatusCodes.Status500InternalServerError, new { Message = "An unexpected error occurred while updating team country." });
             }
         }
     }

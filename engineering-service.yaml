@@ -1,0 +1,57 @@
+type: collection.insomnia.rest/5.0
+schema_version: "5.1"
+name: EngineeringService
+meta:
+  id: wrk_eee13db0f6d645d4bb1e51d6292ae12f
+  created: 1765977358314
+  modified: 1765977549073
+  description: ""
+collection:
+  - url: "{{ _.Put_Engineer }}/{{ _.car_id }}"
+    name: PutCoefficients
+    meta:
+      id: req_88ecfc1a3994425297f18adfa4b49679
+      created: 1765977358414
+      modified: 1766103662454
+      isPrivate: false
+      description: ""
+      sortKey: -1765977358414
+    method: PUT
+    body:
+      mimeType: application/json
+      text: |-
+        {
+        	"EngineerCaId": "AE325AB8-83CF-495F-B13C-DCB548465C06",
+        	"EngineerCpId": "B871253A-DE47-4493-AB5B-FF11DD2BEBE8"
+        }
+    headers:
+      - name: Content-Type
+        value: application/json
+      - name: User-Agent
+        value: insomnia/12.1.0
+        description: ""
+        disabled: false
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+cookieJar:
+  name: Default Jar
+  meta:
+    id: jar_78f41ba8dd134ecaf03513397c2b1c4aeebc550c
+    created: 1765977358319
+    modified: 1765977358319
+environments:
+  name: Base Environment
+  meta:
+    id: env_78f41ba8dd134ecaf03513397c2b1c4aeebc550c
+    created: 1765977358317
+    modified: 1766095526466
+    isPrivate: false
+  data:
+    Put_Engineer: https://localhost:6001/api/engineering/car
+    car_id: 534BF3B2-7CDB-4C18-B252-25DA66060B9A

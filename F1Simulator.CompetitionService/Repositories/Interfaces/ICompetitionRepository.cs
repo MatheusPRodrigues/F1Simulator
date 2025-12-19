@@ -23,5 +23,6 @@ namespace F1Simulator.CompetitionService.Repositories.Interfaces
         Task<List<DriverStandingResponseDTO>> GetDriverStandingAsync();
         Task<List<TeamStandingResponseDTO>> GetTeamStandingAsync();
         Task<List<RaceResponseDTO>> GetRacesAsync();
+        Task EndRaceAsync(List<DriverStandingResponseDTO> driversUpdate, List<TeamStandingResponseDTO> teamsUpdate);
     }
 }

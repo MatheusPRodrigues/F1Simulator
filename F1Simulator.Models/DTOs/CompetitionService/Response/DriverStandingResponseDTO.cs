@@ -6,8 +6,9 @@ namespace F1Simulator.Models.DTOs.CompetitionService.Response
 {
     public class DriverStandingResponseDTO
     {
-        public string DriverId { get; init; }
+        public Guid DriverId { get; init; }
+        public Guid TeamId { get; init; }
         public string DriverName { get; init; }
-        public decimal Points { get; init; }
+        public int Points { get; set; }
     }
 }

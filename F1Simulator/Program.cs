@@ -3,6 +3,8 @@ using F1Simulator.TeamManagementService.Repositories;
 using F1Simulator.TeamManagementService.Repositories.Interfaces;
 using F1Simulator.TeamManagementService.Services;
 using F1Simulator.TeamManagementService.Services.Interfaces;
+using F1Simulator.Utils.Clients;
+using F1Simulator.Utils.Clients.Interfaces;
 using F1Simulator.Utils.DatabaseConnectionFactory;
 using F1Simulator.Utils.DatabaseConnectionFactory.Connections;
 using Microsoft.Data.SqlClient;
@@ -41,6 +43,12 @@ builder.Services.AddSingleton<ICarService, CarService>();
 builder.Services.AddHttpClient("TeamManagement", client =>
 {
     client.BaseAddress = new Uri("https://localhost:8001/api/");
+});
+
+
+builder.Services.AddHttpClient<ICompetitionClient, CompetitionClient>(client =>
+{
+    client.BaseAddress = new Uri("https://localhost:5001/");
 });
 
 var app = builder.Build();

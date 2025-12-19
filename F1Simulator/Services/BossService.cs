@@ -1,9 +1,10 @@
-﻿using F1Simulator.Models.Models.TeamManegementService;
-using F1Simulator.Models.DTOs.TeamManegementService.BossDTO;
+﻿using F1Simulator.Models.DTOs.TeamManegementService.BossDTO;
+using F1Simulator.Models.Models.TeamManegementService;
 using F1Simulator.TeamManagementService.Data;
 using F1Simulator.TeamManagementService.Repositories;
 using F1Simulator.TeamManagementService.Repositories.Interfaces;
 using F1Simulator.TeamManagementService.Services.Interfaces;
+using F1Simulator.Utils.Clients.Interfaces;
 
 namespace F1Simulator.TeamManagementService.Services
 {
@@ -12,12 +13,15 @@ namespace F1Simulator.TeamManagementService.Services
         private readonly ILogger<Boss> _logger;
         private readonly IBossRepository _bossRepository;
         private readonly ITeamRepository _teamRepository;
+        private readonly ICompetitionClient _competitionClient;
 
-        public BossService(ILogger<Boss> logger, IBossRepository bossRepository, ITeamRepository teamRepository)
+        public BossService(ILogger<Boss> logger, IBossRepository bossRepository, 
+           ITeamRepository teamRepository, ICompetitionClient competitionClient)
         {
             _logger = logger;
             _bossRepository = bossRepository;
             _teamRepository = teamRepository;
+            _competitionClient = competitionClient;
         }
 
         public async Task<int> GetBossByTeamCountAsync(string teamId)
@@ -36,7 +40,12 @@ namespace F1Simulator.TeamManagementService.Services
         public async Task CreateBossAsync(BossRequestDTO bossDto)
         {
             try
-            {               
+            {
+                var activeSeason = await _competitionClient.GetActiveSeasonAsync();
+
+                if (activeSeason is not null && activeSeason.IsActive)
+                    throw new InvalidOperationException("Cannot create bosses while a competition season is active.");
+
                 if (!Guid.TryParse(bossDto.TeamId, out var teamId))
                     throw new Exception("Invalid team id!");
 

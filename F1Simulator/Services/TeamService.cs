@@ -4,6 +4,7 @@ using F1Simulator.TeamManagementService.Data;
 using F1Simulator.TeamManagementService.Repositories;
 using F1Simulator.TeamManagementService.Repositories.Interfaces;
 using F1Simulator.TeamManagementService.Services.Interfaces;
+using F1Simulator.Utils.Clients.Interfaces;
 using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.Data.SqlClient;
 
@@ -13,10 +14,13 @@ namespace F1Simulator.TeamManagementService.Services
     {
         private readonly ILogger<Team> _logger;
         private readonly ITeamRepository _teamRepository;
-        public TeamService( ILogger<Team> logger, ITeamRepository teamRepository)
+        private readonly ICompetitionClient _competitionClient;
+
+        public TeamService( ILogger<Team> logger, ITeamRepository teamRepository, ICompetitionClient competitionClient)
         {
             _logger = logger;
             _teamRepository = teamRepository;
+            _competitionClient = competitionClient;
         }
 
         public async Task<int> GetTeamsCountAsync()
@@ -42,16 +46,30 @@ namespace F1Simulator.TeamManagementService.Services
         {
             try
             {
+                var activeSeason = await _competitionClient.GetActiveSeasonAsync();
+
+                if (activeSeason is not null && activeSeason.IsActive)
+                    throw new InvalidOperationException("Cannot create or update teams while a competition season is active.");
+
+                if (teamRequestDto is null)
+                    throw new ArgumentException("Team data is required.");
+
+                if (string.IsNullOrWhiteSpace(teamRequestDto.Name))
+                    throw new ArgumentException("Team name is required.");
+
+                if (string.IsNullOrWhiteSpace(teamRequestDto.Country))
+                    throw new ArgumentException("Country is required.");
+
                 var count = await _teamRepository.GetTeamsCountAsync();
 
-                if (count > 11)
-                    throw new Exception("Max teams reached!");
+                if (count >= 11)
+                    throw new Exception("Max number of teams reached!");
 
-                var existingTeam = await _teamRepository.GetTeamByNameAsync(teamRequestDto.Name);
+                var existingTeam = await _teamRepository.GetTeamByNameAsync(teamRequestDto.Name.Trim());
                 if (existingTeam is not null)
-                    throw new Exception("Team is already exists!");
+                    throw new Exception("Team already exists!");
 
-                var acronym = GenerateAcronym(teamRequestDto.Name);
+                var acronym = GenerateAcronym(teamRequestDto.Name);              
 
                 var team = new Team
                 {
@@ -125,6 +143,11 @@ namespace F1Simulator.TeamManagementService.Services
         {
             try
             {
+                var activeSeason = await _competitionClient.GetActiveSeasonAsync();
+
+                if (activeSeason is not null && activeSeason.IsActive)
+                    throw new InvalidOperationException("Cannot create or update teams while a competition season is active.");
+
                 if (!Guid.TryParse(teamId, out var idGuid))
                     throw new Exception("Invalid team id!");
 

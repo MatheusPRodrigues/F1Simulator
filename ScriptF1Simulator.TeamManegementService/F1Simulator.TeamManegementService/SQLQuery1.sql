@@ -16,8 +16,7 @@ CREATE TABLE Boss(
     TeamId UNIQUEIDENTIFIER NOT NULL,
     FirstName VARCHAR(50) NOT NULL,
     LastName VARCHAR(50) NOT NULL,
-    Age INT NOT NULL,
-    IsActive BIT NOT NULL
+    Age INT NOT NULL
 );
 
 CREATE TABLE Engineers(
@@ -86,4 +85,9 @@ GO
 ALTER TABLE Engineers
 ADD CONSTRAINT UQ_Car_Specialization
 UNIQUE (CarId, Specialization);
+
+SELECT * FROM Teams
+SELECT * FROM Boss
+
+
 

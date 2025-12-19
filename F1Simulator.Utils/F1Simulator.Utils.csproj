@@ -13,4 +13,8 @@
     <PackageReference Include="MongoDB.Driver" Version="3.5.2" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\F1Simulator.Models\F1Simulator.Models.csproj" />
+  </ItemGroup>
+
 </Project>

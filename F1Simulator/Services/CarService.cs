@@ -2,6 +2,8 @@
 using F1Simulator.Models.Models.TeamManegement;
 using F1Simulator.TeamManagementService.Repositories.Interfaces;
 using F1Simulator.TeamManagementService.Services.Interfaces;
+using F1Simulator.Utils.Clients;
+using F1Simulator.Utils.Clients.Interfaces;
 
 namespace F1Simulator.TeamManagementService.Services
 {
@@ -10,16 +12,23 @@ namespace F1Simulator.TeamManagementService.Services
         private ICarRepository _carRepository;
         private ITeamRepository _teamRepository;
         private readonly Random _random = Random.Shared;
+        private readonly ICompetitionClient _competitionClient;
 
-        public CarService(ICarRepository carRepository, ITeamRepository teamRepository)
+        public CarService(ICarRepository carRepository, ITeamRepository teamRepository, ICompetitionClient competitionClient)
         {
             _carRepository = carRepository;
             _teamRepository = teamRepository;
+            _competitionClient = competitionClient;
         }
 
 
         public async Task CreateCarAsync(CarRequestDTO car)
         {
+            var activeSeason = await _competitionClient.GetActiveSeasonAsync();
+
+            if (activeSeason is not null && activeSeason.IsActive)
+                throw new InvalidOperationException("Cannot create or update cars while a competition season is active.");
+
             if (car is null)
                 throw new ArgumentException(nameof(car), "Car cannot be null.");
 
@@ -84,6 +93,11 @@ namespace F1Simulator.TeamManagementService.Services
 
         public async Task UpdateCarModelAsync(CarModelUpdateDTO carModelUpdate, string carId)
         {
+            var activeSeason = await _competitionClient.GetActiveSeasonAsync();
+
+            if (activeSeason is not null && activeSeason.IsActive)
+                throw new InvalidOperationException("Cannot create or update cars while a competition season is active.");
+
             await _carRepository.UpdateCarModelAsync(carModelUpdate, carId);
         }
 

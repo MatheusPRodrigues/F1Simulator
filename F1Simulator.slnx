@@ -1,9 +1,19 @@
 <Solution>
-  <Folder Name="/docs/" />
-  <Folder Name="/docs/EngineeringService/">
-    <File Path="doc.md" />
+  <Folder Name="/docs/">
+    <File Path="documentacao-f1simulator.md" />
   </Folder>
-  <Folder Name="/docs/Insomnia/" />
+  <Folder Name="/docs/EngineeringService/">
+    <File Path="README.md" />
+  </Folder>
+  <Folder Name="/docs/Insomnia/">
+    <File Path="README_TEMPLATE.md" />
+  </Folder>
+  <Folder Name="/docs/Insomnia/CompettionService/" />
+  <Folder Name="/docs/Insomnia/EngineeringService/">
+    <File Path="engineering-service.yaml" />
+  </Folder>
+  <Folder Name="/docs/Insomnia/RaceControlService/" />
+  <Folder Name="/docs/Insomnia/TeamManagementService/" />
   <Folder Name="/src/">
     <Project Path="F1Simulator.CompetitionService/F1Simulator.CompetitionService.csproj">
       <BuildDependency Project="F1Simulator.Models/F1Simulator.Models.csproj" />
@@ -13,11 +23,5 @@
     <Project Path="F1Simulator.RaceControlService/F1Simulator.RaceControlService.csproj" />
     <Project Path="F1Simulator.Utils/F1Simulator.Utils.csproj" Id="67d20145-1c1f-4ef3-a965-f30051588d8c" />
     <Project Path="F1Simulator/F1Simulator.TeamManagementService.csproj" />
-  </Folder>
-  <Folder Name="/tests/">
-    <Project Path="F1Simulator.CompetitionService.Tests/F1Simulator.CompetitionService.Tests.csproj" />
-    <Project Path="F1Simulator.EngineeringService.Tests/F1Simulator.EngineeringService.Tests.csproj" />
-    <Project Path="F1Simulator.RaceControlService.Tests/F1Simulator.RaceControlService.Tests.csproj" />
-    <Project Path="F1Simulator.TeamManagementService.Tests/F1Simulator.TeamManagementService.Tests.csproj" />
   </Folder>
 </Solution>
