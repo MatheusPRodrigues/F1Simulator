@@ -592,16 +592,27 @@ namespace F1Simulator.CompetitionService.Services
                 // Consume da fila para processar os resultados da corrida
 
                 var raceResults = await ConsumeRaceResultsAsync();
-                
+
                 // Buscar as listas de classificação do banco
 
-                var drivers = _competitionRepository.GetDriverStandingAsync();
-                var teams = _competitionRepository.GetTeamStandingAsync();
+                var drivers = await _competitionRepository.GetDriverStandingAsync();
+                var teams =  await _competitionRepository.GetTeamStandingAsync();
+                List<DriverStandingResponseDTO> driversUpdate = new List<DriverStandingResponseDTO>();
+                List<TeamStandingResponseDTO> teamsUpdate = new List<TeamStandingResponseDTO>();
 
                 // atualizar listas de classificação
 
-                drivers = UpdateDrivers(drivers, raceResults);
-                teams = UpdateTeams(teams, drivers);
+                if (drivers is not null) {
+                    driversUpdate = UpdateDrivers(drivers, raceResults);
+                }
+                if(teams is not null)
+                {
+                   teamsUpdate = UpdateTeams(teams, drivers);
+                }
+
+                // enviar as listas de classificação para o banco e subescrever 
+
+                await _competitionRepository.EndRaceAsync(driversUpdate, teamsUpdate);
 
 
             }
@@ -613,7 +624,7 @@ namespace F1Simulator.CompetitionService.Services
 
         }
 
-        public List<DriverStandingResponseDTO> UpdateDrivers(List<DriverStandingResponseDTO> currentDrivers, List<DriverToPublishDTO> raceResults)
+        private List<DriverStandingResponseDTO> UpdateDrivers(List<DriverStandingResponseDTO> currentDrivers, List<DriverToPublishDTO> raceResults)
         {
             foreach (var raceResult in raceResults)
             {
@@ -626,7 +637,7 @@ namespace F1Simulator.CompetitionService.Services
             return currentDrivers;
         }
 
-        public List<TeamStandingResponseDTO> UpdateTeams(List<TeamStandingResponseDTO> currentTeams, List<DriverStandingResponseDTO> updatedDrivers)
+        private List<TeamStandingResponseDTO> UpdateTeams(List<TeamStandingResponseDTO> currentTeams, List<DriverStandingResponseDTO> updatedDrivers)
         {
             foreach (var team in currentTeams)
             {

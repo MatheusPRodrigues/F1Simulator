@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using F1Simulator.CompetitionService.Repositories.Interfaces;
 using F1Simulator.Models.DTOs.CompetitionService.Response;
+using F1Simulator.Models.Enums.CompetitionService;
 using F1Simulator.Models.Models;
 using F1Simulator.Utils.DatabaseConnectionFactory;
 using Microsoft.Data.SqlClient;
@@ -189,6 +190,8 @@ namespace F1Simulator.CompetitionService.Repositories
                 var updateQuery = @"UPDATE Races
                                     SET Status = 'InProgress'
                                     WHERE Id = @Id";
+
+                await _connection.ExecuteAsync(updateQuery);
             }
             catch (SqlException ex)
             {
@@ -383,6 +386,56 @@ namespace F1Simulator.CompetitionService.Repositories
             catch (SqlException ex)
             {
                 _logger.LogError(ex, "Error in GetTeamStanding in CompetitionRepository");
+                throw;
+            }
+        }
+
+        public async Task EndRaceAsync(List<DriverStandingResponseDTO> driversUpdate,List<TeamStandingResponseDTO> teamsUpdate)
+        {
+            using var transaction = _connection.BeginTransaction();
+            try
+            {
+
+                var season = GetCompetionActiveAsync();
+                // atualizar classificação dos pilotos
+                var sqlDriver = @"UPDATE DriverStandings SET Points = Points + @Pontuation 
+                               WHERE DriverId = @DriverId AND SeasonId = @SeasonId";
+                foreach (var driver in driversUpdate)
+                {
+                    await _connection.ExecuteAsync(sqlDriver, new { Pontuation = driver.Points, 
+                                                                    DriverId = driver.DriverId, 
+                                                                    SeasonId = season.Id}, transaction );
+
+                }
+
+
+                // atualizar classificação das equipes
+
+                var sqlTeams = @"UPDATE TeamStandings SET Points = Points + @Pontuation 
+                               WHERE TeamId = @TeamId AND SeasonId = @SeasonId";
+                foreach (var team in teamsUpdate)
+                {
+                    await _connection.ExecuteAsync(sqlDriver, new {Pontuation = team.Points,
+                                                                  DriverId = team.TeamId,
+                                                                  SeasonId = season.Id}, transaction);
+
+                }
+
+                // atualizar o status da corrida
+
+                var race = GetRaceInProgressAsync();
+                var updateQuery = @"UPDATE Races
+                                    SET Status = 'Finished'
+                                    WHERE Id = @Id";
+
+                await _connection.ExecuteAsync(updateQuery, new {Id = race.Id }, transaction);
+
+                transaction.Commit();
+            }
+            catch (SqlException ex)
+            {
+                transaction.Rollback();
+                _logger.LogError(ex, "Error in EndRaceAsync in CompetitionRepository");
                 throw;
             }
         }

@@ -1,5 +1,6 @@
 ﻿using F1Simulator.CompetitionService.Repositories;
 using F1Simulator.Models.DTOs.CompetitionService.Response;
+using F1Simulator.Models.DTOs.RaceControlService;
 using System.Threading.Tasks;
 
 namespace F1Simulator.CompetitionService.Services.Interfaces
@@ -18,5 +19,7 @@ namespace F1Simulator.CompetitionService.Services.Interfaces
         Task<List<DriverStandingResponseWhitPositionDTO>> GetDriverStandingAsync();
         Task<List<TeamStandingResponseWhitPositionDTO>> GetTeamStandingAsync();
         Task<List<RaceResponseDTO>> GetRacesAsync();
+        Task EndRaceAsync();
+       
     }
 }
