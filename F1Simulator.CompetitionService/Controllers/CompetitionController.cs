@@ -283,7 +283,7 @@ namespace F1Simulator.CompetitionService.Controllers
         {
             try
             {
-                await _competitionService.EndRaceAsync();
+                //await _competitionService.EndRaceAsync();
                 return Ok();
             }
             catch (BusinessException bex)

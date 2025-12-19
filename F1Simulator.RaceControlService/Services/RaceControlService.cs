@@ -512,7 +512,7 @@ namespace F1Simulator.RaceControlService.Services
             var race = new RaceControl(
                 raceDto.Id,
                 raceDto.Round,
-                2025,
+                raceDto.YearSeason,
                 new CircuitRace(
                     raceDto.Circuit.Id,
                     raceDto.Circuit.Name,
