@@ -19,6 +19,11 @@ builder.Services.AddHttpClient("EngineeringService", client =>
     client.BaseAddress = new Uri("https://localhost:6001/api/engineering/");
 });
 
+builder.Services.AddHttpClient("TeamManagementServicesDrivers", client =>
+{
+    client.BaseAddress = new Uri("https://localhost:8001/api");
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

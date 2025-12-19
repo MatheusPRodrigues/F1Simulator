@@ -13,7 +13,8 @@ namespace F1Simulator.RaceControlService.Services
         private readonly IPublishService _messageService;
         private readonly IRaceControlRepository _raceControlRepository;
         private readonly ILogger<RaceControlService> _logger;
-        private readonly IHttpClientFactory _factory;
+        private readonly HttpClient _engineeringClient;
+        private readonly HttpClient _teamManagementClient;
 
         public RaceControlService(
             IPublishService messageService,
@@ -25,12 +26,65 @@ namespace F1Simulator.RaceControlService.Services
             _messageService = messageService; 
             _raceControlRepository = raceControlRepository;
             _logger = logger;
-            _factory = factory; 
+            _engineeringClient = factory.CreateClient("EngineeringService");
+            _teamManagementClient = factory.CreateClient("TeamManagementServicesDrivers");
         }
 
-        public Task ExecuteQualifierSectionAsync(string raceId)
+        public async Task<List<DriverGridResponseDTO>> ExecuteQualifierSectionAsync(string raceId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var drivers = await _teamManagementClient.GetFromJsonAsync<List<DriverToRaceDTO>>("/drivers/race");
+                var luck = Random.Shared.Next(1, 11);
+                var driverProcessToGrid = new List<DriverGridResponseDTO>();
+
+                foreach (var d in drivers)
+                {
+                    var request = new EngineersPutDTO
+                    {
+                        EngineerCaId = d.EnginneringAId,
+                        EngineerCpId = d.EnginneringPId
+                    };
+
+                    var response = await _engineeringClient.PutAsJsonAsync($"car/{d.CarId}", request);
+                    var processedResponse = JsonSerializer.Deserialize<CarUpdateDTO>(await response.Content.ReadAsStringAsync());
+
+                    var newCa = processedResponse.Ca;
+                    var newCp = processedResponse.Cp;
+
+                    var newHandicap = d.Handicap - (d.DriverExp * 0.5);
+                    await _teamManagementClient.PatchAsJsonAsync($"car/{d.CarId}/handicap", new { Handicap = newHandicap });
+
+                    var dto = new DriverGridResponseDTO
+                    {
+                        DriverId = d.DriverId,
+                        DriverName = d.DriverName,
+                        Handicap = newHandicap,
+                        TeamId = d.TeamId,
+                        TeamName = d.TeamName,
+                        CarId = d.CarId,
+                        Ca = newCa,
+                        Cp = newCp
+                    };
+
+                    dto.Pd = (dto.Ca * 0.4) + (dto.Cp * 0.4) - dto.Handicap + luck;
+                    driverProcessToGrid.Add(dto);
+                }
+
+                driverProcessToGrid.Sort((a, b) => b.Pd.CompareTo(a.Pd));
+
+                for (var i = 0; i < driverProcessToGrid.Count; i++)
+                {
+                    driverProcessToGrid[i].Position = i + 1;
+                }
+
+                return driverProcessToGrid;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error occurred while execute qualifier section: {ex}");
+                throw;
+            }
         }
 
         public async Task<List<DriverGridFinalRaceResponseDTO>> ExecuteRaceSectionAsync(string raceId)
@@ -132,11 +186,12 @@ namespace F1Simulator.RaceControlService.Services
                     new() { DriverId = Guid.NewGuid().ToString(), DriverName = "Driver 20", Handicap = 0.76, DriverExp = 64, TeamId = Guid.NewGuid().ToString(), TeamName = "Team O", EnginneringAId = Guid.NewGuid().ToString(), EnginneringPId = Guid.NewGuid().ToString(), CarId = Guid.NewGuid().ToString(), Ca = 0.73, Cp = 0.74 }
                 };
 
-                var luck = Random.Shared.Next(1, 10);
+                var drivers = await _teamManagementClient.GetFromJsonAsync<List<DriverToRaceDTO>>("/drivers/race");
+                var luck = Random.Shared.Next(1, 11);
 
                 var driverProcessToGrid = new List<DriverGridFinalRaceResponseDTO>();
 
-                foreach (var d in driversToRace)
+                foreach (var d in drivers)
                 {
                     // recebe novos valores de Ca e Cp
 
@@ -146,19 +201,20 @@ namespace F1Simulator.RaceControlService.Services
                         EngineerCpId = d.EnginneringPId
                     };
 
-                    var response = await _factory.CreateClient("EngineeringService")
-                        .PutAsJsonAsync($"car/{d.CarId}", request);
-
+                    var response = await _engineeringClient.PutAsJsonAsync($"car/{d.CarId}", request);
                     var processedResponse = JsonSerializer.Deserialize<CarUpdateDTO>(await response.Content.ReadAsStringAsync());
 
                     var newCa = processedResponse.Ca;
                     var newCp = processedResponse.Cp;
 
+                    var newHandicap = d.Handicap - (d.DriverExp * 0.5);
+                    await _teamManagementClient.PatchAsJsonAsync($"car/{d.CarId}/handicap", new { Handicap = newHandicap });
+
                     var dto = new DriverGridFinalRaceResponseDTO
                     {
                         DriverId = d.DriverId,
                         DriverName = d.DriverName,
-                        Handicap = d.Handicap - (d.DriverExp * 0.5),
+                        Handicap = newHandicap,
                         TeamId = d.TeamId,
                         TeamName = d.TeamName,
                         CarId = d.CarId,
@@ -192,19 +248,102 @@ namespace F1Simulator.RaceControlService.Services
             }
         }
 
-        public Task ExecuteTlOneSectionAsync(string raceId)
+        public async Task<List<DriverComparisonResponseDTO>> ExecuteTlOneSectionAsync(string raceId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var drivers = await _teamManagementClient.GetFromJsonAsync<List<DriverToRaceDTO>>("/drivers/race");
+
+                var response = await ProcessingDriversComparison(drivers);
+
+                return response;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error occurred while execute tl one section: {ex}");
+                throw;
+            }
         }
 
-        public Task ExecuteTlThreeSectionAsync(string raceId)
+        public async Task<List<DriverComparisonResponseDTO>> ExecuteTlThreeSectionAsync(string raceId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var drivers = await _teamManagementClient.GetFromJsonAsync<List<DriverToRaceDTO>>("/drivers/race");
+
+                var response = await ProcessingDriversComparison(drivers);
+
+                return response;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error occurred while execute tl two section: {ex}");
+                throw;
+            }
         }
 
-        public Task ExecuteTlTwoSectionAsync(string raceId)
+        public async Task<List<DriverComparisonResponseDTO>> ExecuteTlTwoSectionAsync(string raceId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var drivers = await _teamManagementClient.GetFromJsonAsync<List<DriverToRaceDTO>>("/drivers/race");
+
+                var response = await ProcessingDriversComparison(drivers);
+
+                return response;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error occurred while execute tl three section: {ex}");
+                throw;
+            }
+        }
+
+        private async Task<List<DriverComparisonResponseDTO>> ProcessingDriversComparison(List<DriverToRaceDTO> drivers)
+        {
+            var driversComparison = new List<DriverComparisonResponseDTO>();
+            foreach (var d in drivers)
+            {
+                var request = new EngineersPutDTO
+                {
+                    EngineerCaId = d.EnginneringAId,
+                    EngineerCpId = d.EnginneringPId
+                };
+
+                var responseEngineeringAPI = await _engineeringClient.PutAsJsonAsync($"car/{d.CarId}", request);
+                var processedResponse = JsonSerializer.Deserialize<CarUpdateDTO>(await responseEngineeringAPI.Content.ReadAsStringAsync());
+
+                var newCa = processedResponse.Ca;
+                var newCp = processedResponse.Cp;
+
+                var newHandicap = d.Handicap - (d.DriverExp * 0.5);
+                await _teamManagementClient.PatchAsJsonAsync($"car/{d.CarId}/handicap", new { Handicap = newHandicap });
+
+                var comparison = new DriverComparisonResponseDTO
+                {
+                    OlderStats = new DriverAndCarStatsDTO
+                    {
+                        DriverId = d.DriverId,
+                        DriverName = d.DriverName,
+                        Handicap = d.Handicap,
+                        CarId = d.CarId,
+                        Ca = d.Ca,
+                        Cp = d.Cp
+                    },
+                    NewStats = new DriverAndCarStatsDTO
+                    {
+                        DriverId = d.DriverId,
+                        DriverName = d.DriverName,
+                        Handicap = newHandicap,
+                        CarId = d.CarId,
+                        Ca = newCa,
+                        Cp = newCp
+                    }
+                };
+                driversComparison.Add(comparison);
+            }
+
+            return driversComparison;
         }
 
         private List<DriverToPublishDTO> ProcessDtoToPublish(List<DriverGridFinalRaceResponseDTO> dto)

@@ -4,10 +4,10 @@ namespace F1Simulator.RaceControlService.Services.Interfaces
 {
     public interface IRaceControlService
     {
-        Task ExecuteTlOneSectionAsync(string raceId);
-        Task ExecuteTlTwoSectionAsync(string raceId);
-        Task ExecuteTlThreeSectionAsync(string raceId);
-        Task ExecuteQualifierSectionAsync(string raceId);
+        Task<List<DriverComparisonResponseDTO>> ExecuteTlOneSectionAsync(string raceId);
+        Task<List<DriverComparisonResponseDTO>> ExecuteTlTwoSectionAsync(string raceId);
+        Task<List<DriverComparisonResponseDTO>> ExecuteTlThreeSectionAsync(string raceId);
+        Task<List<DriverGridResponseDTO>> ExecuteQualifierSectionAsync(string raceId);
         Task<List<DriverGridFinalRaceResponseDTO>> ExecuteRaceSectionAsync(string raceId);
     }
 }
