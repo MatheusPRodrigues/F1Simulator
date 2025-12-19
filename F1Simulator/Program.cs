@@ -14,14 +14,23 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 
 builder.Services.AddSingleton<IDatabaseConnection<SqlConnection>, SqlServerConnection>();
+
 builder.Services.AddSingleton<IEngineerRepository, EngineerRepository>();
 builder.Services.AddSingleton<IEngineerService, EngineerService>();
+
 builder.Services.AddSingleton<ITeamRepository, TeamRepository>();
 builder.Services.AddSingleton<ITeamService, TeamService>();
 
+builder.Services.AddSingleton<IDriverRepository, DriverRepository>();
+builder.Services.AddSingleton<IDriverService, DriverService>();
 
 builder.Services.AddSingleton<ICarRepository, CarRepository>();
 builder.Services.AddSingleton<ICarService, CarService>();
+
+builder.Services.AddHttpClient("TeamManagement", client =>
+{
+    client.BaseAddress = new Uri("https://localhost:8001/api/");
+});
 
 var app = builder.Build();
 
