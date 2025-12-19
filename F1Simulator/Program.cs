@@ -14,10 +14,15 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 
 builder.Services.AddSingleton<IDatabaseConnection<SqlConnection>, SqlServerConnection>();
+
 builder.Services.AddSingleton<IEngineerRepository, EngineerRepository>();
 builder.Services.AddSingleton<IEngineerService, EngineerService>();
+
 builder.Services.AddSingleton<ITeamRepository, TeamRepository>();
 builder.Services.AddSingleton<ITeamService, TeamService>();
+
+builder.Services.AddSingleton<IBossRepository, BossRepository>();
+builder.Services.AddSingleton<IBossService, BossService>();
 
 
 builder.Services.AddSingleton<ICarRepository, CarRepository>();
