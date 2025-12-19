@@ -1,4 +1,4 @@
-﻿using F1Simulator.Models.Enuns.TeamManegementService;
+﻿using F1Simulator.Models.Enums.TeamManegementService;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

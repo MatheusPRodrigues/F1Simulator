@@ -89,7 +89,7 @@ namespace F1Simulator.CompetitionService.Controllers
                 var race = _competitionService.GetRaceWithCircuitAsync();
                 if (race == null)
                 {
-                    return NotFound("There is already a race in progress in the current season.");
+                    return NotFound("There isn't a race in progress in the current season.");
                 }
 
                 return Ok(race);
@@ -283,7 +283,7 @@ namespace F1Simulator.CompetitionService.Controllers
         {
             try
             {
-                await _competitionService.EndRaceAsync();
+                //await _competitionService.EndRaceAsync();
                 return Ok();
             }
             catch (BusinessException bex)

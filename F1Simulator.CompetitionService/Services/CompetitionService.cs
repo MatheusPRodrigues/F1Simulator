@@ -600,8 +600,8 @@ namespace F1Simulator.CompetitionService.Services
 
                 // atualizar listas de classificação
 
-                drivers = UpdateDrivers(drivers, raceResults);
-                teams = UpdateTeams(teams, drivers);
+                //drivers = UpdateDrivers(drivers, raceResults);
+                //teams = UpdateTeams(teams, drivers);
 
 
             }

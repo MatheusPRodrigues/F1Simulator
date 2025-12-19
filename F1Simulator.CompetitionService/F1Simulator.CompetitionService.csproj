@@ -16,13 +16,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\F1Simulator.CompetitionService.Tests\F1Simulator.CompetitionService.Tests.csproj" />
-    <ProjectReference Include="..\F1Simulator.EngineeringService.Tests\F1Simulator.EngineeringService.Tests.csproj" />
+    <!--<ProjectReference Include="..\F1Simulator.CompetitionService.Tests\F1Simulator.CompetitionService.Tests.csproj" />
+    <ProjectReference Include="..\F1Simulator.EngineeringService.Tests\F1Simulator.EngineeringService.Tests.csproj" />-->
     <ProjectReference Include="..\F1Simulator.EngineeringService\F1Simulator.EngineeringService.csproj" />
     <ProjectReference Include="..\F1Simulator.Models\F1Simulator.Models.csproj" />
-    <ProjectReference Include="..\F1Simulator.RaceControlService.Tests\F1Simulator.RaceControlService.Tests.csproj" />
+    <!--<ProjectReference Include="..\F1Simulator.RaceControlService.Tests\F1Simulator.RaceControlService.Tests.csproj" />-->
     <ProjectReference Include="..\F1Simulator.RaceControlService\F1Simulator.RaceControlService.csproj" />
-    <ProjectReference Include="..\F1Simulator.TeamManagementService.Tests\F1Simulator.TeamManagementService.Tests.csproj" />
+    <!--<ProjectReference Include="..\F1Simulator.TeamManagementService.Tests\F1Simulator.TeamManagementService.Tests.csproj" />-->
     <ProjectReference Include="..\F1Simulator.Utils\F1Simulator.Utils.csproj" />
     <ProjectReference Include="..\F1Simulator\F1Simulator.TeamManagementService.csproj" />
   </ItemGroup>

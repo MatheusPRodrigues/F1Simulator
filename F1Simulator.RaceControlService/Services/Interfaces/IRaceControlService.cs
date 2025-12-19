@@ -1,13 +1,16 @@
 ﻿using F1Simulator.Models.DTOs.RaceControlService;
+using F1Simulator.Models.Models.RaceControlService;
 
 namespace F1Simulator.RaceControlService.Services.Interfaces
 {
     public interface IRaceControlService
     {
-        Task ExecuteTlOneSectionAsync(string raceId);
-        Task ExecuteTlTwoSectionAsync(string raceId);
-        Task ExecuteTlThreeSectionAsync(string raceId);
-        Task ExecuteQualifierSectionAsync(string raceId);
-        Task<List<DriverGridFinalRaceResponseDTO>> ExecuteRaceSectionAsync(string raceId);
+        Task<List<DriverComparisonResponseDTO>> ExecuteTlOneSectionAsync();
+        Task<List<DriverComparisonResponseDTO>> ExecuteTlTwoSectionAsync();
+        Task<List<DriverComparisonResponseDTO>> ExecuteTlThreeSectionAsync();
+        Task<List<DriverGridResponseDTO>> ExecuteQualifierSectionAsync();
+        Task<List<DriverGridFinalRaceResponseDTO>> ExecuteRaceSectionAsync();
+        Task<RaceControlResponseDTO> GetRaceByRaceIdAsync(Guid raceId);
+        Task<List<RaceControlResponseDTO>> GetRacesBySeasonYearAsync(int year);
     }
 }
