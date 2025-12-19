@@ -85,7 +85,7 @@ namespace F1Simulator.TeamManagementService.Services
                 if (engineer is null)
                     throw new ArgumentException("The engineer not found");
 
-                return await _engineerRepository.UpdateActiveEngineerAsync(engineerUpdateRequestDTO, id);
+                await _engineerRepository.UpdateActiveEngineerAsync(engineerUpdateRequestDTO, id);
             } catch(Exception ex)
             {
                 throw new Exception(ex.Message);

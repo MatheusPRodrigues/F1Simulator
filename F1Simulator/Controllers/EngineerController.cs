@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace F1Simulator.TeamManagementService.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/engineer")]
     [ApiController]
     public class EngineerController : ControllerBase
     {
@@ -46,7 +46,7 @@ namespace F1Simulator.TeamManagementService.Controllers
             }
         }
 
-        [HttpGet]
+        [HttpGet("{id}")]
         public async Task<ActionResult<EngineerResponseDTO>> GetEngineerByIdAsync([FromRoute] Guid id)
         {
             try
