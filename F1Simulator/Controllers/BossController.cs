@@ -43,14 +43,18 @@ namespace F1Simulator.TeamManagementService.Controllers
         {
             try
             {
-                await _bossService.CreateBossAsync(bossDto);
+               await _bossService.CreateBossAsync(bossDto);
                 _logger.LogInformation("Team sucessfully created!");
-                return Created();
+                return StatusCode(StatusCodes.Status201Created); ;
+            }
+            catch(ArgumentException ex)
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, new { Message = ex.Message });
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occurred while creating boss!");
-                return BadRequest(ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, new { Message = "An unspected error ocurred while creating boss!!" });
             }
         }
 
