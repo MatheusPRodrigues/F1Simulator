@@ -1,4 +1,5 @@
 ﻿using F1Simulator.Models.DTOs.RaceControlService;
+using F1Simulator.Models.DTOs.TeamManegementService.CarDTO;
 using F1Simulator.Models.DTOs.TeamManegementService.DriverDTO;
 using F1Simulator.Models.Models.TeamManegement;
 using F1Simulator.TeamManagementService.Repositories.Interfaces;
@@ -6,6 +7,7 @@ using F1Simulator.TeamManagementService.Services.Interfaces;
 using F1Simulator.Utils.Clients.Interfaces;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using System;
+using System.Runtime.CompilerServices;
 
 namespace F1Simulator.TeamManagementService.Services
 {
@@ -40,7 +42,9 @@ namespace F1Simulator.TeamManagementService.Services
                 if (await _carService.GetCountCarByIdCar(driverRequest.CarId) == 1)
                     throw new InvalidOperationException("This car is already linked to a driver.");
 
-                if(await _teamService.GetTeamByIdAsync(driverRequest.TeamId.ToString()) is null)
+                var team = await _teamService.GetTeamByIdAsync(driverRequest.TeamId.ToString());
+
+                if (team is null)
                     throw new KeyNotFoundException("Team not found.");
 
                 if(await _teamService.GetDriversInTeamById(driverRequest.TeamId) >= 2)
@@ -60,7 +64,13 @@ namespace F1Simulator.TeamManagementService.Services
                     handicap
                 );
 
-                return await _driverRepository.CreateDriverAsync(driver);
+                var model = team.NameAcronym + driver.DriverNumber;
+
+                var driverStorage = await _driverRepository.CreateDriverAsync(driver);
+                var updateCarModel = new CarModelUpdateDTO { Model = model };
+                var updateModelCar = _carService.UpdateCarModelAsync(updateCarModel, driver.CarId.ToString());
+                return driverStorage;
+
             }
             catch (Exception ex)
             {
