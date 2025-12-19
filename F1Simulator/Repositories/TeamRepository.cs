@@ -51,12 +51,19 @@ namespace F1Simulator.TeamManagementService.Repositories
 
         public async Task<TeamResponseDTO> GetTeamByNameAsync(string name)
         {
-
-            var query = @"SELECT TeamId, Name, NameAcronym, Country
+            try
+            {
+                var query = @"SELECT TeamId, Name, NameAcronym, Country
                           FROM Teams
                           WHERE Name = @Name";
 
                 return await _connection.QueryFirstOrDefaultAsync<TeamResponseDTO>(query, new { Name = name });           
+
+            }
+            catch (SqlException ex)
+            {
+                throw new Exception("Error querying the database.", ex);
+            }
         }
 
         public async Task UpdateTeamCountryAsync(Guid teamId, string country)
