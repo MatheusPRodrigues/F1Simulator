@@ -26,21 +26,21 @@ namespace F1Simulator.EngineeringService.Controllers
             {
                 var result = await _engineeringService.PutCarCoefficientsAsync(engIds, carId);
 
-                return Ok(result);
+                return StatusCode(StatusCodes.Status201Created, result);
             }
             catch (KeyNotFoundException ex)
             {
-                return NotFound(ex.Message);
+                return StatusCode(StatusCodes.Status400BadRequest, new { Message = ex.Message });
             }
             catch (ArgumentException ex)
             {
-                return BadRequest(ex.Message);
+                return StatusCode(StatusCodes.Status400BadRequest, new { Message = ex.Message });
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An unexpected error occurred.");
 
-                return Problem(ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, new { Message = ex.Message});
             }
         }
 

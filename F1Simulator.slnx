@@ -1,9 +1,17 @@
 <Solution>
   <Folder Name="/docs/" />
   <Folder Name="/docs/EngineeringService/">
-    <File Path="doc.md" />
+    <File Path="README.md" />
   </Folder>
-  <Folder Name="/docs/Insomnia/" />
+  <Folder Name="/docs/Insomnia/">
+    <File Path="README_TEMPLATE.md" />
+  </Folder>
+  <Folder Name="/docs/Insomnia/CompettionService/" />
+  <Folder Name="/docs/Insomnia/EngineeringService/">
+    <File Path="engineering-service.yaml" />
+  </Folder>
+  <Folder Name="/docs/Insomnia/RaceControlService/" />
+  <Folder Name="/docs/Insomnia/TeamManagementService/" />
   <Folder Name="/src/">
     <Project Path="F1Simulator.CompetitionService/F1Simulator.CompetitionService.csproj">
       <BuildDependency Project="F1Simulator.Models/F1Simulator.Models.csproj" />

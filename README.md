@@ -1,4 +1,4 @@
-# Engineering Service API
+﻿# Engineering Service API
 
 Este serviço faz parte do projeto **F1Simulator** e é responsável por aplicar **ajustes nos coeficientes técnicos dos carros (Ca e Cp)** com base na atuação de engenheiros especializados.
 
