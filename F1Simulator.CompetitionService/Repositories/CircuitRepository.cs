@@ -1,9 +1,8 @@
 ﻿using Dapper;
-using F1Simulator.CompetitionService.Data;
 using F1Simulator.CompetitionService.Repositories.Interfaces;
-using F1Simulator.Models.DTOs.CompetitionService.Request;
 using F1Simulator.Models.DTOs.CompetitionService.Response;
 using F1Simulator.Models.Models;
+using F1Simulator.Utils.DatabaseConnectionFactory;
 using Microsoft.Data.SqlClient;
 
 namespace F1Simulator.CompetitionService.Repositories
@@ -14,10 +13,10 @@ namespace F1Simulator.CompetitionService.Repositories
         private readonly ILogger<CircuitRepository> _logger;
         private readonly SqlConnection _connection;
 
-        public CircuitRepository(ILogger<CircuitRepository> logger, CompetitionServiceConnection connection)
+        public CircuitRepository(ILogger<CircuitRepository> logger, IDatabaseConnection<SqlConnection> connection)
         {
             _logger = logger;
-            _connection = connection.GetConnection();
+            _connection = connection.Connect();
         }
 
 
@@ -38,7 +37,7 @@ namespace F1Simulator.CompetitionService.Repositories
                     } 
                 );
             }
-            catch (Exception ex)
+            catch (SqlException ex)
             {
                 _logger.LogError("Error in CreateCircuitAsync in CircuitReposytory: " + ex.Message);
                 throw;
@@ -54,7 +53,7 @@ namespace F1Simulator.CompetitionService.Repositories
                 return result > 0;
 
             }
-            catch (Exception ex)
+            catch (SqlException ex)
             {
                 _logger.LogError("Error in ExistsAsync in CircuitReposytory: " + ex.Message);
                 throw;
@@ -70,13 +69,13 @@ namespace F1Simulator.CompetitionService.Repositories
                 return (int)await _connection.ExecuteScalarAsync<int>(query);
 
             }
-            catch (Exception ex)
+            catch (SqlException ex)
             {
                 _logger.LogError("Error in CircuitsActivadesAsync in CircuitReposytory: " + ex.Message);
                 throw;
             }
         }
-        public async Task<CreateCircuitResponseDTO?> GetCircuitById(Guid id)
+        public async Task<CreateCircuitResponseDTO?> GetCircuitByIdAsync(Guid id)
         {
             try {
 
@@ -87,13 +86,15 @@ namespace F1Simulator.CompetitionService.Repositories
                 return  await _connection.QuerySingleOrDefaultAsync<CreateCircuitResponseDTO>(select, new { Id = id });
 
             }
-            catch (Exception ex)
+            catch (SqlException ex)
             {
-                _logger.LogError("Error in GetCircuitById in CircuitReposytory: " + ex.Message);
+                _logger.LogError("Error in GetCircuitById in CircuitRepository: " + ex.Message);
                 throw;
             }
             
         }
+
+      
 
         public async Task UpdateIsActiveCircuitAsync(Guid id)
         {
@@ -106,7 +107,7 @@ namespace F1Simulator.CompetitionService.Repositories
                 await _connection.ExecuteAsync(select, new { Id = id });
 
             }
-            catch (Exception ex)
+            catch (SqlException ex)
             {
                 _logger.LogError("Error in CircuitUpdateIsActiveAsync in CircuitReposytory: " + ex.Message);
                 throw;
@@ -123,7 +124,7 @@ namespace F1Simulator.CompetitionService.Repositories
                 var circuits = await _connection.QueryAsync<CreateCircuitResponseDTO>(select);
                 return circuits.ToList();
             }
-            catch (Exception ex)
+            catch (SqlException ex)
             {
                 _logger.LogError("Error in GetAllCircuitsAsync in CircuitReposytory: " + ex.Message);
                 throw;
@@ -141,29 +142,13 @@ namespace F1Simulator.CompetitionService.Repositories
                 var circuits = await _connection.QueryAsync<CreateCircuitResponseDTO>(select);
                 return circuits.ToList();
             }
-            catch (Exception ex)
+            catch (SqlException ex)
             {
                 _logger.LogError("Error in GetAllCircuitsAsync in CircuitReposytory: " + ex.Message);
                 throw;
             }
         }
 
-        public async Task<CreateCircuitResponseDTO?> GetCircuitByIdAsync(Guid id)
-        {
-            try
-            {
-                var select = @"SELECT Id, Name, Country, LapsNumber, IsActive
-                           FROM Circuits
-                           WHERE Id = @Id;";
-
-                return await _connection.QuerySingleOrDefaultAsync<CreateCircuitResponseDTO>(select, new { Id = id });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError("Error in GetCircuitByIdAsync in CircuitReposytory: " + ex.Message);
-                throw;
-            }
-        }
 
         public async Task<bool> DeleteCircuitAsync(Guid id)
         {
@@ -177,7 +162,7 @@ namespace F1Simulator.CompetitionService.Repositories
 
                 return rows > 0 ? true : false;
             }
-            catch (Exception ex)
+            catch (SqlException ex)
             {
                 _logger.LogError("Error in DeleteCircuitAsync in CircuitReposytory: " + ex.Message);
                 throw;
@@ -193,7 +178,7 @@ namespace F1Simulator.CompetitionService.Repositories
 
                 return rows > 0 ? true : false;
             }
-            catch (Exception ex)
+            catch (SqlException ex)
             {
                 _logger.LogError("Error in UpdateCircuitAsync in CircuitReposytory: " + ex.Message);
                 throw;

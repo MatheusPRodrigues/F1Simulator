@@ -6,15 +6,15 @@ namespace F1Simulator.CompetitionService.Repositories.Interfaces
 {
     public interface ICompetitionRepository
     {
-        Task<SeasonResponseDTO?> GetCompetionActive();
-        Task<int?> GetMaxYearSeason();
+        Task<SeasonResponseDTO?> GetCompetionActiveAsync();
+        Task<int?> GetMaxYearSeasonAsync();
         Task StartSeasonAsync(Season season, List<TeamStanding> teams, List<DriverStanding> drivers, List<Race> races);
         Task<RaceCompleteResponseDTO?> GetRaceCompleteByIdAndSeasonIdAsync(int round, Guid seasonID);
         Task<bool> ExistRaceInProgressAsync(Guid seasonID);
         Task UpdateStatusRaceAsync(Guid id);
         Task<RaceResponseDTO?> GetRaceByIdAsync(Guid Id);
         Task<RaceWithCircuitResponseDTO?> GetRaceWithCircuitAsync();
-        Task<RaceCompleteResponseDTO?> GetRaceInProgress();
+        Task<RaceCompleteResponseDTO?> GetRaceInProgressAsync();
         Task UpdateRaceT1Async();
         Task UpdateRaceT2Async();
         Task UpdateRaceT3Async();

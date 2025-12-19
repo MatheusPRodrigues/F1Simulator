@@ -10,7 +10,7 @@ using System;
 
 namespace F1Simulator.CompetitionService.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/circuit")]
     [ApiController]
     public class CircuitController : ControllerBase
     {
@@ -23,16 +23,18 @@ namespace F1Simulator.CompetitionService.Controllers
             _circuitService = circuitService;
         }
 
-        [HttpPost("Circuit")]
-        public async Task<ActionResult> CreateCircuit(CreateCircuitRequestDTO createCircuit) { 
+        [HttpPost("create")]
+        public async Task<ActionResult> CreateCircuit([FromBody] CreateCircuitRequestDTO createCircuit) { 
             try
             {
+
                  var circuit = await _circuitService.CreateCircuitAsync(createCircuit);
                 if(circuit == null)
                 {
                     return BadRequest("Error: There is already a circuit with this name and country.");
                 }
                 return Ok(circuit);
+
             }catch(BusinessException bex)
             {
                 _logger.LogWarning(bex, "Business error creating circuit");
@@ -46,8 +48,8 @@ namespace F1Simulator.CompetitionService.Controllers
             }
         }
 
-        [HttpPost("Circuits")]
-        public async Task<ActionResult> CreateCircuits(CreateCircuitsRequestDTO createCircuit)
+        [HttpPost("create/circuits")]
+        public async Task<ActionResult> CreateCircuits([FromBody] CreateCircuitsRequestDTO createCircuit)
         {
             try
             {
@@ -71,9 +73,9 @@ namespace F1Simulator.CompetitionService.Controllers
             }
         }
 
-        [HttpPatch("Deactivate/{id}")]
+        [HttpPatch("dea tivate/{id}")]
 
-        public async Task<ActionResult> DeactivateCircuitAsync(Guid id)
+        public async Task<ActionResult> DeactivateCircuitAsync( [FromRoute] Guid id)
         {
             try
             {
@@ -88,7 +90,8 @@ namespace F1Simulator.CompetitionService.Controllers
                 }
 
                 return Ok(circuit);
-            }catch(BusinessException bex)
+            }
+            catch(BusinessException bex)
             {
                 _logger.LogWarning(bex, "Business error deactivating circuit");
                 return BadRequest(bex.Message);
@@ -100,9 +103,9 @@ namespace F1Simulator.CompetitionService.Controllers
             }
         }
 
-        [HttpPatch("Activate/{id}")]
+        [HttpPatch("activate/{id}")]
 
-        public async Task<ActionResult> ActivateCircuitAsync(Guid id)
+        public async Task<ActionResult> ActivateCircuitAsync( [FromRoute] Guid id)
         {
             try
             {
@@ -150,7 +153,7 @@ namespace F1Simulator.CompetitionService.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<CreateCircuitResponseDTO>> GetCircuitById(Guid id)
+        public async Task<ActionResult<CreateCircuitResponseDTO>> GetCircuitById([FromRoute] Guid id)
         {
             try
             {
@@ -169,7 +172,7 @@ namespace F1Simulator.CompetitionService.Controllers
         }
 
         [HttpDelete("{id}")] 
-        public async Task<ActionResult> DeleteCircuit(Guid id)
+        public async Task<ActionResult> DeleteCircuit([FromRoute] Guid id)
         {
             try
             {
@@ -193,7 +196,7 @@ namespace F1Simulator.CompetitionService.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult> UpdateCircuitAsync(Guid id, UpdateCircuitDTO updateCircuit)
+        public async Task<ActionResult> UpdateCircuitAsync([FromRoute] Guid id, [FromBody] UpdateCircuitDTO updateCircuit)
         {
             try
             {

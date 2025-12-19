@@ -1,8 +1,8 @@
 ﻿using Dapper;
-using F1Simulator.CompetitionService.Data;
 using F1Simulator.CompetitionService.Repositories.Interfaces;
 using F1Simulator.Models.DTOs.CompetitionService.Response;
 using F1Simulator.Models.Models;
+using F1Simulator.Utils.DatabaseConnectionFactory;
 using Microsoft.Data.SqlClient;
 
 namespace F1Simulator.CompetitionService.Repositories
@@ -12,13 +12,13 @@ namespace F1Simulator.CompetitionService.Repositories
 
         private readonly ILogger<CompetitionRepository> _logger;
         private readonly SqlConnection _connection;
-        public CompetitionRepository(ILogger<CompetitionRepository> logger, CompetitionServiceConnection connection)
+        public CompetitionRepository(ILogger<CompetitionRepository> logger, IDatabaseConnection<SqlConnection> connection)
         {
             _logger = logger;
-            _connection = connection.GetConnection();
+            _connection = connection.Connect();
         }
 
-        public async Task<SeasonResponseDTO?> GetCompetionActive()
+        public async Task<SeasonResponseDTO?> GetCompetionActiveAsync()
         {
             try
             {
@@ -26,26 +26,43 @@ namespace F1Simulator.CompetitionService.Repositories
 
                 return await _connection.QueryFirstOrDefaultAsync<SeasonResponseDTO>(query);
             }
-            catch (Exception ex)
+            catch (SqlException ex)
             {
                 _logger.LogError(ex, "Error in GetCompetionActive in CompetitionRepository");
                 throw;
             }
         }
 
-        public async Task<int?> GetMaxYearSeason()
+        public async Task<int?> GetMaxYearSeasonAsync()
         {
-            var query = "SELECT MAX ([Year]) FROM Season;";
+            try
+            {
+                var query = "SELECT MAX ([Year]) FROM Season;";
 
-            int? year = await _connection.QueryFirstOrDefaultAsync<int?>(query);
-            return year;
+                int? year = await _connection.QueryFirstOrDefaultAsync<int?>(query);
+                return year;
+            }
+            catch (SqlException ex)
+            {
+                _logger.LogError(ex, "Error in GetMaxYearSeason in CompetitionRepository");
+                throw;
+            }
         }
 
-        public async Task<int> CreateSeason(int year)
+        public async Task<int> CreateSeasonAsync(int year)
         {
-            var query = "INSERT INTO Season ([Year], IsActive) VALUES (@Year, 1); SELECT CAST(SCOPE_IDENTITY() as int);";
-            var seasonId = await _connection.QuerySingleAsync<int>(query, new { Year = year });
-            return seasonId;
+            try
+            {
+                var query = "INSERT INTO Season ([Year], IsActive) VALUES (@Year, 1); SELECT CAST(SCOPE_IDENTITY() as int);";
+                var seasonId = await _connection.QuerySingleAsync<int>(query, new { Year = year });
+                return seasonId;
+            }
+            catch (SqlException ex)
+            {
+                _logger.LogError(ex, "Error in  CreateSeason in CompetitionRepository");
+                throw;
+            }
+
         }
 
         public async Task StartSeasonAsync(Season season, List<TeamStanding> teams, List<DriverStanding> drivers, List<Race> races)
@@ -101,7 +118,7 @@ namespace F1Simulator.CompetitionService.Repositories
 
                 transaction.Commit();
             }
-            catch (Exception ex)
+            catch (SqlException ex)
             {
                 transaction.Rollback();
                 _logger.LogError(ex, "Error in StartSeasonAsync in CompetitionRepository");
@@ -120,7 +137,7 @@ namespace F1Simulator.CompetitionService.Repositories
 
                 return await _connection.QueryFirstOrDefaultAsync<RaceCompleteResponseDTO>(selectQuery, new { SeasonId = seasonID, Round = round });
             }
-            catch (Exception ex)
+            catch (SqlException ex)
             {
                 _logger.LogError(ex, "Error in GetRaceCompleteByIdAndSeasonIdAsync in CompetitionRepository");
                 throw;
@@ -138,14 +155,14 @@ namespace F1Simulator.CompetitionService.Repositories
                 var count = await _connection.QuerySingleAsync<int>(selectQuery, new { SeasonId = seasonID });
                 return count > 0;
 
-            } catch (Exception ex)
+            } catch (SqlException ex)
             {
                 _logger.LogError(ex, "Error in ExistRaceInProgress in CompetitionRepository");
                 throw;
             }
         }
 
-        public async Task<RaceCompleteResponseDTO?> GetRaceInProgress()
+        public async Task<RaceCompleteResponseDTO?> GetRaceInProgressAsync()
         {
             try
             {
@@ -155,7 +172,7 @@ namespace F1Simulator.CompetitionService.Repositories
                 return await _connection.QueryFirstOrDefaultAsync<RaceCompleteResponseDTO>(selectQuery);
 
             }
-            catch (Exception ex)
+            catch (SqlException ex)
             {
                 _logger.LogError(ex, "Error in GetRaceInProgress in CompetitionRepository");
                 throw;
@@ -169,7 +186,7 @@ namespace F1Simulator.CompetitionService.Repositories
                                     SET Status = 'InProgress'
                                     WHERE Id = @Id";
             }
-            catch (Exception ex)
+            catch (SqlException ex)
             {
                 _logger.LogError(ex, "Error in UpdateStatusRace in CompetitionRepository");
                 throw;
@@ -188,7 +205,7 @@ namespace F1Simulator.CompetitionService.Repositories
                 var calendar = await _connection.QueryAsync<RaceResponseDTO>(selectQuery);
                 return calendar.ToList();
             }
-            catch (Exception ex)
+            catch (SqlException ex)
             {
                 _logger.LogError(ex, "Error in GetRacesAsyn in CompetitionRepository");
                 throw;
@@ -205,7 +222,7 @@ namespace F1Simulator.CompetitionService.Repositories
                                     WHERE R.Id = @Id";
                 return await _connection.QueryFirstOrDefaultAsync<RaceResponseDTO>(selectQuery, new { Id = Id });
             }
-            catch (Exception ex)
+            catch (SqlException ex)
             {
                 _logger.LogError(ex, "Error in GetRaceByIdAsync in CompetitionRepository");
                 throw;
@@ -235,7 +252,7 @@ namespace F1Simulator.CompetitionService.Repositories
                 );
                 return result.FirstOrDefault();
             }
-            catch (Exception ex)
+            catch (SqlException ex)
             {
                 _logger.LogError(ex, "Error in GetRaceWithCircuitAsync in CompetitionRepository");
                 throw;
@@ -252,7 +269,7 @@ namespace F1Simulator.CompetitionService.Repositories
 
                 await _connection.ExecuteAsync(updateQuery);
             }
-            catch (Exception ex)
+            catch (SqlException ex)
             {
                 _logger.LogError(ex, "Error in UpdateRaceT1Async in CompetitionRepository");
                 throw;
@@ -270,7 +287,7 @@ namespace F1Simulator.CompetitionService.Repositories
 
                 await _connection.ExecuteAsync(updateQuery);
             }
-            catch (Exception ex)
+            catch (SqlException ex)
             {
                 _logger.LogError(ex, "Error in UpdateRaceT2Async in CompetitionRepository");
                 throw;
@@ -287,7 +304,7 @@ namespace F1Simulator.CompetitionService.Repositories
 
                 await _connection.ExecuteAsync(updateQuery);
             }
-            catch (Exception ex)
+            catch (SqlException ex)
             {
                 _logger.LogError(ex, "Error in UpdateRaceT3Async in CompetitionRepository");
                 throw;
@@ -304,7 +321,7 @@ namespace F1Simulator.CompetitionService.Repositories
 
                 await _connection.ExecuteAsync(updateQuery);
             }
-            catch (Exception ex)
+            catch (SqlException ex)
             {
                 _logger.LogError(ex, "Error in UpdateRaceQualifierAsync in CompetitionRepository");
                 throw;
@@ -321,7 +338,7 @@ namespace F1Simulator.CompetitionService.Repositories
 
                 await _connection.ExecuteAsync(updateQuery);
             }
-            catch (Exception ex)
+            catch (SqlException ex)
             {
                 _logger.LogError(ex, "Error in UpdateRaceRaceAsync in CompetitionRepository");
                 throw;
@@ -340,7 +357,7 @@ namespace F1Simulator.CompetitionService.Repositories
 
                 return driverStandings.ToList();
             }
-            catch (Exception ex)
+            catch (SqlException ex)
             {
                 _logger.LogError(ex, "Error in GetDriverStanding in CompetitionRepository");
                 throw;
@@ -358,7 +375,7 @@ namespace F1Simulator.CompetitionService.Repositories
                 var teamStandings = await _connection.QueryAsync<TeamStandingResponseDTO>(selectQuery);
                 return teamStandings.ToList();
             }
-            catch (Exception ex)
+            catch (SqlException ex)
             {
                 _logger.LogError(ex, "Error in GetTeamStanding in CompetitionRepository");
                 throw;

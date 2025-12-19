@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace F1Simulator.CompetitionService.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/competition")]
     [ApiController]
     public class CompetitionController : ControllerBase
     {
@@ -62,7 +62,7 @@ namespace F1Simulator.CompetitionService.Controllers
 
         [HttpPatch("races/round:{round}/start")]
 
-        public async Task<ActionResult> StartRaceAsync(int round)
+        public async Task<ActionResult> StartRaceAsync([FromRoute] int round)
         {
             try
             {
