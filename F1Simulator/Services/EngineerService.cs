@@ -1,4 +1,5 @@
-﻿using F1Simulator.Models.DTOs.TeamManegementService.EngineerDTO;
+﻿using F1Simulator.Models.DTOs.TeamManegementService.CarDTO;
+using F1Simulator.Models.DTOs.TeamManegementService.EngineerDTO;
 using F1Simulator.Models.DTOs.TeamManegementService.TeamDTO;
 using F1Simulator.Models.Models.TeamManegement;
 using F1Simulator.TeamManagementService.Repositories.Interfaces;
@@ -10,27 +11,31 @@ namespace F1Simulator.TeamManagementService.Services
     {
         private readonly Random _random = Random.Shared;
         private readonly IEngineerRepository _engineerRepository;
-        private readonly IHttpClientFactory _httpClient;
-        public EngineerService(IEngineerRepository engineerRepository, IHttpClientFactory httpClient)
+        private readonly ITeamService _teamService;
+        private readonly ICarService _carService;
+        public EngineerService(IEngineerRepository engineerRepository, ITeamService teamService, ICarService carService)
         {
             _engineerRepository = engineerRepository;
-            _httpClient = httpClient;
+            _teamService = teamService;
+            _carService = carService;
         }
 
         public async Task<EngineerResponseDTO> CreateEngineerAsync(EngineerRequestDTO engineerRequestDTO)
         {
             try
             {
-                var httpClient = _httpClient.CreateClient("TeamManagement");
-                var team = await httpClient.GetFromJsonAsync<TeamResponseDTO>($"team/{engineerRequestDTO.TeamId.ToString()}");
+
+                var team = await _teamService.GetTeamByIdAsync(engineerRequestDTO.TeamId.ToString());
 
                 if (team is null)
-                    throw new ArgumentException("The team not found!");
+                    throw new KeyNotFoundException("The team not found!");
 
-                var car = await httpClient.GetFromJsonAsync<TeamResponseDTO>($"car/{engineerRequestDTO.CarId.ToString()}");
+                var car = await _carService.GetCarByIdAsync(engineerRequestDTO.CarId.ToString());
 
                 if (car is null)
-                    throw new ArgumentException("The car not found!");
+                    throw new KeyNotFoundException("The car not found!");
+
+                
 
                 var experienceEngineer = Math.Round((10.0 * _random.NextDouble()), 3);
 
@@ -83,7 +88,7 @@ namespace F1Simulator.TeamManagementService.Services
                 var engineer = await _engineerRepository.GetEngineerByIdAsync(id);
 
                 if (engineer is null)
-                    throw new ArgumentException("The engineer not found");
+                    throw new KeyNotFoundException("The engineer not found");
 
                 await _engineerRepository.UpdateActiveEngineerAsync(engineerUpdateRequestDTO, id);
             } catch(Exception ex)

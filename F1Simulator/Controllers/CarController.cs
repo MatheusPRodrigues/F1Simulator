@@ -48,7 +48,7 @@ namespace F1Simulator.TeamManagementService.Controllers
             {
                 var cars = await _carService.GetAllCarAsync();
 
-                if (cars.IsNullOrEmpty())
+                if (cars.IsNullOrEmpty() || cars.Count == 0)
                     return NoContent();
 
                 return Ok(cars);

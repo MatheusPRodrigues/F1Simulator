@@ -117,6 +117,16 @@ namespace F1Simulator.TeamManagementService.Repositories
 
         }
 
+        public async Task<int> GetCountCarsByIdCar(Guid carId)
+        {
+            var sql = @"SELECT COUNT(*) FROM Cars c
+                        INNER JOIN Drivers d
+                        on c.CarId = @CarId";
+
+            return await _connection.QueryFirstOrDefaultAsync<int>(sql, new { CarId = carId });
+
+        }
+
 
     }
 }

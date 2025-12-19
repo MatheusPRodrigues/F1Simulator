@@ -6,6 +6,7 @@ using F1Simulator.TeamManagementService.Services;
 using F1Simulator.TeamManagementService.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Bson.Serialization.Serializers;
 
 namespace F1Simulator.TeamManagementService.Controllers
 {
@@ -43,14 +44,18 @@ namespace F1Simulator.TeamManagementService.Controllers
         {
             try
             {
-                await _bossService.CreateBossAsync(bossDto);
+               await _bossService.CreateBossAsync(bossDto);
                 _logger.LogInformation("Team sucessfully created!");
-                return Created();
+                return StatusCode(StatusCodes.Status201Created); ;
+            }
+            catch(ArgumentException ex)
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, new { Message = ex.Message });
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occurred while creating boss!");
-                return BadRequest(ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, new { Message = "An unspected error ocurred while creating boss!!" });
             }
         }
 
@@ -61,10 +66,10 @@ namespace F1Simulator.TeamManagementService.Controllers
             {
                 var boss = await _bossService.GetAllBossesAsync();
 
-                if (boss is null)
+                if (boss is null || boss.Count == 0)
                     return NoContent();
 
-                return boss is null ? NotFound() : Ok(boss);
+                return Ok(boss);
             }
             catch(Exception ex)
             {

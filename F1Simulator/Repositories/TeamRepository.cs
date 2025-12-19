@@ -19,34 +19,79 @@ namespace F1Simulator.TeamManagementService.Repositories
 
         public async Task<int> GetTeamsCountAsync()
         {
-            var sql = @"SELECT COUNT(*) FROM Teams";
+            try
+            {
+                var sql = @"SELECT COUNT(*) FROM Teams";
 
-            return await _connection.ExecuteScalarAsync<int>(sql);
+                return await _connection.ExecuteScalarAsync<int>(sql);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task<int> GetDriversInTeamById(Guid id)
+        {
+            try
+            {
+                var sql = @"SELECT COUNT(*) FROM Teams t
+                            INNER JOIN Drivers d 
+                            ON t.TeamId = d.TeamId WHERE t.TeamId = @Id";
+
+                return await _connection.ExecuteScalarAsync<int>(sql, new { Id = id});
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
         }
 
         public async Task CreateTeamAsync(Team team)
         {
-            var query = "INSERT INTO Teams (TeamId, Name, NameAcronym, Country) " +
+            try
+            {
+                var query = "INSERT INTO Teams (TeamId, Name, NameAcronym, Country) " +
                         "VALUES (@TeamId, @Name, @NameAcronym, @Country)";
 
-            await _connection.ExecuteAsync(query, team);
+                await _connection.ExecuteAsync(query, team);
+                await _connection.ExecuteAsync(query, team);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
         }
 
         public async Task<IEnumerable<TeamResponseDTO>> GetAllTeamsAsync()
         {
+            try
+            {
                 var query = @"SELECT TeamId, Name, NameAcronym, Country
                           FROM Teams";
 
-                return await _connection.QueryAsync<TeamResponseDTO>(query);           
+                return await _connection.QueryAsync<TeamResponseDTO>(query);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
         }
 
         public async Task<TeamResponseDTO> GetTeamByIdAsync(Guid teamId)
         {
+            try
+            {
                 var query = @"SELECT TeamId, Name, NameAcronym, Country
                           FROM Teams
                           WHERE TeamId = @TeamId";
 
-                return await _connection.QueryFirstOrDefaultAsync<TeamResponseDTO>(query, new { TeamId = teamId });           
+                return await _connection.QueryFirstOrDefaultAsync<TeamResponseDTO>(query, new { TeamId = teamId });
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
         }
 
         public async Task<TeamResponseDTO> GetTeamByNameAsync(string name)
@@ -57,7 +102,7 @@ namespace F1Simulator.TeamManagementService.Repositories
                           FROM Teams
                           WHERE Name = @Name";
 
-                return await _connection.QueryFirstOrDefaultAsync<TeamResponseDTO>(query, new { Name = name });           
+                return await _connection.QueryFirstOrDefaultAsync<TeamResponseDTO>(query, new { Name = name });
 
             }
             catch (SqlException ex)
@@ -68,15 +113,22 @@ namespace F1Simulator.TeamManagementService.Repositories
 
         public async Task UpdateTeamCountryAsync(Guid teamId, string country)
         {
-            var query = @"UPDATE Teams
+            try
+            {
+                var query = @"UPDATE Teams
                           SET Country = @Country
                           WHERE TeamId = @TeamId";
 
-            await _connection.ExecuteAsync(query, new 
+                await _connection.ExecuteAsync(query, new
+                {
+                    TeamId = teamId,
+                    Country = country
+                });
+            }
+            catch (SqlException ex)
             {
-                TeamId = teamId,
-                Country = country
-            });
+                throw new Exception(ex.Message);
+            }
         }
     }
 }

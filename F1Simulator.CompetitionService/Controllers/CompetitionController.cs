@@ -81,7 +81,7 @@ namespace F1Simulator.CompetitionService.Controllers
             }
         }
 
-        [HttpGet("races/inProgress")]
+        [HttpGet("races/inprogress")]
         public async Task<ActionResult> GetRaceInProgress()
         {
             try
@@ -218,7 +218,7 @@ namespace F1Simulator.CompetitionService.Controllers
             }
         }
 
-        [HttpGet("driverStanding")]
+        [HttpGet("driverstanding")]
         public async Task<ActionResult> GetDriverStandingAsync()
         {
             try
@@ -238,7 +238,7 @@ namespace F1Simulator.CompetitionService.Controllers
             }
         }
 
-        [HttpGet("teamStanding")]
+        [HttpGet("teamstanding")]
         public async Task<ActionResult> GetTeamStandingAsync()
         {
             try
@@ -278,5 +278,25 @@ namespace F1Simulator.CompetitionService.Controllers
             }
         }
 
+        [HttpPost("endrace")]
+        public async Task<ActionResult> EndRaceAsync()
+        {
+            try
+            {
+                await _competitionService.EndRaceAsync();
+                return Ok();
+            }
+            catch (BusinessException bex)
+            {
+                _logger.LogWarning(bex, "Business error ending race ");
+                return NotFound(bex.Message);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error ending race ");
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while ending the race.");
+            }
+        }
     }
 }

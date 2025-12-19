@@ -21,7 +21,7 @@ namespace F1Simulator.TeamManagementService.Repositories
         {
             try
             {
-                var sql = "INSERT INTO Engineers(EngineerId, TeamId, CarId, FirstName, LastName, Specialization, IsActive) VALUES (@EngineerId, @TeamId, @CarId, @FirstName, @LastName, @Specialization, @IsActive)";
+                var sql = "INSERT INTO Engineers(EngineerId, TeamId, CarId, FirstName, LastName, Specialization, IsActive, ExperienceFactor) VALUES (@EngineerId, @TeamId, @CarId, @FirstName, @LastName, @Specialization, @IsActive, @ExperienceFactor)";
 
                 await _connection.ExecuteScalarAsync(sql, new { 
                     EngineerId = engineer.EngineerId,
@@ -30,13 +30,25 @@ namespace F1Simulator.TeamManagementService.Repositories
                     FirstName = engineer.FirstName,
                     LastName = engineer.FullName, 
                     Specialization = engineer.EngineerSpecialization.ToString(), 
-                    IsActive = engineer.IsActive 
+                    IsActive = engineer.IsActive ,
+                    ExperienceFactor = engineer.ExperienceFactor
                 });
 
-                var engineerResponse = new EngineerResponseDTO { EngineerId = engineer.EngineerId, CarId = engineer.CarId, EngineerSpecialization = engineer.EngineerSpecialization, ExperienceFactor = engineer.ExperienceFactor, FirstName = engineer.FirstName, FullName = engineer.FullName, IsActive = engineer.IsActive, TeamId = engineer.TeamId };
+                var engineerResponse = new EngineerResponseDTO { 
+                    EngineerId = engineer.EngineerId, 
+                    CarId = engineer.CarId, 
+                    EngineerSpecialization = engineer.EngineerSpecialization, 
+                    ExperienceFactor = engineer.ExperienceFactor, 
+                    FirstName = engineer.FirstName, 
+                    LastName = engineer.FullName, 
+                    IsActive = engineer.IsActive, 
+                    TeamId = engineer.TeamId 
+                };
                 return engineerResponse;
             } catch(SqlException ex)
             {
+                if (ex.Message.Contains("Violation of UNIQUE KEY constraint 'UQ_Car_Specialization'"))
+                    throw new Exception("There is already an engineer with that specialization associated with that car.");
                 throw new Exception(ex.Message);
             } catch(Exception ex)
             {
@@ -48,7 +60,7 @@ namespace F1Simulator.TeamManagementService.Repositories
         {
             try
             {
-                var sql = @"SELECT EngineerId, TeamId, CarId, FirstName, LastName, Specialization, IsActive FROM Engineers";
+                var sql = @"SELECT EngineerId, TeamId, CarId, FirstName, LastName, Specialization, IsActive, ExperienceFactor FROM Engineers";
                 var engineers = await _connection.QueryAsync<EngineerResponseDTO>(sql);
 
                 return engineers.ToList();

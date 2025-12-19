@@ -87,5 +87,9 @@ namespace F1Simulator.TeamManagementService.Services
             await _carRepository.UpdateCarModelAsync(carModelUpdate, carId);
         }
 
+        public async Task<int> GetCountCarByIdCar(Guid carId)
+        {
+            return await _carRepository.GetCountCarsByIdCar(carId);
+        }
     }
 }

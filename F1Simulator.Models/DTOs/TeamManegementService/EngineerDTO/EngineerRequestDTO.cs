@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
+using System.Text.Json.Serialization;
 
 namespace F1Simulator.Models.DTOs.TeamManegementService.EngineerDTO
 {
@@ -13,6 +14,7 @@ namespace F1Simulator.Models.DTOs.TeamManegementService.EngineerDTO
         public string FirstName { get; init; }
         public string FullName { get; init; }
 
+        [JsonPropertyName("specialization")]
         [EnumDataType(typeof(Specialization))]
         public Specialization EngineerSpecialization { get; init; }
     }

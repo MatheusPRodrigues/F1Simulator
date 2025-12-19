@@ -71,11 +71,13 @@ namespace F1Simulator.CompetitionService.Repositories
             try
             {
                 // Insert Season
-                var insertSeasonQuery = "INSERT INTO Season (Id, [Year], IsActive) VALUES (@Id, @Year, @IsActive);";
+                var insertSeasonQuery = @"INSERT INTO Season (Id, [Year], IsActive)
+                                         VALUES (@Id, @Year, @IsActive);";
                 await _connection.ExecuteAsync(insertSeasonQuery, new { Id = season.Id, Year = season.Year, IsActive = season.IsActive }, transaction);
 
                 // Insert Team Standings
-                var insertTeamStandingsQuery = "INSERT INTO TeamStanding (Id, SeasonId, TeamName, TeamId, Points) VALUES (@Id, @SeasonId, @TeamName @TeamId, @Points);";
+                var insertTeamStandingsQuery = @"INSERT INTO TeamStanding (Id, SeasonId, TeamName, TeamId, Points) 
+                                                  VALUES (@Id, @SeasonId, @TeamName @TeamId, @Points);";
                 foreach (var team in teams)
                 {
                     await _connection.ExecuteAsync(insertTeamStandingsQuery, new { Id = team.Id, SeasonId = team.SeasonId, TeamName = team.TeamName, TeamId = team.TeamId, Points = team.Points }, transaction);
@@ -83,7 +85,8 @@ namespace F1Simulator.CompetitionService.Repositories
 
                 // Insert Driver Standings
 
-                var insertDriverStandingsQuery = "INSERT INTO DriverStanding (Id, SeasonId, DriverName, DriverId, Position, Points) VALUES (@Id, @SeasonId, @DriverName, @DriverId, @Points);";
+                var insertDriverStandingsQuery = @"INSERT INTO DriverStanding (Id, SeasonId, DriverName, DriverId, TeamId, Position, Points) 
+                                                    VALUES (@Id, @SeasonId, @DriverName, @DriverId, @Points);";
                 foreach (var driver in drivers)
                 {
                     await _connection.ExecuteAsync(insertDriverStandingsQuery, new
@@ -92,6 +95,7 @@ namespace F1Simulator.CompetitionService.Repositories
                         SeasonId = driver.SeasonId,
                         DriverName = driver.DriverName,
                         DriverId = driver.DriverId,
+                        TeamId = driver.TeamId,
                         Points = driver.Points
                     }, transaction);
                 }
@@ -234,9 +238,10 @@ namespace F1Simulator.CompetitionService.Repositories
             try
             {
                 
-                var selectQuery = @"SELECT R.Id, R.SeasonId, R.[Round], R.[Status], R.T1, R.T2, R.T3, R.Qualifier,
+                var selectQuery = @"SELECT R.Id, S.[Year] AS YearSeason, R.[Round], R.[Status], R.T1, R.T2, R.T3, R.Qualifier,
                                    C.Id AS CircuitId, C.[Name], C.Country, C.LapsNumber, C.IsActive
                                    FROM Races R
+                                   JOIN Season S ON R.SeasonId = S.Id
                                   JOIN Circuits C ON R.CircuitId = C.Id
                                   WHERE R.[Status] = 'InProgress'";
 
@@ -349,7 +354,7 @@ namespace F1Simulator.CompetitionService.Repositories
         {
             try
             {
-                var selectQuery = @"SELECT DriverId, DriverName, Points
+                var selectQuery = @"SELECT DriverId, TeamId DriverName, Points
                                     FROM DriverStanding
                                     WHERE SeasonId = (SELECT Id FROM Season WHERE IsActive = 1)
                                     ORDER BY Points DESC";

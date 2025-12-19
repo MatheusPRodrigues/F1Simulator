@@ -8,7 +8,7 @@ namespace F1Simulator.Models.DTOs.CompetitionService.Response
     {
 
         public Guid Id { get; init; }
-        public Guid SeasonId { get; init; }
+        public int YearSeason { get; init; }
         public int Round { get; init; }
         public string Status { get;  init; }
         public bool T1 { get; init; }

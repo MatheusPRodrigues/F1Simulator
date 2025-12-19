@@ -94,7 +94,7 @@ namespace F1Simulator.TeamManagementService.Services
                 var team = await _teamRepository.GetTeamByIdAsync(idGuid);
 
                 if (team is null)
-                    throw new Exception("Team not found!");
+                    throw new ArgumentException("Team not found!");
 
                 return team;
             }
@@ -140,6 +140,19 @@ namespace F1Simulator.TeamManagementService.Services
             catch(Exception ex)
             {
                 _logger.LogError($"An error occurred while updatting team: {ex.Message}", ex);
+                throw;
+            }
+        }
+
+        public async Task<int> GetDriversInTeamById(Guid id)
+        {
+            try
+            {
+                return await _teamRepository.GetDriversInTeamById(id);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"An error occurred while getting count the team: {ex.Message}", ex);
                 throw;
             }
         }
