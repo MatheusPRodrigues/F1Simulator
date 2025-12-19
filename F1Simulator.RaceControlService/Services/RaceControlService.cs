@@ -1,4 +1,5 @@
-﻿using F1Simulator.Models.DTOs.EngineeringService;
+﻿using F1Simulator.Models.DTOs.CompetitionService.Response;
+using F1Simulator.Models.DTOs.EngineeringService;
 using F1Simulator.Models.DTOs.RaceControlService;
 using F1Simulator.Models.DTOs.TeamManegementService.CarDTO;
 using F1Simulator.RaceControlService.Messaging;
@@ -6,6 +7,7 @@ using F1Simulator.RaceControlService.Repositories.Interfaces;
 using F1Simulator.RaceControlService.Services.Interfaces;
 using System.Net;
 using System.Text.Json;
+using static System.Collections.Specialized.BitVector32;
 
 namespace F1Simulator.RaceControlService.Services
 {
@@ -16,6 +18,7 @@ namespace F1Simulator.RaceControlService.Services
         private readonly ILogger<RaceControlService> _logger;
         private readonly HttpClient _engineeringClient;
         private readonly HttpClient _teamManagementClient;
+        private readonly HttpClient _competitionClient;
 
         public RaceControlService(
             IPublishService messageService,
@@ -29,12 +32,29 @@ namespace F1Simulator.RaceControlService.Services
             _logger = logger;
             _engineeringClient = factory.CreateClient("EngineeringService");
             _teamManagementClient = factory.CreateClient("TeamManagementServicesDrivers");
+            _competitionClient = factory.CreateClient("CompetitionService");
         }
 
-        public async Task<List<DriverGridResponseDTO>> ExecuteQualifierSectionAsync(string raceId)
+        public async Task<List<DriverGridResponseDTO>> ExecuteQualifierSectionAsync()
         {
             try
             {
+                var responseCompetitionClient = await _competitionClient.GetAsync("races/inProgress");
+
+                if (responseCompetitionClient.StatusCode == HttpStatusCode.NotFound)
+                    throw new KeyNotFoundException(await responseCompetitionClient.Content.ReadAsStringAsync());
+
+                if (responseCompetitionClient.StatusCode == HttpStatusCode.InternalServerError)
+                    throw new Exception();
+
+                var race = await responseCompetitionClient.Content.ReadFromJsonAsync<RaceWithCircuitResponseDTO>();
+
+                if (!race.T1 || !race.T2 || !race.T3)
+                    throw new ArgumentException("This section cannot be started yet");
+
+                if (race.Qualifier)
+                    throw new ArgumentException("This section has already been completed");
+
                 var drivers = await _teamManagementClient.GetFromJsonAsync<List<DriverToRaceDTO>>("/drivers/race");
                 var luck = Random.Shared.Next(1, 11);
                 var driverProcessToGrid = new List<DriverGridResponseDTO>();
@@ -79,7 +99,23 @@ namespace F1Simulator.RaceControlService.Services
                     driverProcessToGrid[i].Position = i + 1;
                 }
 
+                responseCompetitionClient = await _competitionClient.SendAsync(new HttpRequestMessage(HttpMethod.Patch, "races/qualifier"));
+
+                if (responseCompetitionClient.StatusCode == HttpStatusCode.NotFound)
+                    throw new ArgumentException("This section cannot be started yet");
+
+                if (responseCompetitionClient.StatusCode == HttpStatusCode.InternalServerError)
+                    throw new Exception();
+
                 return driverProcessToGrid;
+            }
+            catch (ArgumentException ex)
+            {
+                throw new ArgumentException(ex.Message);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                throw new KeyNotFoundException(ex.Message);
             }
             catch (Exception ex)
             {
@@ -88,10 +124,26 @@ namespace F1Simulator.RaceControlService.Services
             }
         }
 
-        public async Task<List<DriverGridFinalRaceResponseDTO>> ExecuteRaceSectionAsync(string raceId)
+        public async Task<List<DriverGridFinalRaceResponseDTO>> ExecuteRaceSectionAsync()
         {
             try
             {
+                var responseCompetitionClient = await _competitionClient.GetAsync("races/inProgress");
+
+                if (responseCompetitionClient.StatusCode == HttpStatusCode.NotFound)
+                    throw new KeyNotFoundException(await responseCompetitionClient.Content.ReadAsStringAsync());
+
+                if (responseCompetitionClient.StatusCode == HttpStatusCode.InternalServerError)
+                    throw new Exception();
+
+                var race = await responseCompetitionClient.Content.ReadFromJsonAsync<RaceWithCircuitResponseDTO>();
+
+                if (!race.T1 || !race.T2 || !race.T3 || !race.Qualifier)
+                    throw new ArgumentException("This section cannot be started yet");
+
+                if (race.RaceFinal)
+                    throw new ArgumentException("This section has already been completed");
+
                 const string PUBLISHQUEUE = "RaceFinishedEvent";
                 int[] pontuationArray = { 25, 18, 15, 12, 10, 8, 6, 4, 2, 1 };
                 var luck = Random.Shared.Next(1, 11);
@@ -157,14 +209,26 @@ namespace F1Simulator.RaceControlService.Services
                     driverProcessToGrid[i].Position = i + 1;
                 }
 
+                responseCompetitionClient = await _competitionClient.SendAsync(new HttpRequestMessage(HttpMethod.Patch, "races/race"));
+                
+                if (responseCompetitionClient.StatusCode == HttpStatusCode.NotFound)
+                    throw new ArgumentException("This section cannot be started yet");
+
+                if (responseCompetitionClient.StatusCode == HttpStatusCode.InternalServerError)
+                    throw new Exception();
+
                 var processedList = ProcessDtoToPublish(driverProcessToGrid);
                 await _messageService.Publish(processedList, PUBLISHQUEUE);
-
+                                
                 return driverProcessToGrid;
             }
             catch (ArgumentException ex)
             {
                 throw new ArgumentException(ex.Message);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                throw new KeyNotFoundException(ex.Message);
             }
             catch (Exception ex)
             {
@@ -173,15 +237,44 @@ namespace F1Simulator.RaceControlService.Services
             }
         }
 
-        public async Task<List<DriverComparisonResponseDTO>> ExecuteTlOneSectionAsync(string raceId)
+        public async Task<List<DriverComparisonResponseDTO>> ExecuteTlOneSectionAsync()
         {
             try
             {
+                var responseCompetitionClient = await _competitionClient.GetAsync("races/inProgress");
+
+                if (responseCompetitionClient.StatusCode == HttpStatusCode.NotFound)
+                    throw new KeyNotFoundException(await responseCompetitionClient.Content.ReadAsStringAsync());
+
+                if (responseCompetitionClient.StatusCode == HttpStatusCode.InternalServerError)
+                    throw new Exception();
+
+                var race = await responseCompetitionClient.Content.ReadFromJsonAsync<RaceWithCircuitResponseDTO>();
+
+                if (race.T1)
+                    throw new ArgumentException("This section has already been completed");
+
                 var drivers = await _teamManagementClient.GetFromJsonAsync<List<DriverToRaceDTO>>("/drivers/race");
 
                 var response = await ProcessingDriversComparison(drivers);
 
+                responseCompetitionClient = await _competitionClient.SendAsync(new HttpRequestMessage(HttpMethod.Patch, "races/t1"));
+
+                if (responseCompetitionClient.StatusCode == HttpStatusCode.NotFound)
+                    throw new ArgumentException("This section cannot be started yet");
+
+                if (responseCompetitionClient.StatusCode == HttpStatusCode.InternalServerError)
+                    throw new Exception();
+
                 return response;
+            }
+            catch (ArgumentException ex)
+            {
+                throw new ArgumentException(ex.Message);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                throw new KeyNotFoundException(ex.Message);
             }
             catch (Exception ex)
             {
@@ -190,15 +283,47 @@ namespace F1Simulator.RaceControlService.Services
             }
         }
 
-        public async Task<List<DriverComparisonResponseDTO>> ExecuteTlThreeSectionAsync(string raceId)
+        public async Task<List<DriverComparisonResponseDTO>> ExecuteTlThreeSectionAsync()
         {
             try
             {
+                var responseCompetitionClient = await _competitionClient.GetAsync("races/inProgress");
+
+                if (responseCompetitionClient.StatusCode == HttpStatusCode.NotFound)
+                    throw new KeyNotFoundException(await responseCompetitionClient.Content.ReadAsStringAsync());
+
+                if (responseCompetitionClient.StatusCode == HttpStatusCode.InternalServerError)
+                    throw new Exception();
+
+                var race = await responseCompetitionClient.Content.ReadFromJsonAsync<RaceWithCircuitResponseDTO>();
+
+                if (!race.T1 || !race.T2)
+                    throw new ArgumentException("This section cannot be started yet");
+
+                if (race.T3)
+                    throw new ArgumentException("This section has already been completed.");
+
                 var drivers = await _teamManagementClient.GetFromJsonAsync<List<DriverToRaceDTO>>("/drivers/race");
 
                 var response = await ProcessingDriversComparison(drivers);
 
+                responseCompetitionClient = await _competitionClient.SendAsync(new HttpRequestMessage(HttpMethod.Patch, "races/t3"));
+
+                if (responseCompetitionClient.StatusCode == HttpStatusCode.NotFound)
+                    throw new ArgumentException("This section cannot be started yet");
+
+                if (responseCompetitionClient.StatusCode == HttpStatusCode.InternalServerError)
+                    throw new Exception();
+
                 return response;
+            }
+            catch (ArgumentException ex)
+            {
+                throw new ArgumentException(ex.Message);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                throw new KeyNotFoundException(ex.Message);
             }
             catch (Exception ex)
             {
@@ -207,15 +332,47 @@ namespace F1Simulator.RaceControlService.Services
             }
         }
 
-        public async Task<List<DriverComparisonResponseDTO>> ExecuteTlTwoSectionAsync(string raceId)
+        public async Task<List<DriverComparisonResponseDTO>> ExecuteTlTwoSectionAsync()
         {
             try
             {
+                var responseCompetitionClient = await _competitionClient.GetAsync("races/inProgress");
+
+                if (responseCompetitionClient.StatusCode == HttpStatusCode.NotFound)
+                    throw new KeyNotFoundException(await responseCompetitionClient.Content.ReadAsStringAsync());
+
+                if (responseCompetitionClient.StatusCode == HttpStatusCode.InternalServerError)
+                    throw new Exception();
+
+                var race = await responseCompetitionClient.Content.ReadFromJsonAsync<RaceWithCircuitResponseDTO>();
+
+                if (!race.T1)
+                    throw new ArgumentException("This section cannot be started yet");
+
+                if (race.T2)
+                    throw new ArgumentException("This section has already been completed.");
+
                 var drivers = await _teamManagementClient.GetFromJsonAsync<List<DriverToRaceDTO>>("/drivers/race");
 
                 var response = await ProcessingDriversComparison(drivers);
 
+                responseCompetitionClient = await _competitionClient.SendAsync(new HttpRequestMessage(HttpMethod.Patch, "races/t2"));
+
+                if (responseCompetitionClient.StatusCode == HttpStatusCode.NotFound)
+                    throw new ArgumentException("This section cannot be started yet");
+
+                if (responseCompetitionClient.StatusCode == HttpStatusCode.InternalServerError)
+                    throw new Exception();
+
                 return response;
+            }
+            catch (ArgumentException ex)
+            {
+                throw new ArgumentException(ex.Message);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                throw new KeyNotFoundException(ex.Message);
             }
             catch (Exception ex)
             {

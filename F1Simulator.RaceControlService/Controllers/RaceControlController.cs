@@ -22,17 +22,25 @@ namespace F1Simulator.RaceControlService.Controllers
             _raceControlService = raceControlService;
         }
 
-        [HttpPost("{raceId}/simulate/tl1")]
-        public async Task<ActionResult<List<DriverComparisonResponseDTO>>> ExecuteTlOneSectionAsync([FromRoute] string raceId)
+        [HttpPost("simulate/tl1")]
+        public async Task<ActionResult<List<DriverComparisonResponseDTO>>> ExecuteTlOneSectionAsync()
         {
             try
             {
-                var result = await _raceControlService.ExecuteTlOneSectionAsync(raceId);
+                var result = await _raceControlService.ExecuteTlOneSectionAsync();
                 return StatusCode(StatusCodes.Status201Created, result);
             }
             catch (ArgumentException ex)
             {
-                return StatusCode(StatusCodes.Status400BadRequest, new { Message = ex.Message });
+                return StatusCode(400, new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return StatusCode(409, new { message = ex.Message });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return StatusCode(404, new { message = ex.Message });
             }
             catch (Exception ex)
             {
@@ -41,17 +49,25 @@ namespace F1Simulator.RaceControlService.Controllers
             }
         }
 
-        [HttpPost("{raceId}/simulate/tl2")]
-        public async Task<ActionResult<List<DriverComparisonResponseDTO>>> ExecuteTlTwoSectionAsync([FromRoute] string raceId)
+        [HttpPost("simulate/tl2")]
+        public async Task<ActionResult<List<DriverComparisonResponseDTO>>> ExecuteTlTwoSectionAsync()
         {
             try
             {
-                var result = await _raceControlService.ExecuteTlTwoSectionAsync(raceId);
+                var result = await _raceControlService.ExecuteTlTwoSectionAsync();
                 return StatusCode(StatusCodes.Status201Created, result);
             }
             catch (ArgumentException ex)
             {
-                return StatusCode(StatusCodes.Status400BadRequest, new { Message = ex.Message });
+                return StatusCode(400, new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return StatusCode(409, new { message = ex.Message });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return StatusCode(404, new { message = ex.Message });
             }
             catch (Exception ex)
             {
@@ -60,17 +76,25 @@ namespace F1Simulator.RaceControlService.Controllers
             }
         }
 
-        [HttpPost("{raceId}/simulate/tl3")]
-        public async Task<ActionResult<List<DriverComparisonResponseDTO>>> ExecuteTlThreeSectionAsync([FromRoute] string raceId)
+        [HttpPost("simulate/tl3")]
+        public async Task<ActionResult<List<DriverComparisonResponseDTO>>> ExecuteTlThreeSectionAsync()
         {
             try
             {
-                var result = await _raceControlService.ExecuteTlThreeSectionAsync(raceId);
+                var result = await _raceControlService.ExecuteTlThreeSectionAsync();
                 return StatusCode(StatusCodes.Status201Created, result);
             }
             catch (ArgumentException ex)
             {
-                return StatusCode(StatusCodes.Status400BadRequest, new { Message = ex.Message });
+                return StatusCode(400, new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return StatusCode(409, new { message = ex.Message });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return StatusCode(404, new { message = ex.Message });
             }
             catch (Exception ex)
             {
@@ -79,17 +103,25 @@ namespace F1Simulator.RaceControlService.Controllers
             }
         }
 
-        [HttpPost("{raceId}/simulate/qualifier")]
-        public async Task<ActionResult<List<DriverGridResponseDTO>>> ExecuteQualifierSectionAsync([FromRoute] string raceId)
+        [HttpPost("simulate/qualifier")]
+        public async Task<ActionResult<List<DriverGridResponseDTO>>> ExecuteQualifierSectionAsync()
         {
             try
             {
-                var result = await _raceControlService.ExecuteQualifierSectionAsync(raceId);
+                var result = await _raceControlService.ExecuteQualifierSectionAsync();
                 return StatusCode(StatusCodes.Status201Created, result);
             }
             catch (ArgumentException ex)
             {
-                return StatusCode(StatusCodes.Status400BadRequest, new { Message = ex.Message });
+                return StatusCode(400, new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return StatusCode(409, new { message = ex.Message });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return StatusCode(404, new { message = ex.Message });
             }
             catch (Exception ex)
             {
@@ -98,17 +130,25 @@ namespace F1Simulator.RaceControlService.Controllers
             }
         }
 
-        [HttpPost("{raceId}/simulate/race")]
-        public async Task<ActionResult<List<DriverGridFinalRaceResponseDTO>>> ExecuteRaceSectionAsync([FromRoute] string raceId)
+        [HttpPost("simulate/race")]
+        public async Task<ActionResult<List<DriverGridFinalRaceResponseDTO>>> ExecuteRaceSectionAsync()
         {
             try
             {
-                var result = await _raceControlService.ExecuteRaceSectionAsync(raceId);
+                var result = await _raceControlService.ExecuteRaceSectionAsync();
                 return StatusCode(StatusCodes.Status201Created,  result);
             }
             catch (ArgumentException ex)
             {
-                return StatusCode(StatusCodes.Status400BadRequest, new { Message =  ex.Message });
+                return StatusCode(400, new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return StatusCode(409, new { message = ex.Message });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return StatusCode(404, new { message = ex.Message });
             }
             catch (Exception ex)
             {
