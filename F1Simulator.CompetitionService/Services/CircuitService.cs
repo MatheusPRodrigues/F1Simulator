@@ -1,0 +1,320 @@
+﻿using Dapper;
+using F1Simulator.CompetitionService.Exceptions;
+using F1Simulator.CompetitionService.Repositories.Interfaces;
+using F1Simulator.CompetitionService.Services.Interfaces;
+using F1Simulator.Models.DTOs.CompetitionService.Request;
+using F1Simulator.Models.DTOs.CompetitionService.Response;
+using F1Simulator.Models.DTOs.CompetitionService.Update;
+using F1Simulator.Models.Models;
+
+namespace F1Simulator.CompetitionService.Services
+{
+    public class CircuitService : ICircuitService
+    {
+        private readonly ILogger<CircuitService> _logger;
+        private readonly ICircuitRepository circuitRepository;
+        private readonly ICompetitionRepository competitionRepository;
+        public CircuitService(ILogger<CircuitService> logger,
+            ICircuitRepository circuitRepository, 
+            ICompetitionRepository competitionRepository)
+            
+        {
+            _logger = logger;
+            this.circuitRepository = circuitRepository;
+            this.competitionRepository = competitionRepository;
+        }
+
+        public async Task<CreateCircuitsResponseDTO> CreateCircuitsAsync(CreateCircuitsRequestDTO circuits)
+        {
+            try
+            {
+                //verifica se a temporada já foi iniciada, se sim não permite criar novos circuitos
+                var seasonStarted = await competitionRepository.GetCompetionActive();
+                if (seasonStarted != null)
+                {
+                    throw new BusinessException("Cannot create circuits when the season has already started.");
+                }
+
+                CreateCircuitsResponseDTO circuitsForController = new CreateCircuitsResponseDTO();
+
+                foreach (var c in circuits.CircuitsRequest)
+                {
+                    // verifica se já não existe um circuito com o mesmo nome e país, se tiver ignora
+                    if (!await circuitRepository.CircuitExistsAsync(c.Name))
+                    {
+                        // verifica se já existem 24 circuitos ativos, para os p´róximos serem criados como inativos
+                        bool IsActive = true;
+                        int circuitsActive = await circuitRepository.CircuitsActivatesAsync();
+                        if (circuitsActive == 24)
+                        {
+                            IsActive = false;
+                        }
+                        Circuit circuit = new Circuit(c.Name, c.Country, c.LapsNumber, IsActive);
+                        await circuitRepository.CreateCircuitAsync(circuit);
+
+                        var circuitResponse = new CreateCircuitResponseDTO
+                        {
+                            Name = circuit.Name,
+                            Country = circuit.Country,
+                            LapsNumber = circuit.LapsNumber,
+                            IsActive = circuit.IsActive
+                        };
+                        circuitsForController.circuits.Add(circuitResponse);
+                    }
+                }
+                return circuitsForController;
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in CreateCircuitsAsync");
+                throw;
+            }
+        }
+        public async Task<CreateCircuitResponseDTO> CreateCircuitAsync(CreateCircuitRequestDTO createCircuit)
+        {
+            try
+            {
+                //verifica se a temporada já foi iniciada, se sim não permite criar novos circuitos
+                var seasonStarted = await competitionRepository.GetCompetionActive();
+                if (seasonStarted != null)
+                {
+                    throw new BusinessException("Cannot create circuits when the season has already started.");
+                }
+
+                // verifica se já não existe um circuito com o mesmo nome e país, para evitar duplicidade
+                bool retorno = await circuitRepository.CircuitExistsAsync(createCircuit.Name);
+                if (retorno == true)
+                {
+                    return null;
+                }
+
+                // verifica se já existem 24 circuitos ativos, para os p´róximos serem criados como inativos
+                bool IsActive = true;
+                int circuitsActive = await circuitRepository.CircuitsActivatesAsync();
+                if (circuitsActive == 24)
+                {
+                    IsActive = false;
+                }
+                Circuit circuit = new Circuit(createCircuit.Name, createCircuit.Country, createCircuit.LapsNumber, IsActive);
+                await circuitRepository.CreateCircuitAsync(circuit);
+
+                // Retorna os dados do circuito criado, principalmente para confirmar se foi criado como ativo ou inativo
+                return new CreateCircuitResponseDTO
+                {
+                    Name = circuit.Name,
+                    Country = circuit.Country,
+                    LapsNumber = circuit.LapsNumber,
+                    IsActive = circuit.IsActive
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in CreateCircuitAsync");
+                throw;
+            }
+        }
+
+        public async Task<(bool Update, CreateCircuitResponseDTO? Circuit)> DeactivateCircuitAsync(Guid id)
+        {
+            try
+            {
+                // verificar se a temporada já está ativa, se tiver não permite atualização
+
+                var seasonStarted = await competitionRepository.GetCompetionActive();
+                if (seasonStarted != null)
+                {
+                    throw new BusinessException("Cannot deactivate circuits when the season has already started.");
+                }
+
+                // verifica se existe algum circuito com o id informado
+                var circuit = await circuitRepository.GetCircuitById(id);
+                if (circuit == null)
+                {
+                    return (false, null);
+                }
+
+                // Se o circuito já for inativo, retorna o objeto sem atualizar
+                if (circuit.IsActive == false)
+                {
+                    return (false, circuit);
+                }
+
+                // se existir o circuito e ele for ativo, inverte o valor de IsActive
+                await circuitRepository.UpdateIsActiveCircuitAsync(id);
+
+                // retorna o circuito atualizado
+                return (true, await circuitRepository.GetCircuitById(id));
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error in DeactivateCircuitAsync in CircuitService: " + ex.Message);
+                throw;
+            }
+
+        }
+
+        public async Task<(bool Update, CreateCircuitResponseDTO? Circuit)> ActivateCircuitAsync(Guid id)
+        {
+            try
+            {
+                // verificar se a temporada já está ativa, se tiver não permite atualização
+                var seasonStarted = await competitionRepository.GetCompetionActive();
+                if (seasonStarted != null)
+                {
+                    throw new BusinessException("Cannot activate circuits when the season has already started.");
+                }
+
+                // verifica se existe algum circuito com o id informado
+                var circuit = await circuitRepository.GetCircuitById(id);
+                if (circuit == null)
+                {
+                    return (false, null);
+                }
+
+                // Se o circuito já for ativo, retorna o objeto sem atualizar
+                if (circuit.IsActive == true)
+                {
+                    return (false, circuit);
+                }
+
+                // se já existir 24 circuitos ativos, não permite ativar
+
+                int ativos = await circuitRepository.CircuitsActivatesAsync();
+
+                if (ativos == 24)
+                {
+                    return (true, null);
+                }
+
+                // se existir o circuito, se ele for inativo e não houver 24 circuitos ativos ainda, inverte o valor de IsActive
+                await circuitRepository.UpdateIsActiveCircuitAsync(id);
+
+                // retorna o circuito atualizado
+                return (true, await circuitRepository.GetCircuitById(id));
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error in ActivateCircuitAsync in CircuitService: " + ex.Message);
+                throw;
+            }
+        }
+
+        public async Task<List<CreateCircuitResponseDTO>> GetAllCircuits()
+        {
+
+            try
+            {
+                return await circuitRepository.GetAllCircuitsAsync();
+
+            }catch(Exception ex)
+            {
+                _logger.LogError("Error in GetAllCircuits in CircuitService: " + ex.Message);
+                throw;
+            }
+
+        }
+
+        public async Task<CreateCircuitResponseDTO?> GetCircuitById(Guid id)
+        {
+
+            try
+            {
+                return await circuitRepository.GetCircuitByIdAsync(id);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error in GetCircuitById in CircuitService: " + ex.Message);
+                throw;
+            }
+
+        }
+
+        public async Task<bool> DeleteCircuitAsync(Guid id)
+        {
+            try
+            {
+                // verificar se a temporada já está ativa, se tiver não permite deletar
+                var seasonStarted = await competitionRepository.GetCompetionActive();
+                if (seasonStarted == null)
+                {
+                    throw new BusinessException("Cannot delete circuits when the season has already started.");
+                }
+
+                return await circuitRepository.DeleteCircuitAsync(id);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error in DeleteCircuitAsync in CircuitService: " + ex.Message);
+                throw;
+            }
+
+        }
+
+        public async Task<(bool Update, CreateCircuitResponseDTO? Circuit)> UpdateCircuitAsync(Guid id, UpdateCircuitDTO updateCircuit)
+        {
+            try
+            {
+                // verificar se a temporada já está ativa, se tiver não permite atualização
+                var seasonStarted = await competitionRepository.GetCompetionActive();
+                if (seasonStarted != null)
+                {
+                    throw new BusinessException("Cannot update circuits when the season has already started.");
+                }
+
+                // verifica se existe algum circuito com o id informado
+
+                var circuit = await circuitRepository.GetCircuitById(id);
+                if (circuit == null)
+                {
+                    return (false, null);
+                }
+
+                var updates = new List<string>();
+                var parameters = new DynamicParameters();
+                parameters.Add("Id", id);
+
+                if (!string.IsNullOrEmpty(updateCircuit.Name))
+                {
+                    // verifica se já existe um circuito com o mesmo nome, se sim não permite atualizar
+                    bool existe = await circuitRepository.CircuitExistsAsync(updateCircuit.Name);
+                    if (existe is true)
+                    {
+                        return (true, null);
+                    }
+
+                    updates.Add("Name = @Name");
+                    parameters.Add("Name", updateCircuit.Name);
+                }
+
+                if (!string.IsNullOrEmpty(updateCircuit.Country))
+                {
+                    updates.Add("Country = @Country");
+                    parameters.Add("Country", updateCircuit.Country);
+                }
+
+                if (updateCircuit.LapsNumber.HasValue)
+                {
+                    updates.Add("LapsNumber = @LapsNumber");
+                    parameters.Add("LapsNumber", updateCircuit.LapsNumber);
+                }
+
+                var result = await circuitRepository.UpdateCircuitAsync(id, updates, parameters);
+                circuit = await circuitRepository.GetCircuitById(id);
+
+                return (result, circuit);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error in UpdateCircuit in CircuitService: " + ex.Message);
+                throw;
+            }
+
+        }
+
+
+    }
+}
