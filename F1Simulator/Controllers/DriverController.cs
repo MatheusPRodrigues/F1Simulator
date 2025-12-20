@@ -1,7 +1,6 @@
 ﻿using F1Simulator.Models.DTOs.RaceControlService;
 using F1Simulator.Models.DTOs.TeamManegementService.DriverDTO;
 using F1Simulator.TeamManagementService.Services.Interfaces;
-using F1Simulator.Utils.Clients.Interfaces;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
@@ -133,6 +132,31 @@ namespace F1Simulator.TeamManagementService.Controllers
             {
                 await _driverService.UpdateDriverAsync(id, driverRequestDTO);
                 return NoContent();
+            }
+            catch (ArgumentException ex)
+            {
+                return StatusCode(400, new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return StatusCode(409, new { message = ex.Message });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return StatusCode(404, new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = ex.Message });
+            }
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<int>> GetAllCountDriver()
+        {
+            try
+            {
+                return await _driverService.GetAllDriversCount();
             }
             catch (ArgumentException ex)
             {
