@@ -35,7 +35,7 @@ namespace F1Simulator.TeamManagementService.Services
                 if (await _driverRepository.GetDriverByNumberAsync(driverRequest.DriverNumber) is not null)
                     throw new InvalidOperationException("There is already a pilot with that number.");
 
-                if (await _carService.GetCountCarByIdCar(driverRequest.CarId) == 1)
+                if (await _carService.GetCountCarByIdCarAsync(driverRequest.CarId) == 1)
                     throw new InvalidOperationException("This car is already linked to a driver.");
 
                 var team = await _teamService.GetTeamByIdAsync(driverRequest.TeamId.ToString());

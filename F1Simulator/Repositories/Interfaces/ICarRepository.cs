@@ -16,8 +16,8 @@ namespace F1Simulator.TeamManagementService.Repositories.Interfaces
 
         Task UpdateCarModelAsync(CarModelUpdateDTO carUpdate, string carId);
 
-        Task<int> GetCountCarsByIdTeam(string teamId);
-        Task<int> GetCountCarsByIdCar(Guid carId);
+        Task<int> GetCountCarsByIdTeamAsync(string teamId);
+        Task<int> GetCountCarsByIdCarAsync(Guid carId);
 
     }
 }
