@@ -1,5 +1,4 @@
 ﻿using F1Simulator.Models.DTOs.RaceControlService;
-using F1Simulator.Models.Models.RaceControlService;
 
 namespace F1Simulator.RaceControlService.Services.Interfaces
 {

@@ -1,5 +1,6 @@
 ﻿using F1Simulator.Models.DTOs.CompetitionService.Response;
 using F1Simulator.Models.Models;
+using Microsoft.Data.SqlClient;
 using System.Threading.Tasks;
 
 namespace F1Simulator.CompetitionService.Repositories.Interfaces
@@ -23,6 +24,9 @@ namespace F1Simulator.CompetitionService.Repositories.Interfaces
         Task<List<DriverStandingResponseDTO>> GetDriverStandingAsync();
         Task<List<TeamStandingResponseDTO>> GetTeamStandingAsync();
         Task<List<RaceResponseDTO>> GetRacesAsync();
-        Task EndRaceAsync(List<DriverStandingResponseDTO> driversUpdate, List<TeamStandingResponseDTO> teamsUpdate);
+        Task EndRaceAsync(List<DriverStandingResponseDTO> driversUpdate,
+            List<TeamStandingResponseDTO> teamsUpdate,
+            SeasonResponseDTO season,
+            RaceCompleteResponseDTO race);
     }
 }

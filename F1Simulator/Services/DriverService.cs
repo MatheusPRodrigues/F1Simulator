@@ -20,11 +20,12 @@ namespace F1Simulator.TeamManagementService.Services
         private readonly ICompetitionClient _competitionClient;
 
 
-        public DriverService(IDriverRepository driverRepository, ICarService carService, ITeamService teamService)
+        public DriverService(IDriverRepository driverRepository, ICarService carService, ITeamService teamService, ICompetitionClient competitionClient)
         {
             _driverRepository = driverRepository;
             _carService = carService;
             _teamService = teamService;
+            _competitionClient = competitionClient;
         }
 
         public async Task<DriverResponseDTO> CreateDriverAsync(DriverRequestDTO driverRequest)
@@ -113,11 +114,6 @@ namespace F1Simulator.TeamManagementService.Services
         {
             try
             {
-                var activeSeason = await _competitionClient.GetActiveSeasonAsync();
-
-                if (activeSeason is not null && activeSeason.IsActive)
-                    throw new InvalidOperationException("Cannot create or update teams while a competition season is active.");
-
                 var driverUpdate = Math.Clamp(driverRequest.Handicap, 0, 100);
 
                 var driverNew = new UpdateRequestDriverDTO
