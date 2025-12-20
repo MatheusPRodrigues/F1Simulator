@@ -74,7 +74,7 @@ namespace F1Simulator.TeamManagementService.Repositories
         {
             try
             {
-                var sql = @"SELECT EngineerId, TeamId, CarId, FirstName, LastName, Specialization, IsActive FROM Engineers WHERE EngineerId = @EngineerId";
+                var sql = @"SELECT EngineerId, TeamId, CarId, FirstName, LastName, Specialization, IsActive, ExperienceFactor FROM Engineers WHERE EngineerId = @EngineerId";
 
                 return await _connection.QueryFirstOrDefaultAsync<EngineerResponseDTO>(sql, new { EngineerId = id});
             } catch(SqlException ex)
