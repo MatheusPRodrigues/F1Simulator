@@ -10,7 +10,7 @@ namespace F1Simulator.CompetitionService.Services.Interfaces
         Task<SeasonResponseDTO?> GetCompetitionActiveAsync();
         Task<SeasonResponseDTO?> StartSeasonAsync();
         Task<RaceResponseDTO?> StartRaceAsync(int round);
-        Task<RaceWithCircuitResponseDTO?> GetRaceWithCircuitAsync();
+        Task<RaceWithCircuitResponseDTO> GetRaceWithCircuitAsync();
         Task UpdateRaceT1Async();
         Task UpdateRaceT2Async();
         Task UpdateRaceT3Async();

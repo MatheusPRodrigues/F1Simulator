@@ -137,7 +137,7 @@ namespace F1Simulator.CompetitionService.Repositories
             {
                 var select = @"SELECT Id, Name, Country, LapsNumber, IsActive
                            FROM Circuits
-                            IsActive = 1;";
+                           WHERE IsActive = 1;";
 
                 var circuits = await _connection.QueryAsync<CreateCircuitResponseDTO>(select);
                 return circuits.ToList();

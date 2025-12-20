@@ -70,7 +70,7 @@ namespace F1Simulator.TeamManagementService.Controllers
         }
 
         [HttpGet("race")]
-        public async Task<ActionResult<DriverToRaceDTO>> GetAllDriversToRaceAsync()
+        public async Task<ActionResult<List<DriverToRaceDTO>>> GetAllDriversToRaceAsync()
         {
             try
             {
@@ -151,7 +151,7 @@ namespace F1Simulator.TeamManagementService.Controllers
             }
         }
 
-        [HttpGet]
+        [HttpGet("count")]
         public async Task<ActionResult<int>> GetAllCountDriver()
         {
             try

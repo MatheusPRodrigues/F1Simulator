@@ -4,6 +4,7 @@ using F1Simulator.Models.DTOs.TeamManegementService.DriverDTO;
 using F1Simulator.Models.Models.TeamManegement;
 using F1Simulator.TeamManagementService.Repositories.Interfaces;
 using F1Simulator.TeamManagementService.Services.Interfaces;
+using F1Simulator.Utils.Clients.Interfaces;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using System;
 using System.Runtime.ConstrainedExecution;
@@ -16,6 +17,8 @@ namespace F1Simulator.TeamManagementService.Services
         private readonly IDriverRepository _driverRepository;
         private readonly ICarService _carService;
         private readonly ITeamService _teamService;
+        private readonly ICompetitionClient _competitionClient;
+
 
         public DriverService(IDriverRepository driverRepository, ICarService carService, ITeamService teamService)
         {
