@@ -54,6 +54,7 @@ namespace F1Simulator.CompetitionService.Services
 
                         var circuitResponse = new CreateCircuitResponseDTO
                         {
+                            Id = circuit.Id,
                             Name = circuit.Name,
                             Country = circuit.Country,
                             LapsNumber = circuit.LapsNumber,
@@ -102,6 +103,7 @@ namespace F1Simulator.CompetitionService.Services
                 // Retorna os dados do circuito criado, principalmente para confirmar se foi criado como ativo ou inativo
                 return new CreateCircuitResponseDTO
                 {
+                    Id = circuit.Id,
                     Name = circuit.Name,
                     Country = circuit.Country,
                     LapsNumber = circuit.LapsNumber,
@@ -238,7 +240,7 @@ namespace F1Simulator.CompetitionService.Services
             {
                 // verificar se a temporada já está ativa, se tiver não permite deletar
                 var seasonStarted = await _competitionRepository.GetCompetionActiveAsync();
-                if (seasonStarted == null)
+                if (seasonStarted != null)
                 {
                     throw new BusinessException("Cannot delete circuits when the season has already started.");
                 }

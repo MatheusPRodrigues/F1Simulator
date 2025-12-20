@@ -74,6 +74,7 @@ namespace F1Simulator.CompetitionService.Controllers
         }
 
         [HttpPatch("deactivate/{id}")]
+
         public async Task<ActionResult> DeactivateCircuitAsync( [FromRoute] Guid id)
         {
             try
