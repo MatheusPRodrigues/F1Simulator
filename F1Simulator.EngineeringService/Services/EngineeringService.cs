@@ -34,6 +34,10 @@ namespace F1Simulator.EngineeringService.Services
             if (!string.IsNullOrWhiteSpace(engIds.EngineerCaId))
                 engineerCa = await httpClientEngineer.GetFromJsonAsync<EngineerResponseDTO>($"{engIds.EngineerCaId}");
 
+            var raw = await httpClientEngineer.GetStringAsync($"{engIds.EngineerCaId}");
+            Console.WriteLine(raw);
+
+
             if (!string.IsNullOrWhiteSpace(engIds.EngineerCpId))
                 engineerCp = await httpClientEngineer.GetFromJsonAsync<EngineerResponseDTO>($"{engIds.EngineerCpId}");
 
