@@ -6,7 +6,6 @@ using F1Simulator.RaceControlService.Services.Interfaces;
 using F1Simulator.Utils.DatabaseConnectionFactory;
 using F1Simulator.Utils.DatabaseConnectionFactory.Config;
 using F1Simulator.Utils.DatabaseConnectionFactory.Connections;
-using Microsoft.Data.SqlClient;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
