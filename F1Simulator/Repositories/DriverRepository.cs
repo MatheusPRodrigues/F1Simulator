@@ -41,7 +41,7 @@ namespace F1Simulator.TeamManagementService.Repositories
                 {
                     DriverId = driver.DriverId,
                     CarId = driver.CarId,
-                    DriverNumber = driver.DriverNumber,
+                    DriverNumber = driver.DriverNumber.ToString(),
                     FirstName = driver.FirstName,
                     FullName = driver.FullName,
                     HandiCap = driver.HandiCap,

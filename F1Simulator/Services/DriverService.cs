@@ -31,6 +31,11 @@ namespace F1Simulator.TeamManagementService.Services
         {
             try
             {
+                if (driverRequest.DriverNumber < 0)
+                    throw new ArgumentException("The driver number cannot be negative");
+
+                if (driverRequest.DriverNumber > 99)
+                    throw new ArgumentException("The driver number cannot be greater than 99");
 
                 if (await _driverRepository.GetDriverByNumberAsync(driverRequest.DriverNumber) is not null)
                     throw new InvalidOperationException("There is already a pilot with that number.");
