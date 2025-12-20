@@ -55,23 +55,29 @@ namespace F1Simulator.RaceControlService.Services
                 if (race.Qualifier)
                     throw new ArgumentException("This section has already been completed");
 
-                var drivers = await _teamManagementClient.GetFromJsonAsync<List<DriverToRaceDTO>>("/drivers/race");
+                var drivers = await _teamManagementClient.GetFromJsonAsync<List<DriverToRaceDTO>>("driver/race");
                 var luck = Random.Shared.Next(1, 11);
                 var driverProcessToGrid = new List<DriverGridResponseDTO>();
 
                 foreach (var d in drivers)
                 {
+                    var newCa = d.Ca;
+                    var newCp =d.Cp;
+
                     var request = new EngineersPutDTO
                     {
                         EngineerCaId = d.EnginneringAId.ToString(),
                         EngineerCpId = d.EnginneringPId.ToString()
                     };
 
-                    var response = await _engineeringClient.PutAsJsonAsync($"car/{d.CarId}", request);
-                    var processedResponse = JsonSerializer.Deserialize<CarUpdateDTO>(await response.Content.ReadAsStringAsync());
+                    var responseEngineeringAPI = await _engineeringClient.PutAsJsonAsync($"car/{d.CarId}", request);
 
-                    var newCa = processedResponse.Ca;
-                    var newCp = processedResponse.Cp;
+                    if (responseEngineeringAPI.StatusCode == HttpStatusCode.OK)
+                    {
+                        var processedResponse = await responseEngineeringAPI.Content.ReadFromJsonAsync<CarResponseDTO>();
+                        newCa = processedResponse.Ca;
+                        newCp = processedResponse.Cp;
+                    }
 
                     var newHandicap = d.Handicap - (d.DriverExp * 0.5);
                     await _teamManagementClient.PatchAsJsonAsync($"car/{d.CarId}/handicap", new { Handicap = newHandicap });
@@ -99,6 +105,9 @@ namespace F1Simulator.RaceControlService.Services
                     driverProcessToGrid[i].Position = i + 1;
                 }
 
+                var raceControlToPersist = CreateRaceControlModelObject(race, driverProcessToGrid);
+                await _raceControlRepository.InsertRaceControlRegisterAsync(raceControlToPersist);
+
                 responseCompetitionClient = await _competitionClient.SendAsync(new HttpRequestMessage(HttpMethod.Patch, "races/qualifier"));
 
                 if (responseCompetitionClient.StatusCode == HttpStatusCode.NotFound)
@@ -106,9 +115,6 @@ namespace F1Simulator.RaceControlService.Services
 
                 if (responseCompetitionClient.StatusCode == HttpStatusCode.InternalServerError)
                     throw new Exception();
-
-                var raceControlToPersist = CreateRaceControlModelObject(race, driverProcessToGrid);
-                await _raceControlRepository.InsertRaceControlRegisterAsync(raceControlToPersist);
 
                 return driverProcessToGrid;
             }
@@ -151,7 +157,7 @@ namespace F1Simulator.RaceControlService.Services
                 int[] pontuationArray = { 25, 18, 15, 12, 10, 8, 6, 4, 2, 1 };
                 var luck = Random.Shared.Next(1, 11);
 
-                var responseTeamClient = await _teamManagementClient.GetAsync("/drivers/race");
+                var responseTeamClient = await _teamManagementClient.GetAsync("driver/race");
 
                 if (responseTeamClient.StatusCode == HttpStatusCode.NotFound)
                     throw new ArgumentException("Drivers not found to race");
@@ -329,13 +335,10 @@ namespace F1Simulator.RaceControlService.Services
 
                 var race = await responseCompetitionClient.Content.ReadFromJsonAsync<RaceWithCircuitResponseDTO>();
 
-                if (!race.T1 || !race.T2)
-                    throw new ArgumentException("This section cannot be started yet");
-
                 if (race.T3)
-                    throw new ArgumentException("This section has already been completed.");
+                    throw new ArgumentException("This section has already been completed");
 
-                var drivers = await _teamManagementClient.GetFromJsonAsync<List<DriverToRaceDTO>>("/drivers/race");
+                var drivers = await _teamManagementClient.GetFromJsonAsync<List<DriverToRaceDTO>>("driver/race");
 
                 var response = await ProcessingDriversComparison(drivers);
 
@@ -378,13 +381,10 @@ namespace F1Simulator.RaceControlService.Services
 
                 var race = await responseCompetitionClient.Content.ReadFromJsonAsync<RaceWithCircuitResponseDTO>();
 
-                if (!race.T1)
-                    throw new ArgumentException("This section cannot be started yet");
-
                 if (race.T2)
-                    throw new ArgumentException("This section has already been completed.");
+                    throw new ArgumentException("This section has already been completed");
 
-                var drivers = await _teamManagementClient.GetFromJsonAsync<List<DriverToRaceDTO>>("/drivers/race");
+                var drivers = await _teamManagementClient.GetFromJsonAsync<List<DriverToRaceDTO>>("driver/race");
 
                 var response = await ProcessingDriversComparison(drivers);
 
@@ -420,6 +420,9 @@ namespace F1Simulator.RaceControlService.Services
                 var driversComparison = new List<DriverComparisonResponseDTO>();
                 foreach (var d in drivers)
                 {
+                    var newCa = d.Ca;
+                    var newCp = d.Cp;
+
                     var request = new EngineersPutDTO
                     {
                         EngineerCaId = d.EnginneringAId.ToString(),
@@ -427,10 +430,13 @@ namespace F1Simulator.RaceControlService.Services
                     };
 
                     var responseEngineeringAPI = await _engineeringClient.PutAsJsonAsync($"car/{d.CarId}", request);
-                    var processedResponse = JsonSerializer.Deserialize<CarUpdateDTO>(await responseEngineeringAPI.Content.ReadAsStringAsync());
 
-                    var newCa = processedResponse.Ca;
-                    var newCp = processedResponse.Cp;
+                    if (responseEngineeringAPI.StatusCode == HttpStatusCode.OK)
+                    {
+                        var processedResponse = await responseEngineeringAPI.Content.ReadFromJsonAsync<CarResponseDTO>();
+                        newCa = processedResponse.Ca;
+                        newCp = processedResponse.Cp;
+                    }                    
 
                     var newHandicap = d.Handicap - (d.DriverExp * 0.5);
                     await _teamManagementClient.PatchAsJsonAsync($"car/{d.CarId}/handicap", new { Handicap = newHandicap });
