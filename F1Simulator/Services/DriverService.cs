@@ -40,6 +40,12 @@ namespace F1Simulator.TeamManagementService.Services
                 if (await _driverRepository.GetAllDriversCount() >= 22)
                     throw new InvalidOperationException("The grid already has 22 drivers.");
 
+                if (driverRequest.DriverNumber < 0)
+                    throw new ArgumentException("The driver number cannot be negative");
+
+                if (driverRequest.DriverNumber > 99)
+                    throw new ArgumentException("The driver number cannot be greater than 99");
+
                 if (await _driverRepository.GetDriverByNumberAsync(driverRequest.DriverNumber) is not null)
                     throw new InvalidOperationException("There is already a pilot with that number.");
 
