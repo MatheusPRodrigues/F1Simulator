@@ -56,7 +56,7 @@ namespace F1Simulator.CompetitionService.Controllers
                 CreateCircuitsResponseDTO circuit = await _circuitService.CreateCircuitsAsync(createCircuit);
                 if (circuit.circuits.IsNullOrEmpty())
                 {
-                    return BadRequest("Error: There is already a registration with the same name for all past circuits.");
+                    return BadRequest("You are only allowed to register 24 circuits.");
                 }
                 return Ok(circuit);
             }
@@ -70,70 +70,6 @@ namespace F1Simulator.CompetitionService.Controllers
             {
                 _logger.LogError(ex, "Error creating circuit");
                 return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while creating the circuits.");
-            }
-        }
-
-        [HttpPatch("deactivate/{id}")]
-
-        public async Task<ActionResult> DeactivateCircuitAsync( [FromRoute] Guid id)
-        {
-            try
-            {
-                var( update, circuit) = await _circuitService.DeactivateCircuitAsync(id);
-                if(circuit == null)
-                {
-                    return NotFound("Circuit not found");
-                }
-                if (!update)
-                {
-                    return Ok(new{ circuit, message = "The circuit was already inactive."});
-                }
-
-                return Ok(circuit);
-            }
-            catch(BusinessException bex)
-            {
-                _logger.LogWarning(bex, "Business error deactivating circuit");
-                return BadRequest(bex.Message);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error when deactivating circuit");
-                return StatusCode(StatusCodes.Status500InternalServerError,"An error occurred while deactivating the circuit.");
-            }
-        }
-
-        [HttpPatch("activate/{id}")]
-
-        public async Task<ActionResult> ActivateCircuitAsync( [FromRoute] Guid id)
-        {
-            try
-            {
-                var (update, circuit) = await _circuitService.ActivateCircuitAsync(id);
-                if (circuit == null && update == false)
-                {
-                    return NotFound("Circuit not found");
-                }
-                if (!update)
-                {
-                    return Ok(new { circuit, message = "The circuit was already Active." });
-                }
-                if(circuit == null && update == true)
-                {
-                    return BadRequest("There are already 24 active circuits");
-                }
-
-                return Ok(circuit);
-            }
-            catch (BusinessException bex)
-            {
-                _logger.LogWarning(bex, "Business error activating circuit");
-                return BadRequest(bex.Message);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error when Activating circuit");
-                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while Activating the circuit.");
             }
         }
 

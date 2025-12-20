@@ -64,7 +64,7 @@ namespace F1Simulator.CompetitionService.Repositories
         {
             try
             {
-                var query = "SELECT COUNT(1) FROM Circuits WHERE IsActive = 1";
+                var query = "SELECT COUNT(1) FROM Circuits;";
 
                 return (int)await _connection.ExecuteScalarAsync<int>(query);
 
@@ -94,25 +94,6 @@ namespace F1Simulator.CompetitionService.Repositories
             
         }
 
-      
-
-        public async Task UpdateIsActiveCircuitAsync(Guid id)
-        {
-            try
-            {
-                var select = @"UPDATE Circuits
-                             SET IsActive = CASE WHEN IsActive = 1 THEN 0 ELSE 1 END
-                             WHERE Id = @Id";
-
-                await _connection.ExecuteAsync(select, new { Id = id });
-
-            }
-            catch (SqlException ex)
-            {
-                _logger.LogError("Error in CircuitUpdateIsActiveAsync in CircuitReposytory: " + ex.Message);
-                throw;
-            }
-        }
 
         public async Task<List<CreateCircuitResponseDTO>> GetAllCircuitsAsync()
         {
