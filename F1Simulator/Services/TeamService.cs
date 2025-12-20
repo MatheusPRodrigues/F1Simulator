@@ -1,12 +1,8 @@
 ﻿using F1Simulator.Models.DTOs.TeamManegementService.TeamDTO;
 using F1Simulator.Models.Models.TeamManegement;
-using F1Simulator.TeamManagementService.Data;
-using F1Simulator.TeamManagementService.Repositories;
 using F1Simulator.TeamManagementService.Repositories.Interfaces;
 using F1Simulator.TeamManagementService.Services.Interfaces;
 using F1Simulator.Utils.Clients.Interfaces;
-using Microsoft.AspNetCore.Http.Connections;
-using Microsoft.Data.SqlClient;
 
 namespace F1Simulator.TeamManagementService.Services
 {

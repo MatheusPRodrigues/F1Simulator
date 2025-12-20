@@ -126,13 +126,13 @@ namespace F1Simulator.CompetitionService.Repositories
 
                     transaction.Commit();
 
-            }
-            catch (SqlException ex)
-            {
-                transaction.Rollback();
-                _logger.LogError(ex, "Error in StartSeasonAsync in CompetitionRepository");
-                throw;
-            }
+                }
+                catch (SqlException ex)
+                {
+                    transaction.Rollback();
+                    _logger.LogError(ex, "Error in StartSeasonAsync in CompetitionRepository");
+                    throw;
+                }
             }
         }
 
@@ -165,7 +165,8 @@ namespace F1Simulator.CompetitionService.Repositories
                 var count = await _connection.QuerySingleAsync<int>(selectQuery, new { SeasonId = seasonID });
                 return count > 0;
 
-            } catch (SqlException ex)
+            }
+            catch (SqlException ex)
             {
                 _logger.LogError(ex, "Error in ExistRaceInProgress in CompetitionRepository");
                 throw;
@@ -179,8 +180,8 @@ namespace F1Simulator.CompetitionService.Repositories
                 var selectQuery = @"SELECT Id, [Round], [Status], SeasonId, CircuitId, T1, T2, T3, Qualifier
                                    FROM Races
                                    WHERE [Status] = 'InProgress'";
-                return await _connection.QueryFirstOrDefaultAsync<RaceCompleteResponseDTO>(selectQuery);
 
+                return await _connection.QueryFirstOrDefaultAsync<RaceCompleteResponseDTO>(selectQuery);
             }
             catch (SqlException ex)
             {
@@ -213,7 +214,7 @@ namespace F1Simulator.CompetitionService.Repositories
                                     FROM Races R
                                     JOIN Circuits C ON R.CircuitId = C.Id
                                     JOIN Season S ON R.SeasonId = S.Id";
-                                   
+
                 var calendar = await _connection.QueryAsync<RaceResponseDTO>(selectQuery);
                 return calendar.ToList();
             }
@@ -245,7 +246,7 @@ namespace F1Simulator.CompetitionService.Repositories
         {
             try
             {
-                
+
                 var selectQuery = @"SELECT R.Id AS Id, S.[Year] AS YearSeason, R.[Round] AS Round, R.[Status] AS Status, R.T1 AS T1, R.T2 AS T2, R.T3 AS T3, R.Qualifier AS Qualifier, R.Race AS RaceFinal,
                                    C.Id AS CircuitId, C.[Name] AS Name, C.Country AS Country, C.LapsNumber AS LapsNumber, C.IsActive AS IsActive
                                    FROM Races R
@@ -253,7 +254,7 @@ namespace F1Simulator.CompetitionService.Repositories
                                   JOIN Circuits C ON R.CircuitId = C.Id
                                   WHERE R.[Status] = 'InProgress'";
 
-                
+
                 var result = await _connection.QueryAsync<RaceWithCircuitResponseDTO, CircuitCompleteResponseDTO, RaceWithCircuitResponseDTO>(
                     selectQuery,
                     static (race, circuit) =>
@@ -261,7 +262,7 @@ namespace F1Simulator.CompetitionService.Repositories
                         race.Circuit = circuit;
                         return race;
                     },
-                    splitOn: "CircuitId" 
+                    splitOn: "CircuitId"
                 );
                 return result.FirstOrDefault();
             }
@@ -362,8 +363,8 @@ namespace F1Simulator.CompetitionService.Repositories
         {
             try
             {
-                var selectQuery = @"SELECT DriverId, TeamId DriverName, Points
-                                    FROM DriverStanding
+                var selectQuery = @"SELECT DriverId, TeamId, DriverName, Points
+                                    FROM DriverStandings
                                     WHERE SeasonId = (SELECT Id FROM Season WHERE IsActive = 1)
                                     ORDER BY Points DESC";
                 var driverStandings = await _connection.QueryAsync<DriverStandingResponseDTO>(selectQuery);
@@ -382,7 +383,7 @@ namespace F1Simulator.CompetitionService.Repositories
             try
             {
                 var selectQuery = @"SELECT TeamId, TeamName, Points
-                                    FROM TeamStanding
+                                    FROM TeamStandings
                                     WHERE SeasonId = (SELECT Id FROM Season WHERE IsActive = 1)
                                     ORDER BY Points DESC";
                 var teamStandings = await _connection.QueryAsync<TeamStandingResponseDTO>(selectQuery);
@@ -395,53 +396,60 @@ namespace F1Simulator.CompetitionService.Repositories
             }
         }
 
-        public async Task EndRaceAsync(List<DriverStandingResponseDTO> driversUpdate,List<TeamStandingResponseDTO> teamsUpdate)
+        public async Task EndRaceAsync(List<DriverStandingResponseDTO> driversUpdate,
+            List<TeamStandingResponseDTO> teamsUpdate,
+            SeasonResponseDTO season,
+            RaceCompleteResponseDTO race
+        )
         {
-            using var transaction = _connection.BeginTransaction();
-            try
+            await _connection.OpenAsync();
+            using (var transaction = _connection.BeginTransaction())
             {
-
-                var season = GetCompetionActiveAsync();
-                // atualizar classificação dos pilotos
-                var sqlDriver = @"UPDATE DriverStandings SET Points = Points + @Pontuation 
-                               WHERE DriverId = @DriverId AND SeasonId = @SeasonId";
-                foreach (var driver in driversUpdate)
+                try
                 {
-                    await _connection.ExecuteAsync(sqlDriver, new { Pontuation = driver.Points, 
-                                                                    DriverId = driver.DriverId, 
-                                                                    SeasonId = season.Id}, transaction );
+                    // atualizar classificação dos pilotos
+                    var sqlDriver = @"UPDATE DriverStandings SET Points = @Pontuation 
+                               WHERE DriverId = @DriverIdUpdate AND SeasonId = @SeasonId";
+                    foreach (var driver in driversUpdate)
+                    {
+                        await _connection.ExecuteAsync(sqlDriver, new
+                        {
+                            Pontuation = driver.Points,
+                            DriverIdUpdate = driver.DriverId,
+                            SeasonId = season.Id
+                        }, transaction);
+                    }
 
-                }
 
+                    // atualizar classificação das equipes
+                    var sqlTeams = @"UPDATE TeamStandings SET Points = @Pontuation 
+                               WHERE TeamId = @TeamIdToUpdate AND SeasonId = @SeasonId";
+                    foreach (var team in teamsUpdate)
+                    {
+                        await _connection.ExecuteAsync(sqlTeams, new
+                        {
+                            Pontuation = team.Points,
+                            TeamIdToUpdate = team.TeamId,
+                            SeasonId = season.Id
+                        }, transaction);
 
-                // atualizar classificação das equipes
+                    }
 
-                var sqlTeams = @"UPDATE TeamStandings SET Points = Points + @Pontuation 
-                               WHERE TeamId = @TeamId AND SeasonId = @SeasonId";
-                foreach (var team in teamsUpdate)
-                {
-                    await _connection.ExecuteAsync(sqlDriver, new {Pontuation = team.Points,
-                                                                  DriverId = team.TeamId,
-                                                                  SeasonId = season.Id}, transaction);
-
-                }
-
-                // atualizar o status da corrida
-
-                var race = GetRaceInProgressAsync();
-                var updateQuery = @"UPDATE Races
+                    // atualizar o status da corrida
+                    var updateQuery = @"UPDATE Races
                                     SET Status = 'Finished'
-                                    WHERE Id = @Id";
+                                    WHERE Id = @RaceId";
 
-                await _connection.ExecuteAsync(updateQuery, new {Id = race.Id }, transaction);
+                    await _connection.ExecuteAsync(updateQuery, new { RaceId = race.Id }, transaction);
 
-                transaction.Commit();
-            }
-            catch (SqlException ex)
-            {
-                transaction.Rollback();
-                _logger.LogError(ex, "Error in EndRaceAsync in CompetitionRepository");
-                throw;
+                    transaction.Commit();
+                }
+                catch (SqlException ex)
+                {
+                    transaction.Rollback();
+                    _logger.LogError(ex, "Error in EndRaceAsync in CompetitionRepository");
+                    throw;
+                }
             }
         }
 

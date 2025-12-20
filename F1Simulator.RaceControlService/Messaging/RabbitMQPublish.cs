@@ -1,5 +1,4 @@
-﻿using F1Simulator.Models.Models.TeamManegement;
-using RabbitMQ.Client;
+﻿using RabbitMQ.Client;
 using System.Text;
 using System.Text.Json;
 

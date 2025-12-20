@@ -257,7 +257,7 @@ namespace F1Simulator.CompetitionService.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while retrieving team standings.");
             }
         }
-
+ 
         [HttpGet("calendar")]
         public async Task<ActionResult> GetTeamRacesAsync()
         {
@@ -283,7 +283,7 @@ namespace F1Simulator.CompetitionService.Controllers
         {
             try
             {
-                //await _competitionService.EndRaceAsync();
+                await _competitionService.EndRaceAsync();
                 return Ok();
             }
             catch (BusinessException bex)

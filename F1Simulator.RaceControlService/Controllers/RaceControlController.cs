@@ -1,6 +1,5 @@
 ﻿using F1Simulator.Models.DTOs.RaceControlService;
 using F1Simulator.RaceControlService.Services.Interfaces;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace F1Simulator.RaceControlService.Controllers

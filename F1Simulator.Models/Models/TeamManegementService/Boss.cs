@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace F1Simulator.Models.Models.TeamManegementService
+﻿namespace F1Simulator.Models.Models.TeamManegementService
 {
     public class Boss
     {

@@ -23,7 +23,6 @@ O **Engineering Service** atua como uma camada de orquestração que:
   * `ExperienceFactor` do engenheiro
   * Um fator aleatório entre `-1` e `1`
 * Os valores finais de **Ca** e **Cp** são limitados entre `0` e `10`
-* Se nenhum coeficiente for alterado, a operação falha
 
 ---
 
@@ -62,8 +61,7 @@ O **Engineering Service** atua como uma camada de orquestração que:
   "weightKg": 798,
   "speed": 350,
   "ca": 6.42,
-  "cp": 7.10,
-  "isActive": true
+  "cp": 7.10
 }
 ```
 

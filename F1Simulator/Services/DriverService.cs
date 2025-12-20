@@ -5,9 +5,6 @@ using F1Simulator.Models.Models.TeamManegement;
 using F1Simulator.TeamManagementService.Repositories.Interfaces;
 using F1Simulator.TeamManagementService.Services.Interfaces;
 using F1Simulator.Utils.Clients.Interfaces;
-using Microsoft.AspNetCore.Mvc.Formatters;
-using System;
-using System.Runtime.ConstrainedExecution;
 
 namespace F1Simulator.TeamManagementService.Services
 {
@@ -20,22 +17,36 @@ namespace F1Simulator.TeamManagementService.Services
         private readonly ICompetitionClient _competitionClient;
 
 
-        public DriverService(IDriverRepository driverRepository, ICarService carService, ITeamService teamService)
+        public DriverService(IDriverRepository driverRepository, ICarService carService, ITeamService teamService, ICompetitionClient competitionClient)
         {
             _driverRepository = driverRepository;
             _carService = carService;
             _teamService = teamService;
+            _competitionClient = competitionClient;
         }
 
         public async Task<DriverResponseDTO> CreateDriverAsync(DriverRequestDTO driverRequest)
         {
             try
             {
+                var activeSeason = await _competitionClient.GetActiveSeasonAsync();
+
+                if (activeSeason is not null && activeSeason.IsActive)
+                    throw new InvalidOperationException("Cannot create or update drivers while a competition season is active.");
+
+                if (await _driverRepository.GetAllDriversCount() >= 22)
+                    throw new InvalidOperationException("The grid already has 22 drivers.");
+
+                if (driverRequest.DriverNumber < 0)
+                    throw new ArgumentException("The driver number cannot be negative");
+
+                if (driverRequest.DriverNumber > 99)
+                    throw new ArgumentException("The driver number cannot be greater than 99");
 
                 if (await _driverRepository.GetDriverByNumberAsync(driverRequest.DriverNumber) is not null)
                     throw new InvalidOperationException("There is already a pilot with that number.");
 
-                if (await _carService.GetCountCarByIdCar(driverRequest.CarId) == 1)
+                if (await _carService.GetCountCarByIdCarAsync(driverRequest.CarId) == 1)
                     throw new InvalidOperationException("This car is already linked to a driver.");
 
                 var team = await _teamService.GetTeamByIdAsync(driverRequest.TeamId.ToString());
@@ -113,11 +124,7 @@ namespace F1Simulator.TeamManagementService.Services
         {
             try
             {
-                var activeSeason = await _competitionClient.GetActiveSeasonAsync();
-
-                if (activeSeason is not null && activeSeason.IsActive)
-                    throw new InvalidOperationException("Cannot create or update teams while a competition season is active.");
-
+                //
                 var driverUpdate = Math.Clamp(driverRequest.Handicap, 0, 100);
 
                 var driverNew = new UpdateRequestDriverDTO

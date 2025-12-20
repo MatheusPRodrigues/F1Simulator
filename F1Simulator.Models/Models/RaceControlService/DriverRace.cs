@@ -26,6 +26,7 @@ namespace F1Simulator.Models.Models.RaceControlService
             DriverId = driverId;
             DriverName = driverName;
             TeamId = teamId;
+            TeamName = teamName;
             Position = position;
             Pontuation = pontuation;
         }

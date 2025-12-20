@@ -81,8 +81,8 @@ namespace F1Simulator.EngineeringService.Services
                 Model = car.Model,
                 WeightKg = car.WeightKg,
                 Speed = car.Speed,
-                Ca = caUpdated,
-                Cp = cpUpdated,
+                Ca = Math.Round(caUpdated, 3),
+                Cp = Math.Round(cpUpdated, 3)
             };
 
             await httpClientCar.PutAsJsonAsync($"car/{carId}", new { ca = newCar.Ca, cp = newCar.Cp });

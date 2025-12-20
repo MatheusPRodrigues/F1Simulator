@@ -2,10 +2,7 @@
 using F1Simulator.Models.DTOs.CompetitionService.Response;
 using F1Simulator.Utils.Clients.Interfaces;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
 using System.Net.Http.Json;
-using System.Text;
 
 namespace F1Simulator.Utils.Clients
 {

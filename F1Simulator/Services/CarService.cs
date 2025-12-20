@@ -2,15 +2,15 @@
 using F1Simulator.Models.Models.TeamManegement;
 using F1Simulator.TeamManagementService.Repositories.Interfaces;
 using F1Simulator.TeamManagementService.Services.Interfaces;
-using F1Simulator.Utils.Clients;
 using F1Simulator.Utils.Clients.Interfaces;
 
 namespace F1Simulator.TeamManagementService.Services
 {
     public class CarService : ICarService
     {
-        private ICarRepository _carRepository;
-        private ITeamRepository _teamRepository;
+        private readonly ILogger<CarService> _logger;
+        private readonly ICarRepository _carRepository;
+        private readonly ITeamRepository _teamRepository;
         private readonly Random _random = Random.Shared;
         private readonly ICompetitionClient _competitionClient;
 
@@ -24,86 +24,140 @@ namespace F1Simulator.TeamManagementService.Services
 
         public async Task CreateCarAsync(CarRequestDTO car)
         {
-            var activeSeason = await _competitionClient.GetActiveSeasonAsync();
+            try
+            {
+                var activeSeason = await _competitionClient.GetActiveSeasonAsync();
 
-            if (activeSeason is not null && activeSeason.IsActive)
-                throw new InvalidOperationException("Cannot create or update cars while a competition season is active.");
+                if (activeSeason is not null && activeSeason.IsActive)
+                    throw new InvalidOperationException("Cannot create or update cars while a competition season is active.");
 
-            if (car is null)
-                throw new ArgumentException(nameof(car), "Car cannot be null.");
+                if (car is null)
+                    throw new ArgumentException(nameof(car), "Car cannot be null.");
 
-            if (!Guid.TryParse(car.TeamId, out var teamId))
-                throw new ArgumentException("TeamId must be a valid GUID.");
+                if (!Guid.TryParse(car.TeamId, out var teamId))
+                    throw new ArgumentException("TeamId must be a valid GUID.");
 
-            var countCarsTeam = await _carRepository.GetCountCarsByIdTeam(car.TeamId);
+                var countCarsTeam = await _carRepository.GetCountCarsByIdTeamAsync(car.TeamId);
 
-            if (countCarsTeam >= 2)
-                throw new ArgumentException("The car cannot be added because there are already 2 cars registered in the team.");
+                if (countCarsTeam >= 2)
+                    throw new ArgumentException("The car cannot be added because there are already 2 cars registered in the team.");
 
-            if (car.WeightKg <= 0)
-                throw new ArgumentException("WeightKg must be greater than zero.");
+                if (car.WeightKg <= 0)
+                    throw new ArgumentException("WeightKg must be greater than zero.");
 
-            if (car.Speed <= 0)
-                throw new ArgumentException("Speed must be greater than zero.");
+                if (car.Speed <= 0)
+                    throw new ArgumentException("Speed must be greater than zero.");
 
-            var team = await _teamRepository.GetTeamByIdAsync(Guid.Parse(car.TeamId));
+                var team = await _teamRepository.GetTeamByIdAsync(Guid.Parse(car.TeamId));
             
-            if (team is null)
-                throw new ArgumentException("Team does not exist for the provided TeamId.");
+                if (team is null)
+                    throw new ArgumentException("Team does not exist for the provided TeamId.");
+
+            var totalCars = await _carRepository.GetAllCarsCountAsync();
+
+            if (totalCars >= 22)
+                throw new InvalidOperationException("Maximum number of cars (22) reached.");
 
             var ca = Math.Round((10.0 * _random.NextDouble()), 3);
             var cp = Math.Round((10.0 * _random.NextDouble()), 3);
 
-            var newCar = new Car
-            (
-                teamId,
-                team.NameAcronym,
-                car.WeightKg,
-                car.Speed,
-                ca,
-                cp
-            );
+                var newCar = new Car
+                (
+                    teamId,
+                    team.NameAcronym,
+                    car.WeightKg,
+                    car.Speed,
+                    ca,
+                    cp
+                );
 
-            await _carRepository.CreateCarAsync(newCar);
+                await _carRepository.CreateCarAsync(newCar);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"An error occurred while creating the car.: {ex.Message}", ex);
+                throw;
+            }
         }
 
 
         public async Task<List<CarResponseDTO>> GetAllCarAsync()
         {
-            return await _carRepository.GetAllCarAsync();
+            try
+            {
+                return await _carRepository.GetAllCarAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"An error occurred while listing the cars: {ex.Message}", ex);
+                throw;
+            }
         }
 
 
         public async Task<CarResponseDTO> GetCarByIdAsync(string id)
         {
-            var car = await _carRepository.GetCarByIdAsync(id);
+            try
+            {
+                var car = await _carRepository.GetCarByIdAsync(id);
 
-            if (car is null)
-                throw new KeyNotFoundException("Car not found.");
+                if (car is null)
+                    throw new KeyNotFoundException("Car not found.");
 
-            return car;
+                return car;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"There was an error while searching for the car: {ex.Message}", ex);
+                throw;
+            }
         }
 
 
         public async Task UpdateCarCoefficientsAsync(CarUpdateDTO carUpdate, string carId)
         {
-            await _carRepository.UpdateCarCoefficientsAsync(carUpdate, carId);
+            try
+            {
+                await _carRepository.UpdateCarCoefficientsAsync(carUpdate, carId);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"An error occurred while updating the car's coefficients: {ex.Message}", ex);
+                throw;
+            }
         }
 
 
         public async Task UpdateCarModelAsync(CarModelUpdateDTO carModelUpdate, string carId)
         {
-            var activeSeason = await _competitionClient.GetActiveSeasonAsync();
+            try
+            {
+                var activeSeason = await _competitionClient.GetActiveSeasonAsync();
 
-            if (activeSeason is not null && activeSeason.IsActive)
-                throw new InvalidOperationException("Cannot create or update cars while a competition season is active.");
+                if (activeSeason is not null && activeSeason.IsActive)
+                    throw new InvalidOperationException("Cannot create or update cars while a competition season is active.");
 
-            await _carRepository.UpdateCarModelAsync(carModelUpdate, carId);
+                await _carRepository.UpdateCarModelAsync(carModelUpdate, carId);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"An error occurred while updating the car model: {ex.Message}", ex);
+                throw;
+            }
         }
 
-        public async Task<int> GetCountCarByIdCar(Guid carId)
+
+        public async Task<int> GetCountCarByIdCarAsync(Guid carId)
         {
-            return await _carRepository.GetCountCarsByIdCar(carId);
+            try
+            {
+                return await _carRepository.GetCountCarsByIdCarAsync(carId);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"There was an error while counting cars per driver: {ex.Message}", ex);
+                throw;
+            }
         }
     }
 }
