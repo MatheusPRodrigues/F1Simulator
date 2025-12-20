@@ -4,7 +4,6 @@ using F1Simulator.Models.DTOs.TeamManegementService.DriverDTO;
 using F1Simulator.Models.Models.TeamManegement;
 using F1Simulator.TeamManagementService.Repositories.Interfaces;
 using F1Simulator.TeamManagementService.Services.Interfaces;
-using F1Simulator.Utils.Clients.Interfaces;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using System;
 using System.Runtime.ConstrainedExecution;
@@ -17,24 +16,18 @@ namespace F1Simulator.TeamManagementService.Services
         private readonly IDriverRepository _driverRepository;
         private readonly ICarService _carService;
         private readonly ITeamService _teamService;
-        private readonly ICompetitionClient _competitionClient;
 
-        public DriverService(IDriverRepository driverRepository, ICarService carService, ITeamService teamService, ICompetitionClient competitionClient)
+        public DriverService(IDriverRepository driverRepository, ICarService carService, ITeamService teamService)
         {
             _driverRepository = driverRepository;
             _carService = carService;
             _teamService = teamService;
-            _competitionClient = competitionClient;
         }
 
         public async Task<DriverResponseDTO> CreateDriverAsync(DriverRequestDTO driverRequest)
         {
             try
             {
-                var activeSeason = await _competitionClient.GetActiveSeasonAsync();
-
-                if (activeSeason is not null && activeSeason.IsActive)
-                    throw new InvalidOperationException("Cannot create or update drivers while a competition season is active.");
 
                 if (await _driverRepository.GetDriverByNumberAsync(driverRequest.DriverNumber) is not null)
                     throw new InvalidOperationException("There is already a pilot with that number.");
@@ -132,6 +125,17 @@ namespace F1Simulator.TeamManagementService.Services
                 await _driverRepository.UpdateDriverAsync(id, driverNew);
             }
             catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task<int> GetAllDriversCount()
+        {
+            try
+            {
+                return await _driverRepository.GetAllDriversCount();
+            } catch(Exception ex)
             {
                 throw new Exception(ex.Message);
             }
