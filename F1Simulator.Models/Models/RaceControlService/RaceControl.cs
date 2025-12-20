@@ -26,6 +26,7 @@ namespace F1Simulator.Models.Models.RaceControlService
         )
         {
             Id = ObjectId.GenerateNewId();
+            RaceId = raceId;
             Round = round;
             Season = season;
             Circuit = circuit;
