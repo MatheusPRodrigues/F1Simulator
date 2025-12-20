@@ -286,13 +286,13 @@ namespace F1Simulator.RaceControlService.Services
                 if (race.T1)
                     throw new ArgumentException("This section has already been completed");
 
-                var drivers = await _teamManagementClient.GetFromJsonAsync<List<DriverToRaceDTO>>("/drivers/race");
+                var drivers = await _teamManagementClient.GetFromJsonAsync<List<DriverToRaceDTO>>("driver/race");
 
                 var response = await ProcessingDriversComparison(drivers);
 
                 responseCompetitionClient = await _competitionClient.SendAsync(new HttpRequestMessage(HttpMethod.Patch, "races/t1"));
 
-                if (responseCompetitionClient.StatusCode == HttpStatusCode.NotFound)
+                if (responseCompetitionClient.StatusCode == HttpStatusCode.NotFound)    
                     throw new ArgumentException("This section cannot be started yet");
 
                 if (responseCompetitionClient.StatusCode == HttpStatusCode.InternalServerError)
@@ -514,7 +514,7 @@ namespace F1Simulator.RaceControlService.Services
                 raceDto.Round,
                 raceDto.YearSeason,
                 new CircuitRace(
-                    raceDto.Circuit.Id,
+                    raceDto.Circuit.CircuitId,
                     raceDto.Circuit.Name,
                     raceDto.Circuit.Country,
                     raceDto.Circuit.LapsNumber

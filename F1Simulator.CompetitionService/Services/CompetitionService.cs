@@ -220,8 +220,9 @@ namespace F1Simulator.CompetitionService.Services
                     throw new BusinessException("There is no active season.");
                 }
 
-                return await _competitionRepository.GetRaceWithCircuitAsync();
+                var response =  await _competitionRepository.GetRaceWithCircuitAsync();
 
+                return response;
             }
             catch (Exception ex)
             {

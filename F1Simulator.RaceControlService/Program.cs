@@ -34,12 +34,12 @@ builder.Services.AddHttpClient("EngineeringService", client =>
 
 builder.Services.AddHttpClient("TeamManagementServicesDrivers", client =>
 {
-    client.BaseAddress = new Uri("https://localhost:8001/api");
+    client.BaseAddress = new Uri("https://localhost:8001/api/");
 });
 
 builder.Services.AddHttpClient("CompetitionService", client =>
 {
-    client.BaseAddress = new Uri("https://localhost:5001/api/competition");
+    client.BaseAddress = new Uri("https://localhost:5001/api/competition/");
 });
 
 var app = builder.Build();

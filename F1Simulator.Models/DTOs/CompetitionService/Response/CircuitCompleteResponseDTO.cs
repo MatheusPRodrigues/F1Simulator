@@ -6,7 +6,7 @@ namespace F1Simulator.Models.DTOs.CompetitionService.Response
 {
     public class CircuitCompleteResponseDTO
     {
-        public Guid Id { get; init; }
+        public Guid CircuitId { get; init; }
         public string Name { get; init; }
         public string Country { get; init; }
         public int LapsNumber { get; init; }

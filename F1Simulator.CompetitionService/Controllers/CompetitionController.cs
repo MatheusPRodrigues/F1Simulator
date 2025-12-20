@@ -86,7 +86,7 @@ namespace F1Simulator.CompetitionService.Controllers
         {
             try
             {
-                var race = _competitionService.GetRaceWithCircuitAsync();
+                var race = await _competitionService.GetRaceWithCircuitAsync();
                 if (race == null)
                 {
                     return NotFound("There isn't a race in progress in the current season.");

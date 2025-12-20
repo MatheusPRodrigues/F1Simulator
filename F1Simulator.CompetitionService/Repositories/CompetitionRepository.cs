@@ -68,66 +68,71 @@ namespace F1Simulator.CompetitionService.Repositories
 
         public async Task StartSeasonAsync(Season season, List<TeamStanding> teams, List<DriverStanding> drivers, List<Race> races)
         {
-            using var transaction = _connection.BeginTransaction();
-            try
+            await _connection.OpenAsync();
+
+            using (var transaction = _connection.BeginTransaction())
             {
-                // Insert Season
-                var insertSeasonQuery = @"INSERT INTO Season (Id, [Year], IsActive)
-                                         VALUES (@Id, @Year, @IsActive);";
-                await _connection.ExecuteAsync(insertSeasonQuery, new { Id = season.Id, Year = season.Year, IsActive = season.IsActive }, transaction);
-
-                // Insert Team Standings
-                var insertTeamStandingsQuery = @"INSERT INTO TeamStanding (Id, SeasonId, TeamName, TeamId, Points) 
-                                                  VALUES (@Id, @SeasonId, @TeamName @TeamId, @Points);";
-                foreach (var team in teams)
+                try
                 {
-                    await _connection.ExecuteAsync(insertTeamStandingsQuery, new { Id = team.Id, SeasonId = team.SeasonId, TeamName = team.TeamName, TeamId = team.TeamId, Points = team.Points }, transaction);
-                }
+                    // Insert Season
+                    var insertSeasonQuery = @"INSERT INTO [Season] (Id, [Year], IsActive)
+                                             VALUES (@Id, @Year, @IsActive);";
+                    await _connection.ExecuteAsync(insertSeasonQuery, new { Id = season.Id, Year = season.Year, IsActive = season.IsActive }, transaction);
 
-                // Insert Driver Standings
-
-                var insertDriverStandingsQuery = @"INSERT INTO DriverStanding (Id, SeasonId, DriverName, DriverId, TeamId, Position, Points) 
-                                                    VALUES (@Id, @SeasonId, @DriverName, @DriverId, @Points);";
-                foreach (var driver in drivers)
-                {
-                    await _connection.ExecuteAsync(insertDriverStandingsQuery, new
+                    // Insert Team Standings
+                    var insertTeamStandingsQuery = @"INSERT INTO TeamStandings (Id, SeasonId, TeamName, TeamId, Points) 
+                                                      VALUES (@Id, @SeasonId, @TeamName, @TeamId, @Points);";
+                    foreach (var team in teams)
                     {
-                        Id = driver.Id,
-                        SeasonId = driver.SeasonId,
-                        DriverName = driver.DriverName,
-                        DriverId = driver.DriverId,
-                        TeamId = driver.TeamId,
-                        Points = driver.Points
-                    }, transaction);
-                }
+                        await _connection.ExecuteAsync(insertTeamStandingsQuery, new { Id = team.Id, SeasonId = team.SeasonId, TeamName = team.TeamName, TeamId = team.TeamId, Points = team.Points }, transaction);
+                    }
 
-                // Insert Races
-                var insertRacesQuery = "INSERT INTO Races (Id, [Round], [Status], SeasonId, CircuitId, T1, T2, T3, Qualifier, Race) " +
-                                       "VALUES (@Id, @Round, @Status, @SeasonId, @CircuitId, @T1, @T2, @T3, @Qualifier, @Race);";
-                foreach (var race in races)
-                {
-                    await _connection.ExecuteAsync(insertRacesQuery, new
+                    // Insert Driver Standings
+
+                    var insertDriverStandingsQuery = @"INSERT INTO DriverStandings (Id, SeasonId, DriverName, DriverId, TeamId, Points) 
+                                                        VALUES (@Id, @SeasonId, @DriverName, @DriverId, @TeamId, @Points);";
+                    foreach (var driver in drivers)
                     {
-                        Id = race.Id,
-                        Round = race.Round,
-                        Status = race.Status,
-                        SeasonId = race.SeasonId,
-                        CircuitId = race.CircuitId,
-                        T1 = race.T1,
-                        T2 = race.T2,
-                        T3 = race.T3,
-                        Qualifier = race.Qualifier,
-                        Race = race.RaceFinal
-                    }, transaction);
-                }
+                        await _connection.ExecuteAsync(insertDriverStandingsQuery, new
+                        {
+                            Id = driver.Id,
+                            SeasonId = driver.SeasonId,
+                            DriverName = driver.DriverName,
+                            DriverId = driver.DriverId,
+                            TeamId = driver.TeamId,
+                            Points = driver.Points
+                        }, transaction);
+                    }
 
-                transaction.Commit();
+                    // Insert Races
+                    var insertRacesQuery = "INSERT INTO Races (Id, [Round], [Status], SeasonId, CircuitId, T1, T2, T3, Qualifier, Race) " +
+                                           "VALUES (@Id, @Round, @Status, @SeasonId, @CircuitId, @T1, @T2, @T3, @Qualifier, @Race);";
+                    foreach (var race in races)
+                    {
+                        await _connection.ExecuteAsync(insertRacesQuery, new
+                        {
+                            Id = race.Id,
+                            Round = race.Round,
+                            Status = race.Status,
+                            SeasonId = race.SeasonId,
+                            CircuitId = race.CircuitId,
+                            T1 = race.T1,
+                            T2 = race.T2,
+                            T3 = race.T3,
+                            Qualifier = race.Qualifier,
+                            Race = race.RaceFinal
+                        }, transaction);
+                    }
+
+                    transaction.Commit();
+
             }
             catch (SqlException ex)
             {
                 transaction.Rollback();
                 _logger.LogError(ex, "Error in StartSeasonAsync in CompetitionRepository");
                 throw;
+            }
             }
         }
 
@@ -154,7 +159,7 @@ namespace F1Simulator.CompetitionService.Repositories
             try
             {
                 var selectQuery = @"SELECT COUNT(1)
-                                    FROM Race
+                                    FROM Races
                                     WHERE SeasonId = @SeasonId
                                     AND Status = 'InProgress'";
                 var count = await _connection.QuerySingleAsync<int>(selectQuery, new { SeasonId = seasonID });
@@ -191,7 +196,7 @@ namespace F1Simulator.CompetitionService.Repositories
                                     SET Status = 'InProgress'
                                     WHERE Id = @Id";
 
-                await _connection.ExecuteAsync(updateQuery);
+                await _connection.ExecuteAsync(updateQuery, new { Id = id });
             }
             catch (SqlException ex)
             {
@@ -241,8 +246,8 @@ namespace F1Simulator.CompetitionService.Repositories
             try
             {
                 
-                var selectQuery = @"SELECT R.Id, S.[Year] AS YearSeason, R.[Round], R.[Status], R.T1, R.T2, R.T3, R.Qualifier,
-                                   C.Id AS CircuitId, C.[Name], C.Country, C.LapsNumber, C.IsActive
+                var selectQuery = @"SELECT R.Id AS Id, S.[Year] AS YearSeason, R.[Round] AS Round, R.[Status] AS Status, R.T1 AS T1, R.T2 AS T2, R.T3 AS T3, R.Qualifier AS Qualifier, R.Race AS RaceFinal,
+                                   C.Id AS CircuitId, C.[Name] AS Name, C.Country AS Country, C.LapsNumber AS LapsNumber, C.IsActive AS IsActive
                                    FROM Races R
                                    JOIN Season S ON R.SeasonId = S.Id
                                   JOIN Circuits C ON R.CircuitId = C.Id

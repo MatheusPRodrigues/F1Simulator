@@ -26,7 +26,7 @@ namespace F1Simulator.EngineeringService.Controllers
             {
                 var result = await _engineeringService.PutCarCoefficientsAsync(engIds, carId);
 
-                return StatusCode(StatusCodes.Status201Created, result);
+                return StatusCode(StatusCodes.Status200OK, result);
             }
             catch (KeyNotFoundException ex)
             {
