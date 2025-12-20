@@ -16,7 +16,6 @@ namespace F1Simulator.TeamManagementService.Repositories
             _connection = connection.Connect();
         }
 
-
         public async Task CreateCarAsync(Car car)
         {
             try
