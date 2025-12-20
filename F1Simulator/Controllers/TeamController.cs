@@ -48,6 +48,18 @@ namespace F1Simulator.TeamManagementService.Controllers
                 await _teamService.CreateTeamAsync(teamRequestDto);
                 return StatusCode(StatusCodes.Status201Created);
             }
+            catch (ArgumentException ex)
+            {
+                return StatusCode(400, new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return StatusCode(409, new { message = ex.Message });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return StatusCode(404, new { message = ex.Message });
+            }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occurred while creating team");
@@ -67,6 +79,18 @@ namespace F1Simulator.TeamManagementService.Controllers
                 
                 return Ok(teams);
             }
+            catch (ArgumentException ex)
+            {
+                return StatusCode(400, new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return StatusCode(409, new { message = ex.Message });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return StatusCode(404, new { message = ex.Message });
+            }
             catch (Exception ex)
             {
                 _logger.LogError($"An error occurred while getting the team list: {ex.Message}", ex);
@@ -82,7 +106,19 @@ namespace F1Simulator.TeamManagementService.Controllers
                 var result = await _teamService.GetTeamByIdAsync(teamId);
                 return result is null ? NotFound() : Ok(result);
             }
-            catch(Exception ex)
+            catch (ArgumentException ex)
+            {
+                return StatusCode(400, new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return StatusCode(409, new { message = ex.Message });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return StatusCode(404, new { message = ex.Message });
+            }
+            catch (Exception ex)
             {
                 _logger.LogError($"An error occurred while getting the team by id: {ex.Message}", ex);
                 throw;
@@ -99,7 +135,15 @@ namespace F1Simulator.TeamManagementService.Controllers
             }
             catch (ArgumentException ex)
             {
-                return StatusCode(StatusCodes.Status400BadRequest, new { Message = ex.Message });
+                return StatusCode(400, new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return StatusCode(409, new { message = ex.Message });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return StatusCode(404, new { message = ex.Message });
             }
             catch (Exception ex)
             {

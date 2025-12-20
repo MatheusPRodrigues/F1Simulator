@@ -18,6 +18,7 @@ namespace F1Simulator.TeamManagementService.Repositories.Interfaces
 
         Task<int> GetCountCarsByIdTeam(string teamId);
         Task<int> GetCountCarsByIdCar(Guid carId);
+        Task<int> GetAllCarsCountAsync();
 
     }
 }

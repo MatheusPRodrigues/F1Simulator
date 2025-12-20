@@ -72,5 +72,19 @@ namespace F1Simulator.TeamManagementService.Repositories
             }
         }
 
+        public async Task<int> GetAllBossesCountAsync()
+        {
+            try
+            {
+                var sql = @"SELECT COUNT(*) FROM Boss";
+
+                return await _connection.ExecuteScalarAsync<int>(sql);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
     }
 }

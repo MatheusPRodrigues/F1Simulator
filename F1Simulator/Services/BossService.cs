@@ -1,4 +1,5 @@
 ﻿using F1Simulator.Models.DTOs.TeamManegementService.BossDTO;
+using F1Simulator.Models.Models.TeamManegement;
 using F1Simulator.Models.Models.TeamManegementService;
 using F1Simulator.TeamManagementService.Data;
 using F1Simulator.TeamManagementService.Repositories;
@@ -54,6 +55,10 @@ namespace F1Simulator.TeamManagementService.Services
                 if (team is null)
                     throw new Exception("Team does not exist");
 
+                var totalBosses = await _bossRepository.GetAllBossesCountAsync();
+
+                if (totalBosses >= 22)
+                    throw new InvalidOperationException("Maximum number of bosses (22) reached.");
 
                 var bossCount = await _bossRepository.GetBossByTeamCountAsync(teamId);
                 if (bossCount >= 2)
@@ -100,6 +105,19 @@ namespace F1Simulator.TeamManagementService.Services
             catch (Exception ex)
             {
                 _logger.LogError($"An error occurred while getting the boss list: {ex.Message}", ex);
+                throw;
+            }
+        }
+
+        public async Task<int> GetAllBossesCountAsync()
+        {
+            try
+            {
+                return await _bossRepository.GetAllBossesCountAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"An error occurred while getting count the boss in the team: {ex.Message}", ex);
                 throw;
             }
         }

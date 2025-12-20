@@ -25,7 +25,5 @@ namespace F1Simulator.Models.Models
             Points = points;
             DriverName = driverName;
         }
-    }
-
-    
+    }  
 }

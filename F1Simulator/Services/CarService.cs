@@ -51,6 +51,11 @@ namespace F1Simulator.TeamManagementService.Services
             if (team is null)
                 throw new ArgumentException("Team does not exist for the provided TeamId.");
 
+            var totalCars = await _carRepository.GetAllCarsCountAsync();
+
+            if (totalCars >= 22)
+                throw new InvalidOperationException("Maximum number of cars (22) reached.");
+
             var ca = Math.Round((10.0 * _random.NextDouble()), 3);
             var cp = Math.Round((10.0 * _random.NextDouble()), 3);
 

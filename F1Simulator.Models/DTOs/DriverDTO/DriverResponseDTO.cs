@@ -15,6 +15,5 @@ namespace F1Simulator.Models.DTOs.DriverDTO
         public string NameAcronym { get; init; }
         public double WeightKg { get; init; }
         public double HandiCap { get; init; }
-        public bool IsActive { get; init; }
     }
 }

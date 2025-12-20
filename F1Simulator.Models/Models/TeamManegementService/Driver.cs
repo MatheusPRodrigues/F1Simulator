@@ -9,7 +9,6 @@ namespace F1Simulator.Models.Models.TeamManegement
         public Driver(int driverNumber, Guid teamId, Guid carId, string firstName, string fullName, double weightKg, double experienceFactor, double handicap)
         {
             DriverId = Guid.NewGuid();
-            HandiCap = 
             DriverNumber = driverNumber;
             TeamId = teamId;
             CarId = carId;
@@ -18,7 +17,6 @@ namespace F1Simulator.Models.Models.TeamManegement
             WeightKg = weightKg;
             ExperienceFactor = experienceFactor;
             HandiCap = handicap;
-            IsActive = true;
         }
 
         public Guid DriverId { get; set; }
@@ -30,6 +28,5 @@ namespace F1Simulator.Models.Models.TeamManegement
         public string FullName { get; set; }
         public double WeightKg { get; set; }
         public double HandiCap { get; set; }
-        public bool IsActive { get; set; } = true;
     }
 }
