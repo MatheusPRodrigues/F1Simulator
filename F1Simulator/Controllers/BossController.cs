@@ -1,12 +1,6 @@
 ﻿using F1Simulator.Models.DTOs.TeamManegementService.BossDTO;
-using F1Simulator.Models.DTOs.TeamManegementService.TeamDTO;
-using F1Simulator.Models.Models.TeamManegement;
-using F1Simulator.Models.Models.TeamManegementService;
-using F1Simulator.TeamManagementService.Services;
 using F1Simulator.TeamManagementService.Services.Interfaces;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using MongoDB.Bson.Serialization.Serializers;
 
 namespace F1Simulator.TeamManagementService.Controllers
 {
@@ -28,10 +22,22 @@ namespace F1Simulator.TeamManagementService.Controllers
         {
             try
             {
-                _logger.LogInformation("Count of teams:");
-                return await _bossService.GetBossByTeamCountAsync(teamId);
+                var count = await _bossService.GetBossByTeamCountAsync(teamId);
+                return StatusCode(201, count); ;
             }
-            catch(Exception ex)
+            catch (ArgumentException ex)
+            {
+                return StatusCode(400, new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return StatusCode(409, new { message = ex.Message });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return StatusCode(404, new { message = ex.Message });
+            }
+            catch (Exception ex)
             {
 
                 _logger.LogError(ex, "Error occurred while getting count of bosess in team!");
@@ -45,12 +51,19 @@ namespace F1Simulator.TeamManagementService.Controllers
             try
             {
                await _bossService.CreateBossAsync(bossDto);
-                _logger.LogInformation("Team sucessfully created!");
-                return StatusCode(StatusCodes.Status201Created); ;
+                return StatusCode(StatusCodes.Status201Created, bossDto); ;
             }
-            catch(ArgumentException ex)
+            catch (ArgumentException ex)
             {
-                return StatusCode(StatusCodes.Status400BadRequest, new { Message = ex.Message });
+                return StatusCode(400, new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return StatusCode(409, new { message = ex.Message });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return StatusCode(404, new { message = ex.Message });
             }
             catch (Exception ex)
             {
@@ -71,10 +84,22 @@ namespace F1Simulator.TeamManagementService.Controllers
 
                 return Ok(boss);
             }
-            catch(Exception ex)
+            catch (ArgumentException ex)
             {
-                _logger.LogError(ex, "Error occurred while getting all bosses!");
-                throw;
+                return StatusCode(400, new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return StatusCode(409, new { message = ex.Message });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return StatusCode(404, new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while getting the bosses!");
+                return StatusCode(StatusCodes.Status500InternalServerError, new { Message = "An unspected error ocurred while getting the bosses!" });
             }
         }
 
@@ -86,10 +111,50 @@ namespace F1Simulator.TeamManagementService.Controllers
                 var bossTeam = await _bossService.GetBossesWithTeamAsync();
                 return bossTeam is null ? NotFound() : Ok(bossTeam);
             }
+            catch (ArgumentException ex)
+            {
+                return StatusCode(400, new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return StatusCode(409, new { message = ex.Message });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return StatusCode(404, new { message = ex.Message });
+            }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occurred while getting all bosses with their teams!");
                 throw;
+            }
+        }
+
+        [HttpGet("count")]
+        public async Task<ActionResult<int>> GetAllBossesCountAsync()
+        {
+            try
+            {
+                var count = await _bossService.GetAllBossesCountAsync();
+                return Ok(count); ;
+            }
+            catch (ArgumentException ex)
+            {
+                return StatusCode(400, new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return StatusCode(409, new { message = ex.Message });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return StatusCode(404, new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+
+                _logger.LogError(ex, "Error occurred while getting count all bosess!");
+                return BadRequest(ex);
             }
         }
     }

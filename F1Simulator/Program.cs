@@ -1,4 +1,3 @@
-using F1Simulator.TeamManagementService.Data;
 using F1Simulator.TeamManagementService.Repositories;
 using F1Simulator.TeamManagementService.Repositories.Interfaces;
 using F1Simulator.TeamManagementService.Services;
@@ -8,7 +7,6 @@ using F1Simulator.Utils.Clients.Interfaces;
 using F1Simulator.Utils.DatabaseConnectionFactory;
 using F1Simulator.Utils.DatabaseConnectionFactory.Connections;
 using Microsoft.Data.SqlClient;
-using System.Drawing;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);

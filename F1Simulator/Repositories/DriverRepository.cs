@@ -5,7 +5,6 @@ using F1Simulator.Models.Models.TeamManegement;
 using F1Simulator.TeamManagementService.Repositories.Interfaces;
 using F1Simulator.Utils.DatabaseConnectionFactory;
 using Microsoft.Data.SqlClient;
-using ZstdSharp.Unsafe;
 
 namespace F1Simulator.TeamManagementService.Repositories
 {
@@ -21,8 +20,8 @@ namespace F1Simulator.TeamManagementService.Repositories
         {
             try
             {
-                var sql = @"INSERT INTO Drivers(DriverId, DriverNumber, TeamId, CarId, FirstName, FullName, WeightKg, HandiCap, IsActive, ExperienceFactor) 
-                            VALUES (@DriverId, @DriverNumber, @TeamId, @CarId, @FirstName, @FullName, @WeightKg, @HandiCap, @IsActive, @ExperienceFactor)";
+                var sql = @"INSERT INTO Drivers(DriverId, DriverNumber, TeamId, CarId, FirstName, FullName, WeightKg, HandiCap, ExperienceFactor) 
+                            VALUES (@DriverId, @DriverNumber, @TeamId, @CarId, @FirstName, @FullName, @WeightKg, @HandiCap, @ExperienceFactor)";
                 await _connection.ExecuteAsync(sql, 
                     new {
                         DriverId = driver.DriverId, 
@@ -33,7 +32,6 @@ namespace F1Simulator.TeamManagementService.Repositories
                         FullName = driver.FullName,
                         WeightKg = driver.WeightKg,
                         HandiCap = driver.HandiCap,
-                        IsActive = driver.IsActive,
                         ExperienceFactor = driver.ExperienceFactor
                     });
 
@@ -41,11 +39,10 @@ namespace F1Simulator.TeamManagementService.Repositories
                 {
                     DriverId = driver.DriverId,
                     CarId = driver.CarId,
-                    DriverNumber = driver.DriverNumber,
+                    DriverNumber = driver.DriverNumber.ToString(),
                     FirstName = driver.FirstName,
                     FullName = driver.FullName,
                     HandiCap = driver.HandiCap,
-                    IsActive = driver.IsActive,
                     TeamId = driver.TeamId,
                     WeightKg = driver.WeightKg,
                     ExperienceFactor = driver.ExperienceFactor
@@ -62,7 +59,8 @@ namespace F1Simulator.TeamManagementService.Repositories
         {
             try
             {
-                var sql = @"SELECT DriverId, DriverNumber, TeamId, CarId, FirstName, FullName, WeightKg, HandiCap, IsActive FROM Drivers";
+                var sql = @"SELECT DriverId, DriverNumber, TeamId, CarId, FirstName, FullName, WeightKg, HandiCap, ExperienceFactor
+                            FROM Drivers";
                 var drivers = await _connection.QueryAsync<DriverResponseDTO>(sql);
                 return drivers.ToList();
             }
@@ -88,7 +86,7 @@ namespace F1Simulator.TeamManagementService.Repositories
         {
             try
             {
-                var sql = @"SELECT DriverId, DriverNumber, TeamId, CarId, FirstName, FullName, WeightKg, HandiCap, IsActive FROM Drivers WHERE DriverId = @DriverId";
+                var sql = @"SELECT DriverId, DriverNumber, TeamId, CarId, FirstName, FullName, WeightKg, HandiCap FROM Drivers WHERE DriverId = @DriverId";
                 var driver = await _connection.QueryFirstOrDefaultAsync<DriverResponseDTO>(sql, new { DriverId = id });
                 return driver;
             }
@@ -102,7 +100,7 @@ namespace F1Simulator.TeamManagementService.Repositories
         {
             try
             {
-                var sql = @"SELECT DriverId, DriverNumber, TeamId, CarId, FirstName, FullName, WeightKg, HandiCap, IsActive FROM Drivers WHERE DriverNumber = @DriverNumber";
+                var sql = @"SELECT DriverId, DriverNumber, TeamId, CarId, FirstName, FullName, WeightKg, HandiCap FROM Drivers WHERE DriverNumber = @DriverNumber";
                 var driver = await _connection.QueryFirstOrDefaultAsync<DriverResponseDTO>(sql, new { DriverNumber = number });
                 return driver;
             } catch(SqlException ex)
@@ -135,12 +133,9 @@ namespace F1Simulator.TeamManagementService.Repositories
                         INNER JOIN Engineers eCa
                             ON eCa.CarId = c.CarId
                            AND eCa.Specialization = 'Ca'
-                           AND eCa.IsActive = 1
                         INNER JOIN Engineers eCp
                             ON eCp.CarId = c.CarId
-                           AND eCp.Specialization = 'Cp'
-                           AND eCp.IsActive = 1
-                        WHERE d.IsActive = 1;";
+                           AND eCp.Specialization = 'Cp';";
 
                 var driversToRace =  await _connection.QueryAsync<DriverToRaceDTO>(sql);
                 return driversToRace.ToList();

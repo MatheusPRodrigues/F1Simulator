@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace F1Simulator.Models.DTOs.DriverDTO
+﻿namespace F1Simulator.Models.DTOs.DriverDTO
 {
     public class DriverResponseDTO
     {
@@ -15,6 +11,5 @@ namespace F1Simulator.Models.DTOs.DriverDTO
         public string NameAcronym { get; init; }
         public double WeightKg { get; init; }
         public double HandiCap { get; init; }
-        public bool IsActive { get; init; }
     }
 }

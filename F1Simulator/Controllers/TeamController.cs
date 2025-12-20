@@ -1,10 +1,5 @@
 ﻿using F1Simulator.Models.DTOs.TeamManegementService.TeamDTO;
-using F1Simulator.Models.Models.TeamManegement;
-using F1Simulator.TeamManagementService.Repositories;
-using F1Simulator.TeamManagementService.Services;
 using F1Simulator.TeamManagementService.Services.Interfaces;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace F1Simulator.TeamManagementService.Controllers
@@ -23,12 +18,24 @@ namespace F1Simulator.TeamManagementService.Controllers
         }
 
         [HttpGet("count")]
-        public async Task<int> GetTeamsCountAsync()
+        public async Task<ActionResult<int>> GetTeamsCountAsync()
         {
             try
             {
-                _logger.LogInformation("Count of teams:");
-                return await _teamService.GetTeamsCountAsync();
+                var count = await _teamService.GetTeamsCountAsync();
+                return StatusCode(StatusCodes.Status201Created, count);
+            }
+            catch (ArgumentException ex)
+            {
+                return StatusCode(400, new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return StatusCode(409, new { message = ex.Message });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return StatusCode(404, new { message = ex.Message });
             }
             catch (Exception ex)
             {
@@ -48,6 +55,18 @@ namespace F1Simulator.TeamManagementService.Controllers
                 await _teamService.CreateTeamAsync(teamRequestDto);
                 return StatusCode(StatusCodes.Status201Created);
             }
+            catch (ArgumentException ex)
+            {
+                return StatusCode(400, new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return StatusCode(409, new { message = ex.Message });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return StatusCode(404, new { message = ex.Message });
+            }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occurred while creating team");
@@ -65,7 +84,19 @@ namespace F1Simulator.TeamManagementService.Controllers
                 if (teams is null || teams.Count == 0)
                     return NoContent();
                 
-                return Ok(teams);
+                return StatusCode(StatusCodes.Status201Created, teams);
+            }
+            catch (ArgumentException ex)
+            {
+                return StatusCode(400, new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return StatusCode(409, new { message = ex.Message });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return StatusCode(404, new { message = ex.Message });
             }
             catch (Exception ex)
             {
@@ -82,7 +113,19 @@ namespace F1Simulator.TeamManagementService.Controllers
                 var result = await _teamService.GetTeamByIdAsync(teamId);
                 return result is null ? NotFound() : Ok(result);
             }
-            catch(Exception ex)
+            catch (ArgumentException ex)
+            {
+                return StatusCode(400, new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return StatusCode(409, new { message = ex.Message });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return StatusCode(404, new { message = ex.Message });
+            }
+            catch (Exception ex)
             {
                 _logger.LogError($"An error occurred while getting the team by id: {ex.Message}", ex);
                 throw;
@@ -99,7 +142,15 @@ namespace F1Simulator.TeamManagementService.Controllers
             }
             catch (ArgumentException ex)
             {
-                return StatusCode(StatusCodes.Status400BadRequest, new { Message = ex.Message });
+                return StatusCode(400, new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return StatusCode(409, new { message = ex.Message });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return StatusCode(404, new { message = ex.Message });
             }
             catch (Exception ex)
             {
@@ -118,12 +169,15 @@ namespace F1Simulator.TeamManagementService.Controllers
             }
             catch (ArgumentException ex)
             {
-                _logger.LogWarning(ex, "Invalid data when updating team country. TeamId: {TeamId}", teamId);
-                return BadRequest(new { Message = ex.Message });
+                return StatusCode(400, new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return StatusCode(409, new { message = ex.Message });
             }
             catch (KeyNotFoundException ex)
             {
-                return NotFound(new { Message = ex.Message });
+                return StatusCode(404, new { message = ex.Message });
             }
             catch (Exception ex)
             {

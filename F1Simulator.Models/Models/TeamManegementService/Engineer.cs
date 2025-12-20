@@ -15,7 +15,6 @@ namespace F1Simulator.Models.Models.TeamManegement
             FirstName = firstName;
             FullName = fullName;
             EngineerSpecialization = engineerSpecialization;
-            IsActive = true;
             ExperienceFactor = experienceFactor;
         }
 
@@ -25,9 +24,6 @@ namespace F1Simulator.Models.Models.TeamManegement
         public string FirstName { get; set; }
         public string FullName { get; set; }
         public Specialization EngineerSpecialization { get; set; }
-        public double ExperienceFactor { get; set; }
-        public bool IsActive { get; set; } = true;
-
-        
+        public double ExperienceFactor { get; set; }    
     }
 }

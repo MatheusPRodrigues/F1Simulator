@@ -9,5 +9,6 @@ namespace F1Simulator.TeamManagementService.Repositories.Interfaces
         Task CreateBossAsync(Boss boss);
         Task<IEnumerable<BossResponseDTO>> GetAllBossesAsync();
         Task<IEnumerable<BossWithTeamDTO>> GetBossesWithTeamAsync();
+        Task<int> GetAllBossesCountAsync();
     }
 }

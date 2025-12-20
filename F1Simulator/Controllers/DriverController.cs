@@ -1,7 +1,6 @@
 ﻿using F1Simulator.Models.DTOs.RaceControlService;
 using F1Simulator.Models.DTOs.TeamManegementService.DriverDTO;
 using F1Simulator.TeamManagementService.Services.Interfaces;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace F1Simulator.TeamManagementService.Controllers

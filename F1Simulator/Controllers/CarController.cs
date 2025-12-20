@@ -26,20 +26,27 @@ namespace F1Simulator.TeamManagementService.Controllers
             {
                 await _carService.CreateCarAsync(car);
 
-                return Created();
+                return StatusCode(StatusCodes.Status201Created, car);
             }
             catch (ArgumentException ex)
             {
-                return BadRequest(ex.Message);
+                return StatusCode(400, new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return StatusCode(409, new { message = ex.Message });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return StatusCode(404, new { message = ex.Message });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An unexpected error occurred while creating a new car.");
 
-                return Problem(ex.Message);
+                _logger.LogError(ex, "Error occurred while creating the car!");
+                return BadRequest(ex);
             }
         }
-
 
         [HttpGet]
         public async Task<ActionResult<List<CarResponseDTO>>> GetAllCarAsync()
@@ -52,6 +59,18 @@ namespace F1Simulator.TeamManagementService.Controllers
                     return NoContent();
 
                 return Ok(cars);
+            }
+            catch (ArgumentException ex)
+            {
+                return StatusCode(400, new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return StatusCode(409, new { message = ex.Message });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return StatusCode(404, new { message = ex.Message });
             }
             catch (Exception ex)
             {
@@ -71,9 +90,17 @@ namespace F1Simulator.TeamManagementService.Controllers
 
                 return Ok(car);
             }
+            catch (ArgumentException ex)
+            {
+                return StatusCode(400, new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return StatusCode(409, new { message = ex.Message });
+            }
             catch (KeyNotFoundException ex)
             {
-                return NotFound(ex.Message);
+                return StatusCode(404, new { message = ex.Message });
             }
             catch (Exception ex)
             {
@@ -85,13 +112,25 @@ namespace F1Simulator.TeamManagementService.Controllers
 
 
         [HttpPut("{carId}/coefficients")]
-        public async Task<IActionResult> UpdateCarCoefficientsAsync([FromBody] CarUpdateDTO carUpdate, [FromRoute] string carId)
+        public async Task<ActionResult> UpdateCarCoefficientsAsync([FromBody] CarUpdateDTO carUpdate, [FromRoute] string carId)
         {
             try
             {
                 await _carService.UpdateCarCoefficientsAsync(carUpdate, carId);
 
                 return NoContent();
+            }
+            catch (ArgumentException ex)
+            {
+                return StatusCode(400, new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return StatusCode(409, new { message = ex.Message });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return StatusCode(404, new { message = ex.Message });
             }
             catch (Exception ex)
             {
@@ -103,13 +142,25 @@ namespace F1Simulator.TeamManagementService.Controllers
 
 
         [HttpPatch("{carId}/model")]
-        public async Task<IActionResult> UpdateCarModelAsync([FromBody] CarModelUpdateDTO carModelUpdate, [FromRoute] string carId)
+        public async Task<ActionResult> UpdateCarModelAsync([FromBody] CarModelUpdateDTO carModelUpdate, [FromRoute] string carId)
         {
             try
             {
                 await _carService.UpdateCarModelAsync(carModelUpdate, carId);
 
                 return NoContent();
+            }
+            catch (ArgumentException ex)
+            {
+                return StatusCode(400, new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return StatusCode(409, new { message = ex.Message });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return StatusCode(404, new { message = ex.Message });
             }
             catch (Exception ex)
             {

@@ -1,9 +1,7 @@
 ﻿using Dapper;
 using F1Simulator.Models.DTOs.TeamManegementService.TeamDTO;
 using F1Simulator.Models.Models.TeamManegement;
-using F1Simulator.TeamManagementService.Data;
 using F1Simulator.TeamManagementService.Repositories.Interfaces;
-using F1Simulator.TeamManagementService.Services;
 using F1Simulator.Utils.DatabaseConnectionFactory;
 using Microsoft.Data.SqlClient;
 

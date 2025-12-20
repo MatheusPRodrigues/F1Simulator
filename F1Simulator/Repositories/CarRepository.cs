@@ -141,5 +141,18 @@ namespace F1Simulator.TeamManagementService.Repositories
             }
         }
 
+        public async Task<int> GetAllCarsCountAsync()
+        {
+            try
+            {
+                var sql = @"SELECT COUNT(*) FROM Cars";
+
+                return await _connection.ExecuteScalarAsync<int>(sql);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
     }
 }
