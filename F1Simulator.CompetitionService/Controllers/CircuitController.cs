@@ -73,8 +73,7 @@ namespace F1Simulator.CompetitionService.Controllers
             }
         }
 
-        [HttpPatch("dea tivate/{id}")]
-
+        [HttpPatch("deactivate/{id}")]
         public async Task<ActionResult> DeactivateCircuitAsync( [FromRoute] Guid id)
         {
             try
@@ -142,7 +141,7 @@ namespace F1Simulator.CompetitionService.Controllers
         {
             try
             {
-                var circuits = await _circuitService.GetAllCircuits();
+                var circuits = await _circuitService.GetAllCircuitsAsync();
                 return Ok(circuits);
             }
             catch (Exception ex)
@@ -157,7 +156,7 @@ namespace F1Simulator.CompetitionService.Controllers
         {
             try
             {
-                var circuit = await _circuitService.GetCircuitById(id);
+                var circuit = await _circuitService.GetCircuitByIdAsync(id);
                 if(circuit == null)
                 {
                     return NotFound("Circuit not found");

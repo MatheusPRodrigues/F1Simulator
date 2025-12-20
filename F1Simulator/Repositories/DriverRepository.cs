@@ -72,6 +72,18 @@ namespace F1Simulator.TeamManagementService.Repositories
             }
         }
 
+        public async Task<int> GetAllDriversCount()
+        {
+            try
+            {
+                var sql = @"SELECT COUNT(*) FROM Drivers";
+                return await _connection.ExecuteScalarAsync<int>(sql);
+            } catch(SqlException ex)
+            {
+                throw new Exception(ex.Message);
+            } 
+        }
+
         public async Task<DriverResponseDTO> GetDriverByIdAsync(Guid id)
         {
             try
@@ -105,7 +117,6 @@ namespace F1Simulator.TeamManagementService.Repositories
             {
                 var sql = @"SELECT
                             d.DriverId AS DriverId,
-                            d.DriverNumber As DriverNumber,
                             d.FullName AS DriverName,
                             d.HandiCap AS Handicap,
                             d.ExperienceFactor AS DriverExp,
