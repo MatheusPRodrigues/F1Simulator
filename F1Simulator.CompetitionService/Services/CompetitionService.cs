@@ -1,5 +1,4 @@
 ﻿using F1Simulator.CompetitionService.Exceptions;
-using F1Simulator.CompetitionService.Repositories;
 using F1Simulator.CompetitionService.Repositories.Interfaces;
 using F1Simulator.CompetitionService.Services.Interfaces;
 using F1Simulator.Models.DTOs.CompetitionService.Response;
@@ -11,7 +10,6 @@ using F1Simulator.Models.Enums.CompetitionService;
 using F1Simulator.Models.Models;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
-using System.Security;
 using System.Text;
 using System.Text.Json;
 
@@ -677,7 +675,7 @@ namespace F1Simulator.CompetitionService.Services
                 }
 
                 // buscar a corrida round 24
-                var race24 = await _competitionRepository.GetRaceRound24Async();
+                var race24 = await _competitionRepository.GetLastRaceRoundAsync();
                 if (race24 is null)
                 {
                     throw new BusinessException("error in searching for sequence race 24.");
@@ -688,9 +686,9 @@ namespace F1Simulator.CompetitionService.Services
                     throw new BusinessException("There are still races to be held.");
                 }
 
-                await _competitionRepository.EndSeasonAsync(activeSeason.Id);
                 var driverStanding = await GetDriverStandingAsync();
                 var teamStanding = await GetTeamStandingAsync();
+                await _competitionRepository.EndSeasonAsync(activeSeason.Id);
 
                 var standingsResponse = new StandingsResponseDTO
                 {
@@ -707,6 +705,7 @@ namespace F1Simulator.CompetitionService.Services
             }
 
         }
+
         public async Task<List<SeasonResponseDTO>> GetAllSeasonsAsync()
         {
             try
@@ -719,10 +718,6 @@ namespace F1Simulator.CompetitionService.Services
                 throw;
             }
         }
-
-
-
-
     }
 
 }

@@ -157,7 +157,7 @@ namespace F1Simulator.RaceControlService.Controllers
         }
 
         [HttpGet("{raceId}")]
-        public async Task<ActionResult<RaceControlResponseDTO>> GetRaceByRaceIdAsync(Guid raceId)
+        public async Task<ActionResult<RaceControlResponseDTO>> GetRaceByRaceIdAsync([FromRoute] Guid raceId)
         {
             try
             {
@@ -176,7 +176,7 @@ namespace F1Simulator.RaceControlService.Controllers
         }
 
         [HttpGet("season/{seasonYear}")]
-        public async Task<ActionResult<RaceControlResponseDTO>> GetRacesBySeasonYearAsync(int seasonYear)
+        public async Task<ActionResult<RaceControlResponseDTO>> GetRacesBySeasonYearAsync([FromRoute] int seasonYear)
         {
             try
             {

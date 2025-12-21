@@ -122,7 +122,7 @@ namespace F1Simulator.TeamManagementService.Repositories
             }
         }
 
-        public async Task<int> GetCountCarsByIdCarAsync(Guid carId)
+        public async Task<int> GetCountCarsByIdCarAsync(string carId)
         {
             try
             {
@@ -148,7 +148,7 @@ namespace F1Simulator.TeamManagementService.Repositories
 
                 return await _connection.ExecuteScalarAsync<int>(sql);
             }
-            catch (Exception ex)
+            catch (SqlException ex)
             {
                 throw new Exception(ex.Message);
             }

@@ -1,0 +1,190 @@
+type: collection.insomnia.rest/5.0
+schema_version: "5.1"
+name: RaceControlService
+meta:
+  id: wrk_ab030bffce4841449473760cd5851b04
+  created: 1766018555770
+  modified: 1766018555770
+  description: ""
+collection:
+  - url: "{{ _.executeTL1 }}"
+    name: Execute TL1
+    meta:
+      id: req_8405dc3b8b274c8191b14990d78f11eb
+      created: 1766018559042
+      modified: 1766280844742
+      isPrivate: false
+      description: ""
+      sortKey: -1766018559042
+    method: POST
+    headers:
+      - name: User-Agent
+        value: insomnia/12.1.0
+        description: ""
+        disabled: false
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: "{{ _.executeTL2 }}"
+    name: Execute TL2
+    meta:
+      id: req_a57e7dda1b414d9591a9145a77cae4e3
+      created: 1766020922219
+      modified: 1766286658912
+      isPrivate: false
+      description: ""
+      sortKey: -1766018558942
+    method: POST
+    headers:
+      - name: User-Agent
+        value: insomnia/12.1.0
+        description: ""
+        disabled: false
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: "{{ _.executeTL3 }}"
+    name: Execute TL3
+    meta:
+      id: req_7802df60c0684ab18e0a5577b082b5c5
+      created: 1766068382951
+      modified: 1766286686251
+      isPrivate: false
+      description: ""
+      sortKey: -1766018558842
+    method: POST
+    headers:
+      - name: User-Agent
+        value: insomnia/12.1.0
+        description: ""
+        disabled: false
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: "{{ _.executeRace }}"
+    name: Execute Race
+    meta:
+      id: req_a36d3495bdb34a5d94b3ad332e276176
+      created: 1766106035165
+      modified: 1766286842618
+      isPrivate: false
+      description: ""
+      sortKey: -1766018558742
+    method: POST
+    headers:
+      - name: User-Agent
+        value: insomnia/12.1.0
+        description: ""
+        disabled: false
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: "{{ _.executeQualifier }}"
+    name: Execute Qualifier
+    meta:
+      id: req_fdc2b59ce31e4ee684167fbd378f8144
+      created: 1766178729446
+      modified: 1766286813742
+      isPrivate: false
+      description: ""
+      sortKey: -1766018558792
+    method: POST
+    headers:
+      - name: User-Agent
+        value: insomnia/12.2.0
+        description: ""
+        disabled: false
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: "{{ _.baseUrl }}"
+    name: Get One Race by RaceId
+    meta:
+      id: req_88694af22a5644fc90043302b23c3a4d
+      created: 1766178782894
+      modified: 1766286987565
+      isPrivate: false
+      description: ""
+      sortKey: -1766018558642
+    method: GET
+    headers:
+      - name: User-Agent
+        value: insomnia/12.2.0
+        description: ""
+        disabled: false
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: "{{ _.baseUrl }}season/2026"
+    name: Get Races by Season Year
+    meta:
+      id: req_61c5043f35f24290974b5ddd96ce096d
+      created: 1766178872012
+      modified: 1766287007152
+      isPrivate: false
+      description: ""
+      sortKey: -1766018558542
+    method: GET
+    headers:
+      - name: User-Agent
+        value: insomnia/12.2.0
+        description: ""
+        disabled: false
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+cookieJar:
+  name: Default Jar
+  meta:
+    id: jar_c5293caaaf3d48026366c0a8a71604e58973de90
+    created: 1766018555782
+    modified: 1766018555782
+environments:
+  name: Base Environment
+  meta:
+    id: env_c5293caaaf3d48026366c0a8a71604e58973de90
+    created: 1766018555776
+    modified: 1766286953891
+    isPrivate: false
+  data:
+    executeTL1: https://localhost:7001/api/race/simulate/tl1
+    executeTL2: https://localhost:7001/api/race/simulate/tl2
+    executeTL3: https://localhost:7001/api/race/simulate/tl3
+    executeQualifier: https://localhost:7001/api/race/simulate/qualifier
+    executeRace: https://localhost:7001/api/race/simulate/race
+    baseUrl: https://localhost:7001/api/race/

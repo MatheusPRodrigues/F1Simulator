@@ -18,18 +18,33 @@ namespace F1Simulator.TeamManagementService.Repositories
 
         public async Task<int> GetBossByTeamCountAsync(Guid teamId)
         {
-            var sql = @"SELECT COUNT(*) FROM Boss
-                        WHERE TeamId = @TeamId";
+            try
+            {
+                var sql = @"SELECT COUNT(*) FROM Boss
+                            WHERE TeamId = @TeamId";
 
-            return await _connection.ExecuteScalarAsync<int>(sql, new { TeamId = teamId});
+                return await _connection.ExecuteScalarAsync<int>(sql, new { TeamId = teamId});
+            }
+            catch (SqlException ex)
+            {
+                throw new Exception(ex.Message);
+            }
+
         }
 
         public async Task CreateBossAsync(Boss boss)
         {
-            var sql = @"INSERT INTO Boss (BossId, TeamId, FirstName, LastName, Age)
+            try
+            {
+                var sql = @"INSERT INTO Boss (BossId, TeamId, FirstName, LastName, Age)
                         VALUES (@BossId, @TeamId, @FirstName, @LastName, @Age)";
 
-            await _connection.ExecuteAsync(sql, boss);
+                await _connection.ExecuteAsync(sql, boss);
+            }
+            catch (SqlException ex)
+            {
+                throw new Exception(ex.Message);
+            }
         }
 
         public async Task<IEnumerable<BossResponseDTO>> GetAllBossesAsync()
@@ -80,7 +95,7 @@ namespace F1Simulator.TeamManagementService.Repositories
 
                 return await _connection.ExecuteScalarAsync<int>(sql);
             }
-            catch (Exception ex)
+            catch (SqlException ex)
             {
                 throw new Exception(ex.Message);
             }

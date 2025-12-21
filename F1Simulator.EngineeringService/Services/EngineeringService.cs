@@ -89,6 +89,5 @@ namespace F1Simulator.EngineeringService.Services
 
             return newCar;
         }
-
     }
 }

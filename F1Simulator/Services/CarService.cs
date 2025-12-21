@@ -14,8 +14,9 @@ namespace F1Simulator.TeamManagementService.Services
         private readonly Random _random = Random.Shared;
         private readonly ICompetitionClient _competitionClient;
 
-        public CarService(ICarRepository carRepository, ITeamRepository teamRepository, ICompetitionClient competitionClient)
+        public CarService(ILogger<CarService> logger, ICarRepository carRepository, ITeamRepository teamRepository, ICompetitionClient competitionClient)
         {
+            _logger = logger;
             _carRepository = carRepository;
             _teamRepository = teamRepository;
             _competitionClient = competitionClient;
@@ -151,7 +152,7 @@ namespace F1Simulator.TeamManagementService.Services
         {
             try
             {
-                return await _carRepository.GetCountCarsByIdCarAsync(carId);
+                return await _carRepository.GetCountCarsByIdCarAsync(carId.ToString());
             }
             catch (Exception ex)
             {

@@ -1,8 +1,6 @@
 ﻿using F1Simulator.CompetitionService.Exceptions;
 using F1Simulator.CompetitionService.Services.Interfaces;
 using F1Simulator.Models.DTOs.CompetitionService.Response;
-using F1Simulator.Models.Enums.CompetitionService;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace F1Simulator.CompetitionService.Controllers
@@ -83,7 +81,7 @@ namespace F1Simulator.CompetitionService.Controllers
         }
 
         [HttpGet("races/inprogress")]
-        public async Task<ActionResult> GetRaceInProgress()
+        public async Task<ActionResult> GetRaceInProgressAsync()
         {
             try
             {

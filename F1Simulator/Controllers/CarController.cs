@@ -169,7 +169,5 @@ namespace F1Simulator.TeamManagementService.Controllers
                 return Problem(ex.Message);
             }
         }
-
-
     }
 }

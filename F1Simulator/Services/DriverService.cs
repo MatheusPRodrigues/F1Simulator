@@ -34,7 +34,7 @@ namespace F1Simulator.TeamManagementService.Services
                 if (activeSeason is not null && activeSeason.IsActive)
                     throw new InvalidOperationException("Cannot create or update drivers while a competition season is active.");
 
-                if (await _driverRepository.GetAllDriversCount() >= 22)
+                if (await _driverRepository.GetAllDriversCountAsync() >= 22)
                     throw new InvalidOperationException("The grid already has 22 drivers.");
 
                 if (driverRequest.DriverNumber < 0)
@@ -54,7 +54,7 @@ namespace F1Simulator.TeamManagementService.Services
                 if (team is null)
                     throw new KeyNotFoundException("Team not found.");
 
-                if(await _teamService.GetDriversInTeamById(driverRequest.TeamId) >= 2)
+                if(await _teamService.GetDriversInTeamByIdAsync(driverRequest.TeamId) >= 2)
                     throw new InvalidOperationException("The Team is already with two drivers");
                 var experienceDriver = Math.Round((5.0 * _random.NextDouble()), 3);
 
@@ -113,8 +113,9 @@ namespace F1Simulator.TeamManagementService.Services
         {
             try
             {
-                return await _driverRepository.GetDriversToRace();
-            } catch(Exception ex)
+                return await _driverRepository.GetDriversToRaceAsync();
+            }
+            catch(Exception ex)
             {
                 throw new Exception(ex.Message);
             }
@@ -140,12 +141,13 @@ namespace F1Simulator.TeamManagementService.Services
             }
         }
 
-        public async Task<int> GetAllDriversCount()
+        public async Task<int> GetAllDriversCountAsync()
         {
             try
             {
-                return await _driverRepository.GetAllDriversCount();
-            } catch(Exception ex)
+                return await _driverRepository.GetAllDriversCountAsync();
+            }
+            catch(Exception ex)
             {
                 throw new Exception(ex.Message);
             }

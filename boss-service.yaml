@@ -1,0 +1,160 @@
+type: collection.insomnia.rest/5.0
+schema_version: "5.1"
+name: Boss
+meta:
+  id: wrk_0214d7d4b4ba4bb5b219b6a3a99d90a2
+  created: 1766107052304
+  modified: 1766107052304
+  description: ""
+collection:
+  - url: "{{ _.base_url_boss_count }}/3FA0D846-EB9A-4DF4-BC07-5AA593844194"
+    name: GetBossInTheTeamCount
+    meta:
+      id: req_f726c829f10e4fdfb3d1804a07ea24f1
+      created: 1766107066249
+      modified: 1766287960188
+      isPrivate: false
+      description: ""
+      sortKey: -1766107066249
+    method: GET
+    headers:
+      - name: User-Agent
+        value: insomnia/12.1.0
+        description: ""
+        disabled: false
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: "{{ _.base_url_boss }}"
+    name: PostBoss
+    meta:
+      id: req_8731d0e67827470780932b49aa63df31
+      created: 1766107583184
+      modified: 1766288090024
+      isPrivate: false
+      description: ""
+      sortKey: -1766107583184
+    method: POST
+    body:
+      mimeType: application/json
+      text: |-
+        {
+        	"teamId" : "3fa0d846-eb9a-4df4-bc07-5aa593844194",
+        	"firstName" : "Toto",
+        	"lastName" : "22",
+        	"age" : 42
+        }
+    headers:
+      - name: Content-Type
+        value: application/json
+      - name: User-Agent
+        value: insomnia/12.1.0
+        description: ""
+        disabled: false
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: "{{ _.base_url_boss }}"
+    name: GetBoss
+    meta:
+      id: req_3946b2d5a5194f87b1d591200bbf497d
+      created: 1766107753104
+      modified: 1766288080383
+      isPrivate: false
+      description: ""
+      sortKey: -1766107753104
+    method: GET
+    headers:
+      - name: User-Agent
+        value: insomnia/12.1.0
+        description: ""
+        disabled: false
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: "{{ _.base_url_boss_team }}"
+    name: GetBossWithTeam
+    meta:
+      id: req_4a8e576074d94abb9a715ac1840548e7
+      created: 1766109718722
+      modified: 1766288145643
+      isPrivate: false
+      description: ""
+      sortKey: -1766109718722
+    method: GET
+    headers:
+      - name: User-Agent
+        value: insomnia/12.1.0
+        description: ""
+        disabled: false
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: "{{ _.base_url_boss_count }}"
+    name: GetCountAllBoss
+    meta:
+      id: req_8c1333f5fd9b45058615f1e96608885a
+      created: 1766287822044
+      modified: 1766288139882
+      isPrivate: false
+      description: ""
+      sortKey: -1766287822044
+    method: GET
+    headers:
+      - name: User-Agent
+        value: insomnia/12.1.0
+        description: ""
+        disabled: false
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+cookieJar:
+  name: Default Jar
+  meta:
+    id: jar_f57b9b65e880769e73151686f9906ac2d6f29a43
+    created: 1766107052337
+    modified: 1766107052337
+environments:
+  name: Boss
+  meta:
+    id: env_f57b9b65e880769e73151686f9906ac2d6f29a43
+    created: 1766107052315
+    modified: 1766288124304
+    isPrivate: false
+  data:
+    base_url_boss_count: https://localhost:8001/api/boss/count
+    base_url_boss: https://localhost:8001/api/boss
+    base_url_boss_team: https://localhost:8001/api/boss/boss-team
+  subEnvironments:
+    - name: New Environment
+      meta:
+        id: env_f28db5b392a7432380b0592d4b387ecd
+        created: 1766287878848
+        modified: 1766287878848
+        isPrivate: false
+        sortKey: 1766287878848
