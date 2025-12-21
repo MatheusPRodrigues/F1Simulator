@@ -18,7 +18,7 @@ namespace F1Simulator.TeamManagementService.Controllers
         }
 
         [HttpGet("count/{teamId}")]
-        public async Task<ActionResult<int>> GetBossByTeamCountAsync(string teamId)
+        public async Task<ActionResult<int>> GetBossByTeamCountAsync([FromRoute] string teamId)
         {
             try
             {

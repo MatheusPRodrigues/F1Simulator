@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace F1Simulator.Models.DTOs.CompetitionService.Update
+﻿namespace F1Simulator.Models.DTOs.CompetitionService.Update
 {
     public class UpdateCircuitDTO
     {

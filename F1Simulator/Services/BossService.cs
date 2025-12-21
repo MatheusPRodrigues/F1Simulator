@@ -8,12 +8,12 @@ namespace F1Simulator.TeamManagementService.Services
 {
     public class BossService : IBossService
     {
-        private readonly ILogger<Boss> _logger;
+        private readonly ILogger<BossService> _logger;
         private readonly IBossRepository _bossRepository;
         private readonly ITeamRepository _teamRepository;
         private readonly ICompetitionClient _competitionClient;
 
-        public BossService(ILogger<Boss> logger, IBossRepository bossRepository, 
+        public BossService(ILogger<BossService> logger, IBossRepository bossRepository, 
            ITeamRepository teamRepository, ICompetitionClient competitionClient)
         {
             _logger = logger;

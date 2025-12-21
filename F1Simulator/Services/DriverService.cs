@@ -34,13 +34,19 @@ namespace F1Simulator.TeamManagementService.Services
                 if (activeSeason is not null && activeSeason.IsActive)
                     throw new InvalidOperationException("Cannot create or update drivers while a competition season is active.");
 
-                if (await _driverRepository.GetAllDriversCount() >= 22)
+                if (await _driverRepository.GetAllDriversCountAsync() >= 22)
                     throw new InvalidOperationException("The grid already has 22 drivers.");
+
+                if (driverRequest.DriverNumber < 0)
+                    throw new ArgumentException("The driver number cannot be negative");
+
+                if (driverRequest.DriverNumber > 99)
+                    throw new ArgumentException("The driver number cannot be greater than 99");
 
                 if (await _driverRepository.GetDriverByNumberAsync(driverRequest.DriverNumber) is not null)
                     throw new InvalidOperationException("There is already a pilot with that number.");
 
-                if (await _carService.GetCountCarByIdCar(driverRequest.CarId) == 1)
+                if (await _carService.GetCountCarByIdCarAsync(driverRequest.CarId) == 1)
                     throw new InvalidOperationException("This car is already linked to a driver.");
 
                 var team = await _teamService.GetTeamByIdAsync(driverRequest.TeamId.ToString());
@@ -48,7 +54,7 @@ namespace F1Simulator.TeamManagementService.Services
                 if (team is null)
                     throw new KeyNotFoundException("Team not found.");
 
-                if(await _teamService.GetDriversInTeamById(driverRequest.TeamId) >= 2)
+                if(await _teamService.GetDriversInTeamByIdAsync(driverRequest.TeamId) >= 2)
                     throw new InvalidOperationException("The Team is already with two drivers");
                 var experienceDriver = Math.Round((5.0 * _random.NextDouble()), 3);
 
@@ -107,8 +113,9 @@ namespace F1Simulator.TeamManagementService.Services
         {
             try
             {
-                return await _driverRepository.GetDriversToRace();
-            } catch(Exception ex)
+                return await _driverRepository.GetDriversToRaceAsync();
+            }
+            catch(Exception ex)
             {
                 throw new Exception(ex.Message);
             }
@@ -118,6 +125,7 @@ namespace F1Simulator.TeamManagementService.Services
         {
             try
             {
+                //
                 var driverUpdate = Math.Clamp(driverRequest.Handicap, 0, 100);
 
                 var driverNew = new UpdateRequestDriverDTO
@@ -133,12 +141,13 @@ namespace F1Simulator.TeamManagementService.Services
             }
         }
 
-        public async Task<int> GetAllDriversCount()
+        public async Task<int> GetAllDriversCountAsync()
         {
             try
             {
-                return await _driverRepository.GetAllDriversCount();
-            } catch(Exception ex)
+                return await _driverRepository.GetAllDriversCountAsync();
+            }
+            catch(Exception ex)
             {
                 throw new Exception(ex.Message);
             }

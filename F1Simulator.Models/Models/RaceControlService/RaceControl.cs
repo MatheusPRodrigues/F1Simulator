@@ -1,8 +1,4 @@
 ﻿using MongoDB.Bson;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace F1Simulator.Models.Models.RaceControlService
 {
@@ -26,6 +22,7 @@ namespace F1Simulator.Models.Models.RaceControlService
         )
         {
             Id = ObjectId.GenerateNewId();
+            RaceId = raceId;
             Round = round;
             Season = season;
             Circuit = circuit;

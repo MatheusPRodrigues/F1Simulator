@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace F1Simulator.Models.Models.RaceControlService
+﻿namespace F1Simulator.Models.Models.RaceControlService
 {
     public class DriverRace
     {
@@ -26,6 +22,7 @@ namespace F1Simulator.Models.Models.RaceControlService
             DriverId = driverId;
             DriverName = driverName;
             TeamId = teamId;
+            TeamName = teamName;
             Position = position;
             Pontuation = pontuation;
         }

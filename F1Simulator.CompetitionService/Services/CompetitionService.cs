@@ -1,5 +1,4 @@
 ﻿using F1Simulator.CompetitionService.Exceptions;
-using F1Simulator.CompetitionService.Repositories;
 using F1Simulator.CompetitionService.Repositories.Interfaces;
 using F1Simulator.CompetitionService.Services.Interfaces;
 using F1Simulator.Models.DTOs.CompetitionService.Response;
@@ -11,7 +10,6 @@ using F1Simulator.Models.Enums.CompetitionService;
 using F1Simulator.Models.Models;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
-using System.Security;
 using System.Text;
 using System.Text.Json;
 
@@ -116,7 +114,7 @@ namespace F1Simulator.CompetitionService.Services
                 {
                     season = new Season(year.Value + 1);
                 }
-                
+
                 // construir os standings de equipes e pilotos com 0 pontos, e gerar o calendário com os circuitos ativos
 
                 var teamStandings = responseTeams.Select(t => new TeamStanding(season.Id, t.TeamId, 0, t.Name)).ToList();
@@ -220,7 +218,7 @@ namespace F1Simulator.CompetitionService.Services
                     throw new BusinessException("There is no active season.");
                 }
 
-                var response =  await _competitionRepository.GetRaceWithCircuitAsync();
+                var response = await _competitionRepository.GetRaceWithCircuitAsync();
 
                 return response;
             }
@@ -521,57 +519,64 @@ namespace F1Simulator.CompetitionService.Services
         private async Task<List<DriverToPublishDTO>> ConsumeRaceResultsAsync()
         {
             using var connection = await _connectionFactory.CreateConnectionAsync();
-            using var channel = await connection.CreateChannelAsync();
+            using (var channel = await connection.CreateChannelAsync())
+            {                
+                await channel.QueueDeclareAsync(queue: "RaceFinishedEvent",
+                                               durable: false,
+                                               exclusive: false,
+                                               autoDelete: false,
+                                               arguments: null);
 
-            await channel.QueueDeclareAsync(queue: "RaceFinishedEvent",
-                                           durable: false,
-                                           exclusive: true,
-                                           autoDelete: false,
-                                           arguments: null);
-            var consumer = new AsyncEventingBasicConsumer(channel);
-
-            uint numeroMensagens = await channel.MessageCountAsync("RaceFinishedEvent");
-            if (numeroMensagens == 0)
-            {
-                throw new BusinessException("Race results queue is empty");
-            }
-
-            var results = new List<DriverToPublishDTO>();
-            var semaphore = new SemaphoreSlim(0, (int)numeroMensagens);
-
-            consumer = new AsyncEventingBasicConsumer(channel);
-            consumer.ReceivedAsync += async (model, ea) =>
-            {
-                try
+                var consumer = new AsyncEventingBasicConsumer(channel);
+                uint numeroMensagens = await channel.MessageCountAsync("RaceFinishedEvent");
+                if (numeroMensagens == 0)
                 {
-                    var body = ea.Body.ToArray();
-                    var message = Encoding.UTF8.GetString(body);
-
-                    var dto = JsonSerializer.Deserialize<DriverToPublishDTO>(message);
-
-                    results.Add(dto);
-
-                    await channel.BasicAckAsync(ea.DeliveryTag, false);
-
-                }
-                finally
-                {
-                    semaphore.Release();
+                    throw new BusinessException("Race results queue is empty");
                 }
 
+                var results = new List<DriverToPublishDTO>();
+                var semaphore = new SemaphoreSlim(0, (int)numeroMensagens);
 
-            };
-            await channel.BasicConsumeAsync(
-            queue: "RaceFinishedEvent",
-            autoAck: true,
-            consumer: consumer);
+                consumer = new AsyncEventingBasicConsumer(channel);
+                consumer.ReceivedAsync += async (model, ea) =>
+                {
+                    try
+                    {
+                        var body = ea.Body.ToArray();
+                        var message = Encoding.UTF8.GetString(body);
 
-            for (int i = 0; i < numeroMensagens; i++)
-            {
-                await semaphore.WaitAsync();
+                        var dto = JsonSerializer.Deserialize<List<DriverToPublishDTO>>(message);
+
+                        foreach (var d in dto)
+                        {
+                            results.Add(d);
+                        }
+
+                        await channel.BasicAckAsync(ea.DeliveryTag, false);
+                    }
+                    catch (Exception ex)
+                    {
+                        await channel.BasicNackAsync(ea.DeliveryTag, false, true);
+                        throw;
+                    }
+                    finally
+                    {
+                        semaphore.Release();
+                    }
+                };
+                await channel.BasicConsumeAsync(
+                queue: "RaceFinishedEvent",
+                autoAck: false,
+                consumer: consumer);
+
+                for (int i = 0; i < numeroMensagens; i++)
+                {
+                    await semaphore.WaitAsync();
+                }
+
+                return results;
             }
 
-            return results;
         }
         public async Task EndRaceAsync()
         {
@@ -597,25 +602,32 @@ namespace F1Simulator.CompetitionService.Services
                 // Buscar as listas de classificação do banco
 
                 var drivers = await _competitionRepository.GetDriverStandingAsync();
-                var teams =  await _competitionRepository.GetTeamStandingAsync();
+                var teams = await _competitionRepository.GetTeamStandingAsync();
                 List<DriverStandingResponseDTO> driversUpdate = new List<DriverStandingResponseDTO>();
                 List<TeamStandingResponseDTO> teamsUpdate = new List<TeamStandingResponseDTO>();
 
                 // atualizar listas de classificação
 
-                if (drivers is not null) {
+                if (drivers is not null)
+                {
                     driversUpdate = UpdateDrivers(drivers, raceResults);
                 }
-                if(teams is not null)
+                if (teams is not null)
                 {
-                   teamsUpdate = UpdateTeams(teams, drivers);
+                    teamsUpdate = UpdateTeams(teams, drivers);
                 }
 
                 // enviar as listas de classificação para o banco e subescrever 
 
-                await _competitionRepository.EndRaceAsync(driversUpdate, teamsUpdate);
+                var race = await _competitionRepository.GetRaceInProgressAsync();
+                if (race is null)
+                    throw new BusinessException("There isn't a race in progress!");
 
+                var season = await _competitionRepository.GetCompetionActiveAsync();
+                if (season is null)
+                    throw new BusinessException("There isn't a season active!");
 
+                await _competitionRepository.EndRaceAsync(driversUpdate, teamsUpdate, season, race);
             }
             catch (Exception ex)
             {
@@ -651,9 +663,61 @@ namespace F1Simulator.CompetitionService.Services
         }
 
 
+        public async Task<StandingsResponseDTO> EndSeasonAsync()
+        {
+            try
+            {
+                // verificar se tem um season ativa 
+                var activeSeason = await _competitionRepository.GetCompetionActiveAsync();
+                if (activeSeason == null)
+                {
+                    throw new BusinessException("There is no active season.");
+                }
 
+                // buscar a corrida round 24
+                var race24 = await _competitionRepository.GetLastRaceRoundAsync();
+                if (race24 is null)
+                {
+                    throw new BusinessException("error in searching for sequence race 24.");
+                }
 
+                if(race24.Status != "Finished")
+                {
+                    throw new BusinessException("There are still races to be held.");
+                }
 
+                var driverStanding = await GetDriverStandingAsync();
+                var teamStanding = await GetTeamStandingAsync();
+                await _competitionRepository.EndSeasonAsync(activeSeason.Id);
+
+                var standingsResponse = new StandingsResponseDTO
+                {
+                    DriverStandings = driverStanding,
+                    TeamStandings = teamStanding
+                };
+
+                return standingsResponse;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in FinalStnadingsAsync in CompetitionService");
+                throw;
+            }
+
+        }
+
+        public async Task<List<SeasonResponseDTO>> GetAllSeasonsAsync()
+        {
+            try
+            {
+                return await _competitionRepository.GetAllSeasonsAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in GetSeasonsAsync in CompetitionService");
+                throw;
+            }
+        }
     }
 
 }

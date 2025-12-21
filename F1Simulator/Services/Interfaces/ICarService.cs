@@ -9,7 +9,7 @@ namespace F1Simulator.TeamManagementService.Services.Interfaces
         Task<List<CarResponseDTO>> GetAllCarAsync();
 
         Task<CarResponseDTO> GetCarByIdAsync(string id);
-        Task<int> GetCountCarByIdCar(Guid carId);
+        Task<int> GetCountCarByIdCarAsync(Guid carId);
 
         Task UpdateCarCoefficientsAsync(CarUpdateDTO carUpdate, string carId);
 

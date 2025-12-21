@@ -39,7 +39,7 @@ namespace F1Simulator.TeamManagementService.Repositories
                 {
                     DriverId = driver.DriverId,
                     CarId = driver.CarId,
-                    DriverNumber = driver.DriverNumber,
+                    DriverNumber = driver.DriverNumber.ToString(),
                     FirstName = driver.FirstName,
                     FullName = driver.FullName,
                     HandiCap = driver.HandiCap,
@@ -70,7 +70,7 @@ namespace F1Simulator.TeamManagementService.Repositories
             }
         }
 
-        public async Task<int> GetAllDriversCount()
+        public async Task<int> GetAllDriversCountAsync()
         {
             try
             {
@@ -86,7 +86,8 @@ namespace F1Simulator.TeamManagementService.Repositories
         {
             try
             {
-                var sql = @"SELECT DriverId, DriverNumber, TeamId, CarId, FirstName, FullName, WeightKg, HandiCap FROM Drivers WHERE DriverId = @DriverId";
+                var sql = @"SELECT DriverId, DriverNumber, TeamId, CarId, FirstName, FullName, WeightKg, HandiCap FROM Drivers 
+                            WHERE DriverId = @DriverId";
                 var driver = await _connection.QueryFirstOrDefaultAsync<DriverResponseDTO>(sql, new { DriverId = id });
                 return driver;
             }
@@ -100,7 +101,9 @@ namespace F1Simulator.TeamManagementService.Repositories
         {
             try
             {
-                var sql = @"SELECT DriverId, DriverNumber, TeamId, CarId, FirstName, FullName, WeightKg, HandiCap FROM Drivers WHERE DriverNumber = @DriverNumber";
+                var sql = @"SELECT DriverId, DriverNumber, TeamId, CarId, FirstName, FullName, WeightKg, HandiCap FROM Drivers 
+                            WHERE DriverNumber = @DriverNumber";
+
                 var driver = await _connection.QueryFirstOrDefaultAsync<DriverResponseDTO>(sql, new { DriverNumber = number });
                 return driver;
             } catch(SqlException ex)
@@ -109,7 +112,7 @@ namespace F1Simulator.TeamManagementService.Repositories
             } 
         }
 
-        public async Task<List<DriverToRaceDTO>> GetDriversToRace()
+        public async Task<List<DriverToRaceDTO>> GetDriversToRaceAsync()
         {
             try
             {

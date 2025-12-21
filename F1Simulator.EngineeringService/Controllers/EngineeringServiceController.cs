@@ -20,7 +20,7 @@ namespace F1Simulator.EngineeringService.Controllers
 
 
         [HttpPut("car/{carId}")]
-        public async Task<IActionResult> PutCarCoefficientsAsync([FromBody] EngineersPutDTO engIds, [FromRoute] string carId)
+        public async Task<ActionResult> PutCarCoefficientsAsync([FromBody] EngineersPutDTO engIds, [FromRoute] string carId)
         {
             try
             {
@@ -43,6 +43,5 @@ namespace F1Simulator.EngineeringService.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, new { Message = ex.Message});
             }
         }
-
     }
 }

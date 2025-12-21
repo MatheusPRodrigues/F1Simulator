@@ -16,7 +16,7 @@ namespace F1Simulator.RaceControlService.Repositories
             _raceControlCollection = _mongoDatabase.GetCollection<RaceControl>("RaceControll");
         }
 
-        public async Task<List<DriverQualifier>> GetDriverQualiersByRaceId(Guid raceId)
+        public async Task<List<DriverQualifier>> GetDriverQualiersByRaceIdAsync(Guid raceId)
         {
             try
             {

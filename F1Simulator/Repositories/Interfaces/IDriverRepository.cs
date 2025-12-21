@@ -11,7 +11,7 @@ namespace F1Simulator.TeamManagementService.Repositories.Interfaces
         public Task<List<DriverResponseDTO>> GetAllDriversAsync();
         public Task<DriverResponseDTO> GetDriverByIdAsync(Guid id);
         public Task<DriverResponseDTO> GetDriverByNumberAsync(int number);
-        public Task<List<DriverToRaceDTO>> GetDriversToRace();
-        public Task<int> GetAllDriversCount();
+        public Task<List<DriverToRaceDTO>> GetDriversToRaceAsync();
+        public Task<int> GetAllDriversCountAsync();
     }
 }

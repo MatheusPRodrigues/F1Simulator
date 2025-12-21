@@ -1,4 +1,5 @@
 using F1Simulator.RaceControlService.Messaging;
+using F1Simulator.RaceControlService.Messaging.Interfaces;
 using F1Simulator.RaceControlService.Repositories;
 using F1Simulator.RaceControlService.Repositories.Interfaces;
 using F1Simulator.RaceControlService.Services;
@@ -6,8 +7,9 @@ using F1Simulator.RaceControlService.Services.Interfaces;
 using F1Simulator.Utils.DatabaseConnectionFactory;
 using F1Simulator.Utils.DatabaseConnectionFactory.Config;
 using F1Simulator.Utils.DatabaseConnectionFactory.Connections;
-using Microsoft.Data.SqlClient;
 using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
+using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,6 +17,10 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllers();
+
+BsonSerializer.RegisterSerializer(
+    new GuidSerializer(GuidRepresentation.Standard)
+);
 
 builder.Services.Configure<MongoDBSettings>(
     builder.Configuration.GetSection("MongoDB"));

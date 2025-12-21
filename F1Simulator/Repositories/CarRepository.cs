@@ -10,11 +10,11 @@ namespace F1Simulator.TeamManagementService.Repositories
     public class CarRepository : ICarRepository
     {
         private readonly SqlConnection _connection;
+
         public CarRepository(IDatabaseConnection<SqlConnection> connection)
         {
             _connection = connection.Connect();
         }
-
 
         public async Task CreateCarAsync(Car car)
         {
@@ -46,7 +46,7 @@ namespace F1Simulator.TeamManagementService.Repositories
                 return (await _connection.QueryAsync<CarResponseDTO>(sql)).ToList();
 
             }
-            catch (Exception ex)
+            catch (SqlException ex)
             {
                 throw new Exception("Error querying the database.", ex);
             }
@@ -105,27 +105,39 @@ namespace F1Simulator.TeamManagementService.Repositories
         }
 
 
-        public async Task<int> GetCountCarsByIdTeam(string teamId)
+        public async Task<int> GetCountCarsByIdTeamAsync(string teamId)
         {
-            var sql = @"SELECT COUNT (*) FROM Cars c
-                        INNER JOIN Teams t
-                        ON c.TeamId = t.TeamId
-                        WHERE c.TeamId = @TeamId";
+            try
+            {
+                var sql = @"SELECT COUNT (*) FROM Cars c
+                            INNER JOIN Teams t
+                            ON c.TeamId = t.TeamId
+                            WHERE c.TeamId = @TeamId";
 
-            return await _connection.QueryFirstOrDefaultAsync<int>(sql, new { teamId });
-
+                return await _connection.QueryFirstOrDefaultAsync<int>(sql, new { teamId });
+            }
+            catch (SqlException ex)
+            {
+                throw new Exception("Error querying the database.", ex);
+            }
         }
 
-        public async Task<int> GetCountCarsByIdCar(Guid carId)
+        public async Task<int> GetCountCarsByIdCarAsync(string carId)
         {
-            var sql = @"SELECT COUNT(*)
-                        FROM Cars c
-                        INNER JOIN Drivers d ON d.CarId = c.CarId
-                        WHERE c.CarId = @CarId;
-                        ";
+            try
+            {
+                var sql = @"SELECT COUNT(*)
+                            FROM Cars c
+                            INNER JOIN Drivers d ON d.CarId = c.CarId
+                            WHERE c.CarId = @CarId;
+                            ";
 
-            return await _connection.QueryFirstOrDefaultAsync<int>(sql, new { CarId = carId });
-
+                return await _connection.QueryFirstOrDefaultAsync<int>(sql, new { CarId = carId });
+            }
+            catch (SqlException ex)
+            {
+                throw new Exception("Error querying the database.", ex);
+            }
         }
 
         public async Task<int> GetAllCarsCountAsync()
@@ -136,7 +148,7 @@ namespace F1Simulator.TeamManagementService.Repositories
 
                 return await _connection.ExecuteScalarAsync<int>(sql);
             }
-            catch (Exception ex)
+            catch (SqlException ex)
             {
                 throw new Exception(ex.Message);
             }

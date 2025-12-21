@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace F1Simulator.Models.DTOs.TeamManegementService.DriverDTO
+﻿namespace F1Simulator.Models.DTOs.TeamManegementService.DriverDTO
 {
     public class DriverResponseDTO
     {
         public Guid? DriverId { get; init; }
-        public int DriverNumber { get; init; }
+        public string DriverNumber { get; init; }
         public Guid TeamId { get; init; }
         public Guid CarId { get; init; }
         public string FirstName { get; init; }

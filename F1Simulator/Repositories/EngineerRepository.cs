@@ -19,7 +19,8 @@ namespace F1Simulator.TeamManagementService.Repositories
         {
             try
             {
-                var sql = "INSERT INTO Engineers(EngineerId, TeamId, CarId, FirstName, LastName, Specialization, ExperienceFactor) VALUES (@EngineerId, @TeamId, @CarId, @FirstName, @LastName, @Specialization, @ExperienceFactor)";
+                var sql = @"INSERT INTO Engineers(EngineerId, TeamId, CarId, FirstName, LastName, Specialization, ExperienceFactor) 
+                            VALUES (@EngineerId, @TeamId, @CarId, @FirstName, @LastName, @Specialization, @ExperienceFactor)";
 
                 await _connection.ExecuteScalarAsync(sql, new
                 {
@@ -75,7 +76,8 @@ namespace F1Simulator.TeamManagementService.Repositories
         {
             try
             {
-                var sql = @"SELECT EngineerId, TeamId, CarId, FirstName, LastName, Specialization, ExperienceFactor FROM Engineers WHERE EngineerId = @EngineerId";
+                var sql = @"SELECT EngineerId, TeamId, CarId, FirstName, LastName, Specialization, ExperienceFactor FROM Engineers 
+                            WHERE EngineerId = @EngineerId";
 
                 return await _connection.QueryFirstOrDefaultAsync<EngineerResponseDTO>(sql, new { EngineerId = id });
             }

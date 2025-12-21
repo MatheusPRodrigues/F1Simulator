@@ -8,8 +8,6 @@ namespace F1Simulator.CompetitionService.Services.Interfaces
     {
         Task<CreateCircuitResponseDTO> CreateCircuitAsync(CreateCircuitRequestDTO createCircuit);
         Task<CreateCircuitsResponseDTO> CreateCircuitsAsync(CreateCircuitsRequestDTO circuits);
-        Task<(bool Update, CreateCircuitResponseDTO? Circuit)> DeactivateCircuitAsync(Guid id);
-        Task<(bool Update, CreateCircuitResponseDTO? Circuit)> ActivateCircuitAsync(Guid id);
         Task<List<CreateCircuitResponseDTO>> GetAllCircuitsAsync();
         Task<CreateCircuitResponseDTO?> GetCircuitByIdAsync(Guid id);
         Task<bool> DeleteCircuitAsync(Guid id);
