@@ -2,9 +2,6 @@
   <Folder Name="/docs/">
     <File Path="documentacao-f1simulator.md" />
   </Folder>
-  <Folder Name="/docs/EngineeringService/">
-    <File Path="README.md" />
-  </Folder>
   <Folder Name="/docs/Insomnia/">
     <File Path="README_TEMPLATE.md" />
   </Folder>
@@ -14,6 +11,15 @@
   </Folder>
   <Folder Name="/docs/Insomnia/RaceControlService/" />
   <Folder Name="/docs/Insomnia/TeamManagementService/" />
+  <Folder Name="/docs/READMES/">
+    <File Path="documentacao-f1simulator.md" />
+  </Folder>
+  <Folder Name="/docs/READMES/EngineeringService/">
+    <File Path="README.md" />
+  </Folder>
+  <Folder Name="/docs/READMES/TeamManegementService/">
+    <File Path="../../../OneDrive/Área de Trabalho/READMETeamManegementService.zip" />
+  </Folder>
   <Folder Name="/src/">
     <Project Path="F1Simulator.CompetitionService/F1Simulator.CompetitionService.csproj">
       <BuildDependency Project="F1Simulator.Models/F1Simulator.Models.csproj" />
