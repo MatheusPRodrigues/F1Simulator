@@ -677,7 +677,7 @@ namespace F1Simulator.CompetitionService.Services
                 }
 
                 // buscar a corrida round 24
-                var race24 = await _competitionRepository.GetRaceRound24Async();
+                var race24 = await _competitionRepository.GetLastRaceRoundAsync();
                 if (race24 is null)
                 {
                     throw new BusinessException("error in searching for sequence race 24.");
@@ -688,9 +688,9 @@ namespace F1Simulator.CompetitionService.Services
                     throw new BusinessException("There are still races to be held.");
                 }
 
-                await _competitionRepository.EndSeasonAsync(activeSeason.Id);
                 var driverStanding = await GetDriverStandingAsync();
                 var teamStanding = await GetTeamStandingAsync();
+                await _competitionRepository.EndSeasonAsync(activeSeason.Id);
 
                 var standingsResponse = new StandingsResponseDTO
                 {

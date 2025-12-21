@@ -30,7 +30,7 @@ namespace F1Simulator.CompetitionService.Repositories.Interfaces
             RaceCompleteResponseDTO race);
 
         Task EndSeasonAsync(Guid seasonId);
-        Task<RaceCompleteResponseDTO?> GetRaceRound24Async();
+        Task<RaceCompleteResponseDTO?> GetLastRaceRoundAsync();
         Task<List<SeasonResponseDTO>> GetAllSeasonsAsync();
     }
 }

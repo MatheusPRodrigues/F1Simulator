@@ -151,7 +151,7 @@ namespace F1Simulator.TeamManagementService.Services
         {
             try
             {
-                return await _carRepository.GetCountCarsByIdCarAsync(carId);
+                return await _carRepository.GetCountCarsByIdCarAsync(carId.ToString());
             }
             catch (Exception ex)
             {

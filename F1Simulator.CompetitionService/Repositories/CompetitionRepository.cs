@@ -1,7 +1,6 @@
 ﻿using Dapper;
 using F1Simulator.CompetitionService.Repositories.Interfaces;
 using F1Simulator.Models.DTOs.CompetitionService.Response;
-using F1Simulator.Models.Enums.CompetitionService;
 using F1Simulator.Models.Models;
 using F1Simulator.Utils.DatabaseConnectionFactory;
 using Microsoft.Data.SqlClient;
@@ -458,7 +457,7 @@ namespace F1Simulator.CompetitionService.Repositories
             try
             {
                 var updateQuery = @"UPDATE Season
-                                    SET IsActive = 1
+                                    SET IsActive = 0
                                     WHERE Id = @SeasonId";
                 await _connection.ExecuteAsync(updateQuery, new { SeasonId = seasonId });
             }
@@ -484,7 +483,7 @@ namespace F1Simulator.CompetitionService.Repositories
             }
         }
 
-        public async Task<RaceCompleteResponseDTO?> GetRaceRound24Async()
+        public async Task<RaceCompleteResponseDTO?> GetLastRaceRoundAsync()
         {
             try
             {

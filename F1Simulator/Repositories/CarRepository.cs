@@ -122,7 +122,7 @@ namespace F1Simulator.TeamManagementService.Repositories
             }
         }
 
-        public async Task<int> GetCountCarsByIdCarAsync(Guid carId)
+        public async Task<int> GetCountCarsByIdCarAsync(string carId)
         {
             try
             {
