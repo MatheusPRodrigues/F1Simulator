@@ -5,7 +5,9 @@
   <Folder Name="/docs/Insomnia/">
     <File Path="README_TEMPLATE.md" />
   </Folder>
-  <Folder Name="/docs/Insomnia/CompettionService/" />
+  <Folder Name="/docs/Insomnia/CompettionService/">
+    <File Path="../../../Downloads/CompetionService.yaml" />
+  </Folder>
   <Folder Name="/docs/Insomnia/EngineeringService/">
     <File Path="engineering-service.yaml" />
   </Folder>
