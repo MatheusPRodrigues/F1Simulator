@@ -1,4 +1,5 @@
-﻿using RabbitMQ.Client;
+﻿using F1Simulator.RaceControlService.Messaging.Interfaces;
+using RabbitMQ.Client;
 using System.Text;
 using System.Text.Json;
 
@@ -16,7 +17,7 @@ namespace F1Simulator.RaceControlService.Messaging
             _channel = _connection.CreateChannelAsync().GetAwaiter().GetResult();
         }
 
-        public async Task Publish(object data, string routingKey)
+        public async Task PublishAsync(object data, string routingKey)
         {
 
             await _channel.QueueDeclareAsync(

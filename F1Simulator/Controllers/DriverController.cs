@@ -155,7 +155,7 @@ namespace F1Simulator.TeamManagementService.Controllers
         {
             try
             {
-                return await _driverService.GetAllDriversCount();
+                return await _driverService.GetAllDriversCountAsync();
             }
             catch (ArgumentException ex)
             {

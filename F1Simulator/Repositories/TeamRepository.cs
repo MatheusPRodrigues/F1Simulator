@@ -23,13 +23,13 @@ namespace F1Simulator.TeamManagementService.Repositories
 
                 return await _connection.ExecuteScalarAsync<int>(sql);
             }
-            catch (Exception ex)
+            catch (SqlException ex)
             {
                 throw new Exception(ex.Message);
             }
         }
 
-        public async Task<int> GetDriversInTeamById(Guid id)
+        public async Task<int> GetDriversInTeamByIdAsync(Guid id)
         {
             try
             {
@@ -39,7 +39,7 @@ namespace F1Simulator.TeamManagementService.Repositories
 
                 return await _connection.ExecuteScalarAsync<int>(sql, new { Id = id});
             }
-            catch (Exception ex)
+            catch (SqlException ex)
             {
                 throw new Exception(ex.Message);
             }
@@ -54,7 +54,7 @@ namespace F1Simulator.TeamManagementService.Repositories
 
                 await _connection.ExecuteAsync(query, team);
             }
-            catch (Exception ex)
+            catch (SqlException ex)
             {
                 throw new Exception(ex.Message);
             }
@@ -69,7 +69,7 @@ namespace F1Simulator.TeamManagementService.Repositories
 
                 return await _connection.QueryAsync<TeamResponseDTO>(query);
             }
-            catch (Exception ex)
+            catch (SqlException ex)
             {
                 throw new Exception(ex.Message);
             }
@@ -85,7 +85,7 @@ namespace F1Simulator.TeamManagementService.Repositories
 
                 return await _connection.QueryFirstOrDefaultAsync<TeamResponseDTO>(query, new { TeamId = teamId });
             }
-            catch (Exception ex)
+            catch (SqlException ex)
             {
                 throw new Exception(ex.Message);
             }

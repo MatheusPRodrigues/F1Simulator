@@ -31,6 +31,7 @@ namespace F1Simulator.TeamManagementService.Services
                 throw;
             }
         }
+
         private static string GenerateAcronym(string name)
         {
             if (name is null || name.Length < 3)
@@ -38,6 +39,7 @@ namespace F1Simulator.TeamManagementService.Services
 
             return name.Trim().Substring(0, 3).ToUpperInvariant();
         }
+
         public async Task CreateTeamAsync(TeamRequestDTO teamRequestDto)
         {
             try
@@ -163,11 +165,11 @@ namespace F1Simulator.TeamManagementService.Services
             }
         }
 
-        public async Task<int> GetDriversInTeamById(Guid id)
+        public async Task<int> GetDriversInTeamByIdAsync(Guid id)
         {
             try
             {
-                return await _teamRepository.GetDriversInTeamById(id);
+                return await _teamRepository.GetDriversInTeamByIdAsync(id);
             }
             catch (Exception ex)
             {

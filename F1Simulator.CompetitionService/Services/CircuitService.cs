@@ -127,12 +127,12 @@ namespace F1Simulator.CompetitionService.Services
             {
                 return await _circuitRepository.GetAllCircuitsAsync();
 
-            }catch(Exception ex)
+            }
+            catch(Exception ex)
             {
                 _logger.LogError("Error in GetAllCircuits in CircuitService: " + ex.Message);
                 throw;
             }
-
         }
 
         public async Task<CreateCircuitResponseDTO?> GetCircuitByIdAsync(Guid id)
@@ -148,7 +148,6 @@ namespace F1Simulator.CompetitionService.Services
                 _logger.LogError("Error in GetCircuitById in CircuitService: " + ex.Message);
                 throw;
             }
-
         }
 
         public async Task<bool> DeleteCircuitAsync(Guid id)
@@ -169,7 +168,6 @@ namespace F1Simulator.CompetitionService.Services
                 _logger.LogError("Error in DeleteCircuitAsync in CircuitService: " + ex.Message);
                 throw;
             }
-
         }
 
         public async Task<(bool Update, CreateCircuitResponseDTO? Circuit)> UpdateCircuitAsync(Guid id, UpdateCircuitDTO updateCircuit)
@@ -230,9 +228,6 @@ namespace F1Simulator.CompetitionService.Services
                 _logger.LogError("Error in UpdateCircuit in CircuitService: " + ex.Message);
                 throw;
             }
-
         }
-
-
     }
 }

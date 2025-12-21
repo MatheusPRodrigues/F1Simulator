@@ -1,5 +1,4 @@
 ﻿using F1Simulator.CompetitionService.Exceptions;
-using F1Simulator.CompetitionService.Repositories;
 using F1Simulator.CompetitionService.Repositories.Interfaces;
 using F1Simulator.CompetitionService.Services.Interfaces;
 using F1Simulator.Models.DTOs.CompetitionService.Response;
@@ -11,7 +10,6 @@ using F1Simulator.Models.Enums.CompetitionService;
 using F1Simulator.Models.Models;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
-using System.Security;
 using System.Text;
 using System.Text.Json;
 
@@ -707,6 +705,7 @@ namespace F1Simulator.CompetitionService.Services
             }
 
         }
+
         public async Task<List<SeasonResponseDTO>> GetAllSeasonsAsync()
         {
             try
@@ -719,10 +718,6 @@ namespace F1Simulator.CompetitionService.Services
                 throw;
             }
         }
-
-
-
-
     }
 
 }

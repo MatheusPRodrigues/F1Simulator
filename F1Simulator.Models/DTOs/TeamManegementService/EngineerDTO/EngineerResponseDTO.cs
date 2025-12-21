@@ -1,7 +1,4 @@
 ﻿using F1Simulator.Models.Enums.TeamManegementService;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Text.Json.Serialization;
 
 namespace F1Simulator.Models.DTOs.TeamManegementService.EngineerDTO

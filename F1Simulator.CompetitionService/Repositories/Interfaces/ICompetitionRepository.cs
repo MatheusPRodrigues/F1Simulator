@@ -1,7 +1,5 @@
 ﻿using F1Simulator.Models.DTOs.CompetitionService.Response;
 using F1Simulator.Models.Models;
-using Microsoft.Data.SqlClient;
-using System.Threading.Tasks;
 
 namespace F1Simulator.CompetitionService.Repositories.Interfaces
 {

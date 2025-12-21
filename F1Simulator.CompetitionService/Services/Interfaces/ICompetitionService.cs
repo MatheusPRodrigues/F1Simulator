@@ -1,7 +1,4 @@
-﻿using F1Simulator.CompetitionService.Repositories;
-using F1Simulator.Models.DTOs.CompetitionService.Response;
-using F1Simulator.Models.DTOs.RaceControlService;
-using System.Threading.Tasks;
+﻿using F1Simulator.Models.DTOs.CompetitionService.Response;
 
 namespace F1Simulator.CompetitionService.Services.Interfaces
 {
@@ -22,8 +19,6 @@ namespace F1Simulator.CompetitionService.Services.Interfaces
         Task EndRaceAsync();
         Task<StandingsResponseDTO> EndSeasonAsync();
         Task<List<SeasonResponseDTO>> GetAllSeasonsAsync();
-
-
 
     }
 }

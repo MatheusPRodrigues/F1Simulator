@@ -3,7 +3,7 @@ using F1Simulator.Models.DTOs.EngineeringService;
 using F1Simulator.Models.DTOs.RaceControlService;
 using F1Simulator.Models.DTOs.TeamManegementService.CarDTO;
 using F1Simulator.Models.Models.RaceControlService;
-using F1Simulator.RaceControlService.Messaging;
+using F1Simulator.RaceControlService.Messaging.Interfaces;
 using F1Simulator.RaceControlService.Repositories.Interfaces;
 using F1Simulator.RaceControlService.Services.Interfaces;
 using System.Net;
@@ -169,7 +169,7 @@ namespace F1Simulator.RaceControlService.Services
                 if (drivers is null)
                     throw new ArgumentException("Drivers not found to race");
 
-                var gridQualifier = await _raceControlRepository.GetDriverQualiersByRaceId(race.Id);
+                var gridQualifier = await _raceControlRepository.GetDriverQualiersByRaceIdAsync(race.Id);
 
                 var driversWithPositionQualifierGrid = new List<DriverToRaceWithPositionDTO>();
                 for (var i = 0; i < drivers.Count; i++)
@@ -245,7 +245,7 @@ namespace F1Simulator.RaceControlService.Services
                 }
 
                 var processedList = ProcessDtoToPublish(driverProcessToGrid);
-                await _messageService.Publish(processedList, PUBLISHQUEUE);
+                await _messageService.PublishAsync(processedList, PUBLISHQUEUE);
 
                 var raceToReplace = await AddGridFinalRaceInRaceControl(driverProcessToGrid, race.Id);
                 await _raceControlRepository.ReplaceDriverRaceAsync(raceToReplace);

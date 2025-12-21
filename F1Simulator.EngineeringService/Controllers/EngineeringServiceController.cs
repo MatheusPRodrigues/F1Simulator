@@ -43,6 +43,5 @@ namespace F1Simulator.EngineeringService.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, new { Message = ex.Message});
             }
         }
-
     }
 }

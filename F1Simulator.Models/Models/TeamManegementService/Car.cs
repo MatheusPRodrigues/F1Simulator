@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace F1Simulator.Models.Models.TeamManegement
+﻿namespace F1Simulator.Models.Models.TeamManegement
 {
     public class Car
     {

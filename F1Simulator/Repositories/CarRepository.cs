@@ -148,7 +148,7 @@ namespace F1Simulator.TeamManagementService.Repositories
 
                 return await _connection.ExecuteScalarAsync<int>(sql);
             }
-            catch (Exception ex)
+            catch (SqlException ex)
             {
                 throw new Exception(ex.Message);
             }

@@ -3,10 +3,8 @@ using F1Simulator.CompetitionService.Services.Interfaces;
 using F1Simulator.Models.DTOs.CompetitionService.Request;
 using F1Simulator.Models.DTOs.CompetitionService.Response;
 using F1Simulator.Models.DTOs.CompetitionService.Update;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
-using System;
 
 namespace F1Simulator.CompetitionService.Controllers
 {
@@ -24,7 +22,7 @@ namespace F1Simulator.CompetitionService.Controllers
         }
 
         [HttpPost("create")]
-        public async Task<ActionResult> CreateCircuit([FromBody] CreateCircuitRequestDTO createCircuit) { 
+        public async Task<ActionResult> CreateCircuitAsync([FromBody] CreateCircuitRequestDTO createCircuit) { 
             try
             {
 
@@ -49,7 +47,7 @@ namespace F1Simulator.CompetitionService.Controllers
         }
 
         [HttpPost("create/circuits")]
-        public async Task<ActionResult> CreateCircuits([FromBody] CreateCircuitsRequestDTO createCircuit)
+        public async Task<ActionResult> CreateCircuitsAsync([FromBody] CreateCircuitsRequestDTO createCircuit)
         {
             try
             {
@@ -74,7 +72,7 @@ namespace F1Simulator.CompetitionService.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<CreateCircuitResponseDTO>>> GetAllCircuits()
+        public async Task<ActionResult<List<CreateCircuitResponseDTO>>> GetAllCircuitsAsync()
         {
             try
             {
@@ -89,7 +87,7 @@ namespace F1Simulator.CompetitionService.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<CreateCircuitResponseDTO>> GetCircuitById([FromRoute] Guid id)
+        public async Task<ActionResult<CreateCircuitResponseDTO>> GetCircuitByIdAsync([FromRoute] Guid id)
         {
             try
             {
@@ -108,7 +106,7 @@ namespace F1Simulator.CompetitionService.Controllers
         }
 
         [HttpDelete("{id}")] 
-        public async Task<ActionResult> DeleteCircuit([FromRoute] Guid id)
+        public async Task<ActionResult> DeleteCircuitAsync([FromRoute] Guid id)
         {
             try
             {
