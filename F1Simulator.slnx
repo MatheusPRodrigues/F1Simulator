@@ -21,6 +21,9 @@
   <Folder Name="/docs/READMES/">
     <File Path="documentacao-f1simulator.md" />
   </Folder>
+  <Folder Name="/docs/READMES/CompetitionService/">
+    <File Path="../../../Downloads/CompetitionService.md" />
+  </Folder>
   <Folder Name="/docs/READMES/EngineeringService/">
     <File Path="EngineeringService.md" />
   </Folder>
