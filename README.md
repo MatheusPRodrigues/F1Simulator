@@ -61,3 +61,13 @@ O sistema é composto por microsserviços independentes, cada um com responsabil
 ---
 
 📚 Documentação detalhada disponível nas pastas de cada serviço.
+
+--- 
+
+## Contribuidores
+
+- 👨‍🦰 [Bruno Capita](https://github.com/Brunovini08)
+- 👨‍🦰 [Everton Silva](https://github.com/EvertonSilvaTps)
+- 👩‍🦰 [Julia Tostes](https://github.com/juhfrancic)
+- 👨‍🦰 [Lucas Parila](https://github.com/lucasparila)
+- 👨‍🦰 [Matheus Rodrigues](https://github.com/MatheusPRodrigues)
