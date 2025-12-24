@@ -77,7 +77,7 @@ namespace F1Simulator.CompetitionService.Services
 
                 // Verifica se existem 40 ou 44 engenheiros cadastradas, se não houver lança uma exceção 
                 var countEngineers = await _httpGetCountEngineers.GetFromJsonAsync<int>("count");
-                if (countEngineers != 40 || countEngineers != 44)
+                if (countEngineers != 40 && countEngineers != 44)
                 {
                     throw new InvalidOperationException("The season cannot start due to a lack of engineers.");
                 }
